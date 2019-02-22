@@ -5,10 +5,10 @@ class Structure:
     joints = {}
     # Initialise structure with either pre-defined or empty graph object
     def __init__(self,
-                structureID,
-                graph=None,
-                nodes=None,
-                edges=None):
+                 structureID,
+                 graph=None,
+                 nodes=None,
+                 edges=None):
         self.structureID = structureID
         if graph == None:
             graph = {}
