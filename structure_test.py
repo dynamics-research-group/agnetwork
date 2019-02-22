@@ -32,9 +32,9 @@ class TestStructreClass(unittest.TestCase):
         self.assertEqual(self.struct.graph['a'], ['b'])
         self.assertEqual(self.struct.graph['b'], ['a'])
         # Check that if only one node in an edge exits, it is not possible to add an edge
-        with self.assertRaisesRegex(KeyError, "First node not found in graph"):
+        with self.assertRaisesRegex(KeyError, "first node not found in graph"):
             self.struct.addEdge(['c', 'a'])
-        with self.assertRaisesRegex(KeyError, "Second node not found in graph"):
+        with self.assertRaisesRegex(KeyError, "second node not found in graph"):
             self.struct.addEdge(['a', 'c'])
 
     def test_nodeList(self):
@@ -65,7 +65,7 @@ class TestStructreClass(unittest.TestCase):
         self.assertEqual(self.struct.graph, {'a': ['b'], 'b': ['a','c'], 'c': ['b']})
         # Check that adding a joint where both nodes do not exist in the graph gives an error
         self.struct.joints[3] = [['c','d'], 1]
-        with self.assertRaisesRegex(ValueError, "Nodes not found in graph for jointID=3"):
+        with self.assertRaisesRegex(ValueError, "nodes not found in graph for jointID=3"):
             self.struct.addJoints()
             
 if __name__ == '__main__':

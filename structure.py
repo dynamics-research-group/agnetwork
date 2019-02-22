@@ -31,12 +31,12 @@ class Structure:
         if node1 in self.graph:
             self.graph[node1].append(node2)
         else:
-            raise KeyError("First node not found in graph")
+            raise KeyError("first node not found in graph")
         # Add connection in corresponding node
         if node2 in self.graph:
             self.graph[node2].append(node1)
         else:
-            raise KeyError("Second node not found in graph")
+            raise KeyError("second node not found in graph")
 
     # Returns list of nodes in graph
     def nodeList(self):
@@ -70,4 +70,4 @@ class Structure:
                 # Add edge defined for a given join ID
                 self.addEdge(self.joints[jointID][0])
             else:
-                raise ValueError("Nodes not found in graph for jointID=" + str(jointID)) 
+                raise ValueError("nodes not found in graph for jointID=" + str(jointID)) 
