@@ -55,11 +55,10 @@ class Structure:
     
     # Adds nodes from list of elements
     def addElements(self):
-        nodes = self.elements.keys()
-        if len(self.graph) != len(nodes):
-            self.graph = {}
+        nodes = list(self.elements.keys())
         for node in nodes:
             self.addNode(node)
+        return nodes
     
     # Adds edges from list of joints
     def addJoints(self):
@@ -70,3 +69,5 @@ class Structure:
             if node1 in nodes and node2 in nodes:
                 # Add edge defined for a given join ID
                 self.addEdge(self.joints[jointID][0])
+            else:
+                raise ValueError("Nodes not found in graph for jointID=" + str(jointID)) 
