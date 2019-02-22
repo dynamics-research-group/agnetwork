@@ -5,24 +5,27 @@ from unittest.mock import patch
 class TestStructreClass(unittest.TestCase):
 
     def setUp(self):
-        # Create an instance of the Structure class and check that it initialised correctly
+        # Create an instance of the Structure class 
         self.struct = Structure("struct")
-        assert(self.struct.structureID == "struct")
-        assert(self.struct.graph == {})
-        assert(self.struct.nodes == {})
-        assert(self.struct.elements == {})
 
     def tearDown(self):
         pass
 
-    def test_AddNode(self):
+    def test_init(self):
+        # Check that Structure initialised correctly
+        self.assertEqual(self.struct.structureID, "struct")
+        self.assertEqual(self.struct.graph, {})
+        self.assertEqual(self.struct.nodes, {})
+        self.assertEqual(self.struct.elements, {})
+
+    def test_addNode(self):
         # Check that node is added to graph correctly
         self.struct.addNode('a')
         self.assertEqual(self.struct.graph['a'], [])
         # Check that no new node is created if it already exists
         self.assertIsNone(self.struct.addNode('a'))
 
-    def test_AddEdge(self):
+    def test_addEdge(self):
         # Check that the function adds edges correctly
         self.struct.graph = {'a': [], 'b': []}
         self.struct.addEdge(['a', 'b'])
@@ -34,12 +37,12 @@ class TestStructreClass(unittest.TestCase):
         with self.assertRaisesRegex(KeyError, "Second node not found in graph"):
             self.struct.addEdge(['a', 'c'])
 
-    def test_NodeList(self):
+    def test_nodeList(self):
         # Check that nodeList returns the full list of nodes
         self.struct.graph = {'a': [],'b': [],'c': []}
         self.assertEqual(self.struct.nodeList(), ['a', 'b', 'c'])
     
-    def test_EdgeList(self):
+    def test_edgeList(self):
         # Check that edgeList returns the full list of edges
         self.struct.graph = {'a': ['b'],
                              'b': ['a','c'],
