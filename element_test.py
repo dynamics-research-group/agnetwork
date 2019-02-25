@@ -1,6 +1,5 @@
 import unittest
 from element import Element
-from unittest.mock import patch
 
 class TestElementClass(unittest.TestCase):
 
