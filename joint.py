@@ -3,17 +3,18 @@ from structure import Structure
 class Joint(Structure):
 
     @staticmethod
-    # If there are no elements, you cannot create a joint
+    # Check whether or not any elements exist
     def checkForElements():
         try:
             check = Joint.elements
         except NameError:
             check = False
+        # check will be false if Joint.elements does not exist or if Joint.elements is empty
         if bool(check) == False:
-            raise NameError("no elements to connect")
+            raise NameError("no elements to connect.")
         else:
             return True
-
+    
     def __init__(self,
                  jointID,
                  jointSet,
@@ -21,6 +22,7 @@ class Joint(Structure):
         if self.checkForElements():
             self.jointID = jointID
             self.jointSet = jointSet
+            self.location = location
     
     @property
     def jointSet(self):
@@ -28,12 +30,14 @@ class Joint(Structure):
     
     @jointSet.setter
     def jointSet(self, jointSet):
+        # Check that there are the correct number of elements in jointSet
         if len(jointSet) != 2:
             raise ValueError("jointSet must contain two elements")
+        # Check the existence of both elements in jointSet
         elif jointSet[0] in Joint.elements and jointSet[1] in Joint.elements:
             self.__jointSet = jointSet
         else:
-            raise ValueError("jointSet must contain at least two existing elements.")
+            raise ValueError("jointSet must contain two existing elements.")
     
 if __name__ == '__main__':
     pass
