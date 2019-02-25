@@ -23,6 +23,7 @@ class Joint(Structure):
             self.jointID = jointID
             self.jointSet = jointSet
             self.location = location
+            Joint.joints[jointID] = [jointSet, location]
     
     @property
     def jointSet(self):
