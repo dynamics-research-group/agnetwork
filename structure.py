@@ -16,16 +16,16 @@ class Structure:
         self.nodes = {}
         self.edges = {}
 
-    # Adds node to the graph
     def addNode(self,node):
+        """Adds node to the graph"""
         if node not in self.graph:
             self.graph[node] = []
             return self.graph[node]
         else:
             return None
     
-    # Add edges to the graph
     def addEdge(self,edges):
+        """Add edges to the graph"""
         (node1, node2) = tuple(edges)
         # Add connection to node on graph object
         if node1 in self.graph:
@@ -38,13 +38,13 @@ class Structure:
         else:
             raise KeyError("second node not found in graph")
 
-    # Returns list of nodes in graph
     def nodeList(self):
+        """Returns list of nodes in graph"""
         nodes = list(self.graph.keys())
         return nodes
 
-    # Returns list of edges in graph
     def edgeList(self):
+        """Returns list of edges in graph"""
         edges = []
         for node in self.graph:
             for nxtnode in self.graph[node]:
@@ -53,15 +53,15 @@ class Structure:
                         edges.append({node, nxtnode})
         return edges
     
-    # Adds nodes from list of elements
     def addElements(self):
+        """Adds nodes from list of elements"""
         nodes = list(self.elements.keys())
         for node in nodes:
             self.addNode(node)
         return nodes
     
-    # Adds edges from list of joints
     def addJoints(self):
+        """Adds edges from list of joints"""
         for jointID in self.joints:
             # Check whether the joint is connected to any elements
             (node1, node2) = self.joints[jointID][0]
