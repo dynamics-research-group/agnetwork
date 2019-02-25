@@ -6,16 +6,16 @@ class TestElementClass(unittest.TestCase):
 
     def setUp(self):
         # Create an instance of the Element class 
-        self.a = Element('a')
+        self.Ea = Element('a')
 
     def tearDown(self):
         pass
 
     def test_init(self):
         # Check that instance of Element initialised correctly
-        self.assertEqual(self.a.elementID, 'a')
-        self.assertEqual(self.a.length, 1)
-        self.assertEqual(self.a.mass, 1)
+        self.assertEqual(self.Ea.elementID, 'a')
+        self.assertEqual(self.Ea.length, 1)
+        self.assertEqual(self.Ea.mass, 1)
 
 if __name__ == '__main__':
     unittest.main()
