@@ -3,15 +3,13 @@ class Structure:
     elements = {}
     # Create list of joints
     joints = {}
-    # Initialise structure with either pre-defined or empty graph object
+    
     def __init__(self,
                  structureID,
-                 graph=None,
+                 graph={},
                  nodes=None,
                  edges=None):
         self.structureID = structureID
-        if graph == None:
-            graph = {}
         self.graph = graph
         self.nodes = {}
         self.edges = {}
