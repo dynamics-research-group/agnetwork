@@ -29,8 +29,8 @@ class Joint(Structure):
         return self.__jointSet
     
     @jointSet.setter
+    # Check that there are the correct number of elements in jointSet
     def jointSet(self, jointSet):
-        # Check that there are the correct number of elements in jointSet
         if len(jointSet) != 2:
             raise ValueError("jointSet must contain two elements")
         # Check the existence of both elements in jointSet
