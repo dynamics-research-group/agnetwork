@@ -18,12 +18,19 @@ class Joint(Structure):
     def __init__(self,
                  jointID,
                  jointSet,
-                 location):
+                 location,
+                 structureID='global'):
         if self.checkForElements():
             self.jointID = jointID
+            self.structureID = structureID
             self.jointSet = jointSet
             self.location = location
-            Joint.joints[jointID] = [jointSet, location]
+            # TEST ME and tidy up???
+            if structureID not in Joint.joints:
+                Joint.joints[structureID] = {}
+            Joint.joints[structureID][jointID] = []
+            Joint.joints[structureID][jointID].extend([jointSet, location])
+            # TEST ME
     
     @property
     def jointSet(self):
@@ -32,10 +39,11 @@ class Joint(Structure):
     @jointSet.setter
     def jointSet(self, jointSet):
         """Check that there are the correct number of elements in jointSet"""
+        elements = Joint.elements[self.structureID].keys()
         if len(jointSet) != 2:
             raise ValueError("jointSet must contain two elements")
         # Check the existence of both elements in jointSet
-        elif jointSet[0] in Joint.elements and jointSet[1] in Joint.elements:
+        elif jointSet[0] and jointSet[0] in elements:
             self.__jointSet = jointSet
         else:
             raise ValueError("jointSet must contain two existing elements.")

@@ -1,4 +1,5 @@
 import unittest
+from structure import Network
 from structure import Structure
 from unittest.mock import patch
 
@@ -6,17 +7,15 @@ class TestStructreClass(unittest.TestCase):
 
     def setUp(self):
         # Create an instance of the Structure class 
-        self.struct = Structure("struct")
-
-    def tearDown(self):
-        pass
+        self.struct = Structure('struct')
+        self.assertEqual(self.struct.graph, {})
+        self.struct.graph = {}
 
     def test_init(self):
         # Check that Structure initialised correctly
-        self.assertEqual(self.struct.structureID, "struct")
-        self.assertEqual(self.struct.graph, {})
+        self.assertEqual(self.struct.structureID, 'struct')
         self.assertEqual(self.struct.nodes, {})
-        self.assertEqual(self.struct.elements, {})
+        self.assertEqual(self.struct.elements['struct'], {})
 
     def test_addNode(self):
         # Check that node is added to graph correctly
@@ -51,7 +50,7 @@ class TestStructreClass(unittest.TestCase):
 
     def test_addElements(self):
         # Check that the full list of nodes is added
-        self.struct.elements = {'a': [], 'b': [], 'c':[]}
+        self.struct.elements['struct'] = {'a': [], 'b': [], 'c':[]}
         self.assertEqual(self.struct.addElements(), ['a', 'b', 'c'])
         # Check that addNodes was called correctly
         self.assertEqual(self.struct.graph, {'a': [],'b': [],'c': []})
@@ -59,14 +58,23 @@ class TestStructreClass(unittest.TestCase):
     def test_addJoints(self):
         # Check that graph attribute is modified correctly when adding joints
         self.struct.graph = {'a': [], 'b': [], 'c': []}
-        self.struct.joints = {1: [['a','b'], 1], 
-                              2: [['b','c'], 1]}
+        self.struct.joints['struct'] = {1: [['a','b'], 1], 
+                                        2: [['b','c'], 1]}
         self.struct.addJoints()
         self.assertEqual(self.struct.graph, {'a': ['b'], 'b': ['a','c'], 'c': ['b']})
         # Check that adding a joint where both nodes do not exist in the graph gives an error
-        self.struct.joints[3] = [['c','d'], 1]
+        self.struct.joints['struct'][3] = [['c','d'], 1]
         with self.assertRaisesRegex(ValueError, "nodes not found in graph for jointID=3"):
             self.struct.addJoints()
+    
+    # def test_graphSeperation(self):
+    #     # Test whether two seperate structures can have seperate lists of edges and elements
+    #     self.struct.elements = {'a': [], 'b': []}
+    #     self.struct.joints = {1: [['a','b'], 1]}
+    #     self.struct2 = Structure("struct2")
+    #     self.struct2.elements = {'c': [], 'd': []}
+    #     self.struct2.joints = {1: [['c','d'], 1]}
+    #     self.assertNotEqual(self.struct.joints, self.struct2.joints)
             
 if __name__ == '__main__':
     unittest.main()

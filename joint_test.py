@@ -12,19 +12,18 @@ class TestJointClass(unittest.TestCase):
 
     def test_init(self):
         # Check that when a joint is created between two elements that exist
-        with patch.object(Joint, "elements", return_value = {'A'}):
+        with patch.object(Joint, "elements"):
             with self.assertRaisesRegex(ValueError, "jointSet must contain two elements"):
                 Joint(1, [], [0, 0])
             with self.assertRaisesRegex(ValueError, "jointSet must contain two existing elements"):
                 Joint(1, ['A','B'], [0, 0])
         # Check that joint initialises correctly when connecting two elements
-        with patch.object(Joint, "elements"):
-            Joint.elements = {'A','B'}
-            J1 = Joint(1, ['A','B'], [0, 0])
-            self.assertEqual(J1.jointID, 1)
-            self.assertEqual(J1.jointSet, ['A','B'])
-            self.assertEqual(J1.location, [0, 0])
-            self.assertEqual(Joint.joints[1],[['A','B'], [0, 0]])
+        Joint.elements['global'] = {'A': [], 'B': []}
+        j1 = Joint(1, ['A','B'], [0, 0])
+        self.assertEqual(j1.jointID, 1)
+        self.assertEqual(j1.jointSet, ['A','B'])
+        self.assertEqual(j1.location, [0, 0])
+        self.assertEqual(Joint.joints['global'][1], [['A','B'], [0, 0]])
 
     def test_checkForElements(self):
         # Check that the correct error is raised if Joint.elements does not exist

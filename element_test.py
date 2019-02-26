@@ -8,7 +8,8 @@ class TestElementClass(unittest.TestCase):
 
     def setUp(self):
         # Create an instance of the Element class
-        self.earth = Element('A')
+        Element.elements['global'] = {}
+        self.earth = Element('A', 'global')
 
     def tearDown(self):
         del self.earth
@@ -17,7 +18,9 @@ class TestElementClass(unittest.TestCase):
         """Test the Element __init__ method"""
         # Check that instance of Element initialised correctly
         self.assertEqual(self.earth.elementID, 'A')
-        self.assertEqual(Element.elements['A'], [])
+        self.assertEqual(Element.elements['global']['A'], []) 
+        self.wind = Element('B', 'global')
+        self.assertEqual(Element.elements['global'], {'A': [], 'B': []})
 
     def test_remove(self):
         """Test the remove method"""
@@ -30,48 +33,49 @@ class TestElementClass(unittest.TestCase):
     
     def test_removeConnections(self):
         """Test the removeConnections method"""
-        Element.joints = {1: ['A','B'], 2: ['B','C']}
+        Element.joints['global'] = {1: ['A','B'], 
+                                    2: ['B','C']}
         self.earth.removeConnections()
         # Check that correct dictionary entry has been removed
         with self.assertRaises(KeyError):
-            print(self.earth.joints[1])
+            print(self.earth.joints[0])
         # Check that other joint still exists
-        self.assertEqual(Element.joints[2], ['B','C'])
-        del Element.joints
+        self.assertEqual(Element.joints['global'][2], ['B','C'])
 
 class TestBeamClass(unittest.TestCase):
 
     def setUp(self):
         # Create an instance of the Element class
-        self.BeamA = Beam('A')
+        self.beam_a = Beam('A')
 
     def tearDown(self):
-        del self.BeamA
+        del self.beam_a
 
     def test_init(self):
         """Test the Beam __init__ method"""
         # Check that instance of Beam initialised correctly
-        self.assertEqual(self.BeamA.elementID, 'A')
-        self.assertEqual(self.BeamA.length, 1)
-        self.assertEqual(self.BeamA.mass, 1)
-        self.assertEqual(Beam.elements['A'], [1, 1])
+        self.assertEqual(self.beam_a.elementID, 'A')
+        self.assertEqual(self.beam_a.length, 1)
+        self.assertEqual(self.beam_a.mass, 1)
+        self.assertEqual(Beam.elements['global']['A'], [1, 1])
 
 class TestBoundaryClass(unittest.TestCase):
 
     def setUp(self):
         # Create an instance of the Boundary class
-        self.BC1 = Boundary(1)
+        self.bc1 = Boundary(1)
 
     def tearDown(self):
-        del self.BC1
+        pass 
 
     def test_init(self):
         """Test the Boundary __init__ method"""
         # Check that instance of Boundary initialised correctly
-        self.assertEqual(self.BC1.elementID, 1)
-        self.assertEqual(self.BC1.disp, 0)
-        self.assertEqual(self.BC1.trac, 0)
-        self.assertEqual(Boundary.elements[1], [0, 0])
+        self.assertEqual(self.bc1.elementID, 1)
+        self.assertEqual(self.bc1.disp, 0)
+        self.assertEqual(self.bc1.trac, 0)
+        self.assertEqual(Boundary.elements['global'][1], [0, 0])
+        del self.bc1
 
 if __name__ == '__main__':
     unittest.main()

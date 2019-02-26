@@ -1,8 +1,10 @@
 class Network:
     """The network comprises of a set of structures"""
-    structures = {}
+    #structures = {'global': {}}
 
-    def __init__(self):
+    def __init__(self, structureID):
+    #     if structureID not in self.structures.keys():
+    #         self.structures[structureID] = {} 
         pass
 
 class Structure(Network):
@@ -20,7 +22,8 @@ class Structure(Network):
         self.graph = graph
         self.nodes = {}
         self.edges = {}
-        Network.structures[structureID] = []
+        self.elements[structureID] = {}
+        self.joints[structureID] = {}
 
     def addNode(self,node):
         """Adds node to the graph"""
@@ -61,19 +64,20 @@ class Structure(Network):
     
     def addElements(self):
         """Adds nodes from list of elements"""
-        nodes = list(self.elements.keys())
+        nodes = list(self.elements[self.structureID].keys())
         for node in nodes:
             self.addNode(node)
         return nodes
     
     def addJoints(self):
         """Adds edges from list of joints"""
-        for jointID in self.joints:
+        local_joints = self.joints[self.structureID]
+        for jointID in local_joints:
             # Check whether the joint is connected to any elements
-            (node1, node2) = self.joints[jointID][0]
+            (node1, node2) = local_joints[jointID][0]
             nodes = self.nodeList()
             if node1 in nodes and node2 in nodes:
                 # Add edge defined for a given join ID
-                self.addEdge(self.joints[jointID][0])
+                self.addEdge(local_joints[jointID][0])
             else:
-                raise ValueError("nodes not found in graph for jointID=" + str(jointID)) 
+                raise ValueError("nodes not found in graph for jointID=" + str(jointID))
