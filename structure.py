@@ -1,4 +1,11 @@
-class Structure:
+class Network:
+    """The network comprises of a set of structures"""
+    structures = {}
+
+    def __init__(self):
+        pass
+
+class Structure(Network):
     # Create list of elements
     elements = {}
     # Create list of joints
@@ -13,6 +20,7 @@ class Structure:
         self.graph = graph
         self.nodes = {}
         self.edges = {}
+        Network.structures[structureID] = []
 
     def addNode(self,node):
         """Adds node to the graph"""
