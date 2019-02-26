@@ -28,8 +28,7 @@ class Joint(Structure):
             # TEST ME and tidy up???
             if structureID not in Joint.joints:
                 Joint.joints[structureID] = {}
-            Joint.joints[structureID][jointID] = []
-            Joint.joints[structureID][jointID].extend([jointSet, location])
+            Joint.joints[structureID][jointID] = [jointSet, location]
             # TEST ME
     
     @property

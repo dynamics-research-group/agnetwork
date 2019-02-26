@@ -46,7 +46,7 @@ class Beam(Element):
         Element.__init__(self, elementID, structureID)
         self.length = length
         self.mass = mass
-        Element.elements[structureID][elementID].extend([mass, length])
+        Element.elements[structureID][elementID] = [mass, length]
 
 class Boundary(Element):
     """Create a boundary condition with default attributes"""
@@ -58,7 +58,7 @@ class Boundary(Element):
         Element.__init__(self, elementID, structureID)
         self.disp = disp
         self.trac = trac
-        Element.elements[structureID][elementID].extend([disp, trac])
+        Element.elements[structureID][elementID] = [disp, trac]
 
 if __name__ == "__main__":
     pass
