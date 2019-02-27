@@ -29,7 +29,6 @@ class Joint(Structure):
             if structureID not in Joint.joints:
                 Joint.joints[structureID] = {}
             Joint.joints[structureID][jointID] = [jointSet, location]
-            # TEST ME
     
     @property
     def jointSet(self):
