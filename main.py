@@ -2,6 +2,8 @@ from structure import Structure
 from element import Boundary
 from element import Beam
 from joint import Joint
+import networkx as nx
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     turbine = Structure('Turbine')
@@ -35,3 +37,19 @@ if __name__ == '__main__':
     turbine.addElements()
     turbine.addJoints()
     print(turbine.graph)
+    print(turbine.edgeList())
+    print(turbine.nodeList())
+
+    turbineGraph = nx.Graph()
+    turbineGraph.add_nodes_from(turbine.nodeList())
+    turbineGraph.add_edges_from(turbine.edgeList())
+    
+    bridgeGraph = nx.Graph()
+    bridgeGraph.add_nodes_from(bridge.nodeList())
+    bridgeGraph.add_edges_from(bridge.edgeList())
+
+    plt.subplot(121)
+    nx.draw(turbineGraph, with_labels=True)
+    plt.subplot(122)
+    nx.draw(bridgeGraph, with_labels=True)
+    plt.show()
