@@ -15,13 +15,16 @@ class Structure(Network):
     
     def __init__(self,
                  structureID,
-                 graph={},
+                 graph=None,
                  nodes=None,
                  edges=None):
         self.structureID = structureID
-        self.graph = graph
-        self.nodes = {}
-        self.edges = {}
+        if graph == None:
+            self.graph = {}
+        else:
+            self.graph = graph
+        self.nodes = nodes
+        self.edges = edges
         self.elements[structureID] = {}
         self.joints[structureID] = {}
 
@@ -50,6 +53,7 @@ class Structure(Network):
     def nodeList(self):
         """Returns list of nodes in graph"""
         nodes = list(self.graph.keys())
+        self.nodes = nodes
         return nodes
 
     def edgeList(self):
@@ -60,6 +64,7 @@ class Structure(Network):
                     # Check if set of nodes already exist in edges
                     if {nxtnode, node} not in edges:
                         edges.append({node, nxtnode})
+        self.edges = edges
         return edges
     
     def addElements(self):
