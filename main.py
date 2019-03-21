@@ -1,4 +1,5 @@
 from structure import Structure
+from structure import Network
 from element import Boundary
 from element import Beam
 from joint import Joint
@@ -6,12 +7,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
+    
     turbine = Structure('Turbine')
     bridge = Structure('Bridge')
     len_a = 5
     len_b = 5
 
-    # Specify the car
+    # Specify the turbine
     turbine_bc1 = Boundary(1, 'Turbine')
     turbine_beam_a = Beam('A', 'Turbine')
     turbine_beam_b = Beam('B', 'Turbine')
@@ -53,3 +55,8 @@ if __name__ == '__main__':
     plt.subplot(122)
     nx.draw(bridgeGraph, with_labels=True)
     plt.show()
+
+    bridge.addToStructures()
+    print(Network.structures)
+    turbine.addToStructures()
+    print(Network.structures)
