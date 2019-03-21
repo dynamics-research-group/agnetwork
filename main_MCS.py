@@ -7,6 +7,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
+    network = Network()
 
     bridge1 = Structure('Bridge1')
     bridge1.graph = {1 : ['A'],
@@ -38,6 +39,25 @@ if __name__ == '__main__':
                     'E': ['C','F', 5],
                     'F': ['E', 4]}
     
+    bridge1.addToNetwork()
+    bridge2.addToNetwork()
+    bridge3.addToNetwork()
+
+    struct1 = Structure('struct1')
+    struct1.graph = {'a' : ['b'],
+                     'b' : ['a','c'],
+                     'c' : ['b']}
+    struct1.addToNetwork()
+
+    struct2 = Structure('struct2')
+    struct2.graph = {'1' : ['2'],
+                     '2' : ['1','3'],
+                     '3' : ['2']}
+    struct2.addToNetwork()
+
+    network.modularProduct('struct1','struct2')
+
+    """
     bridge1Graph = nx.Graph()
     bridge1Graph.add_nodes_from(bridge1.nodeList())
     bridge1Graph.add_edges_from(bridge1.edgeList())
@@ -57,5 +77,4 @@ if __name__ == '__main__':
     plt.subplot(133)
     nx.draw(bridge3Graph, with_labels=True)
     plt.show()
-
-    
+    """

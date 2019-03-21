@@ -67,11 +67,12 @@ class TestStructreClass(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "nodes not found in graph for jointID=3"):
             self.struct.addJoints()
     
-    def test_addToStructures(self):
+    def test_addToNetwork(self):
         # Check that the structure graph is correctly added to the network structure list
-        self.struct.graph = {'a': [], 'b': [], 'c': []}
-        self.struct.addToStructures()
-        self.assertEqual(Network.structures['struct'], {'a': [], 'b': [], 'c': []})
+        self.struct.graph = {'a': ['b'], 'b': ['a','c'], 'c': ['b']}
+        self.struct.addToNetwork()
+        self.assertEqual(Network.structures['struct']['nodes'], ['a','b','c'])
+        self.assertEqual(Network.structures['struct']['edges'], [{'a','b'},{'b','c'}])
     
     # def test_graphSeperation(self):
     #     # Test whether two seperate structures can have seperate lists of edges and elements

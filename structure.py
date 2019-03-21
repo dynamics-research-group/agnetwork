@@ -7,10 +7,40 @@ class Network:
     # Create list of joints
     joints = {}
 
-    def __init__(self, structureID):
+    def __init__(self):
     #     if structureID not in self.structures.keys():
     #         self.structures[structureID] = {} 
         pass
+
+    def modularProduct(self, struct1, struct2):
+        """Find the modular product of two graphs"""
+        # Create local sets of edges and vetrices
+        V1 = Network.structures[struct1]['nodes']
+        V2 = Network.structures[struct2]['nodes']
+        E1 = Network.structures[struct1]['edges']
+        E2 = Network.structures[struct2]['edges']
+
+        modularV = set()
+        modularE = set()
+
+        for u in V1:
+            for v in V2:
+                modularV.add((u, v))
+
+        for U in modularV:
+            for V in modularV:
+                if U[0] != V[0] and U[1] != V[1]:
+                    if (U[0],V[0]) in E1 and (U[1],V[1]) in E2:
+                        if (U,V) and (V,U) not in modularE:
+                            modularE.add((U,V))
+                    elif (U[0],V[0]) not in E1 and (U[1],V[1]) not in E2:
+                        if (U,V) and (V,U) not in modularE:
+                            modularE.add((U,V))
+        
+        print(modularV)
+        print(len(modularV))
+        print(modularE)
+        print(len(modularE))
 
 class Structure(Network):
     def __init__(self,
@@ -28,7 +58,7 @@ class Structure(Network):
         self.elements[structureID] = {}
         self.joints[structureID] = {}
 
-    def addNode(self,node):
+    def addNode(self, node):
         """Adds node to the graph"""
         if node not in self.graph:
             self.graph[node] = []
@@ -36,7 +66,7 @@ class Structure(Network):
         else:
             return None
     
-    def addEdge(self,edges):
+    def addEdge(self, edges):
         """Add edges to the graph"""
         (node1, node2) = tuple(edges)
         # Add connection to node on graph object
@@ -87,6 +117,6 @@ class Structure(Network):
             else:
                 raise ValueError("nodes not found in graph for jointID=" + str(jointID))
     
-    def addToStructures(self):
+    def addToNetwork(self):
         """Adds the graph of the structure to the network"""
-        Network.structures[self.structureID] = self.graph
+        Network.structures[self.structureID] = {'nodes' : self.nodeList(), 'edges': self.edgeList()}
