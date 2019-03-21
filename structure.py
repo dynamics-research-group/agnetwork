@@ -1,6 +1,11 @@
 class Network:
     """The network comprises of a set of structures"""
-    #structures = {'global': {}}
+    # Creat list of structures
+    structures = {}
+    # Create list of elements
+    elements = {}
+    # Create list of joints
+    joints = {}
 
     def __init__(self, structureID):
     #     if structureID not in self.structures.keys():
@@ -8,11 +13,6 @@ class Network:
         pass
 
 class Structure(Network):
-    # Create list of elements
-    elements = {}
-    # Create list of joints
-    joints = {}
-    
     def __init__(self,
                  structureID,
                  graph=None,
@@ -86,3 +86,7 @@ class Structure(Network):
                 self.addEdge(local_joints[jointID][0])
             else:
                 raise ValueError("nodes not found in graph for jointID=" + str(jointID))
+    
+    def addToStructures(self):
+        """Adds the graph of the structure to the network"""
+        Network.structures[self.structureID] = self.graph
