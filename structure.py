@@ -60,8 +60,20 @@ class Network:
             neighbours[node2].append(node1)
         return neighbours
 
+    def BronKerbosch(self, R, P, X, N):
+        if P == {} and X == {}:
+            return R
+        for v in P.union(X):
+            self.BronKerbosch(R.union(v), P.intersection(N[v]), X.union(N[v]), N)
+
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)
+        # Set R and X to be the empty set
+        R = {}
+        X = {}
+        # Set P to be the vertex set
+        P = V
+        R = self.BronKerbosch(R, P, X, N)
         print(N)
 
 
