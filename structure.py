@@ -19,28 +19,51 @@ class Network:
         V2 = Network.structures[struct2]['nodes']
         E1 = Network.structures[struct1]['edges']
         E2 = Network.structures[struct2]['edges']
-
-        modularV = set()
-        modularE = set()
-
+        # Initialise empty sets for modular product edges and vetices
+        modprodV = set()
+        modprodE = set()
+        # Find the cartesian product of the sets of vertices for each graph
         for u in V1:
             for v in V2:
-                modularV.add((u, v))
+                modprodV.add((u, v))
+        # Loop through each vertex in the modular product
+        for U in modprodV:
+            # Compare with every other vertex in the modular product
+            for V in modprodV:
+                # Exclude any vertices share the same point
+                if V[0] != U[0] and V[1] != U[1]:
+                    # Exclude any pair of vertices that are already contained in an edge
+                    if (U,V) not in modprodE and (V,U) not in modprodE:
+                        # Any two vertices (u0, u1) and (v0, v1) are adjacent in the modular product if and only if
+                        # u0 is adjacent to v0 and u1 is adjacent to v1
+                        if {U[0],V[0]} in E1 and {U[1],V[1]} in E2:
+                            modprodE.add((U,V))
+                        # or u0 is NOT adjacent to v0 and u1 is NOT adjacent to v1
+                        elif {U[0],V[0]} not in E1 and {U[1],V[1]} not in E2:
+                            modprodE.add((U,V))
+        # Return a dictionary defining the resultant graph
+        return {'nodes' : modprodV, 'edges' : modprodE}
 
-        for U in modularV:
-            for V in modularV:
-                if U[0] != V[0] and U[1] != V[1]:
-                    if (U[0],V[0]) in E1 and (U[1],V[1]) in E2:
-                        if (U,V) and (V,U) not in modularE:
-                            modularE.add((U,V))
-                    elif (U[0],V[0]) not in E1 and (U[1],V[1]) not in E2:
-                        if (U,V) and (V,U) not in modularE:
-                            modularE.add((U,V))
-        
-        print(modularV)
-        print(len(modularV))
-        print(modularE)
-        print(len(modularE))
+    def neighbourSet(self, V, E):
+        """Create the neighbour set for each vertex"""
+        # Create an empty dictionary which will contain the neighbour sets
+        neighbours = {}
+        # Initialise entries in the dictionary for each vertex
+        for vertex in V:
+            if vertex not in neighbours:
+                neighbours[vertex] = []
+        # Loop through each edge
+        for edge in E:
+            (node1, node2) = tuple(edge)
+            # Add an entry in the vertex set for each adjacent vertex
+            neighbours[node1].append(node2)
+            neighbours[node2].append(node1)
+        return neighbours
+
+    def maximalCliques(self, V, E):
+        N = self.neighbourSet(V, E)
+        print(N)
+
 
 class Structure(Network):
     def __init__(self,
