@@ -1,31 +1,99 @@
 class Network:
     """The network comprises of a set of structures"""
-    #structures = {'global': {}}
-
-    def __init__(self, structureID):
-    #     if structureID not in self.structures.keys():
-    #         self.structures[structureID] = {} 
-        pass
-
-class Structure(Network):
+    # Creat list of structures
+    structures = {}
     # Create list of elements
     elements = {}
     # Create list of joints
     joints = {}
-    
+
+    def __init__(self):
+    #     if structureID not in self.structures.keys():
+    #         self.structures[structureID] = {} 
+        pass
+
+    def modularProduct(self, struct1, struct2):
+        """Find the modular product of two graphs"""
+        # Create local sets of edges and vetrices
+        V1 = Network.structures[struct1]['nodes']
+        V2 = Network.structures[struct2]['nodes']
+        E1 = Network.structures[struct1]['edges']
+        E2 = Network.structures[struct2]['edges']
+        # Initialise empty sets for modular product edges and vetices
+        modprodV = set()
+        modprodE = set()
+        # Find the cartesian product of the sets of vertices for each graph
+        for u in V1:
+            for v in V2:
+                modprodV.add((u, v))
+        # Loop through each vertex in the modular product
+        for U in modprodV:
+            # Compare with every other vertex in the modular product
+            for V in modprodV:
+                # Exclude any vertices share the same point
+                if V[0] != U[0] and V[1] != U[1]:
+                    # Exclude any pair of vertices that are already contained in an edge
+                    if (U,V) not in modprodE and (V,U) not in modprodE:
+                        # Any two vertices (u0, u1) and (v0, v1) are adjacent in the modular product if and only if
+                        # u0 is adjacent to v0 and u1 is adjacent to v1
+                        if {U[0],V[0]} in E1 and {U[1],V[1]} in E2:
+                            modprodE.add((U,V))
+                        # or u0 is NOT adjacent to v0 and u1 is NOT adjacent to v1
+                        elif {U[0],V[0]} not in E1 and {U[1],V[1]} not in E2:
+                            modprodE.add((U,V))
+        # Return a dictionary defining the resultant graph
+        return {'nodes' : modprodV, 'edges' : modprodE}
+
+    def neighbourSet(self, V, E):
+        """Create the neighbour set for each vertex"""
+        # Create an empty dictionary which will contain the neighbour sets
+        neighbours = {}
+        # Initialise entries in the dictionary for each vertex
+        for vertex in V:
+            if vertex not in neighbours:
+                neighbours[vertex] = []
+        # Loop through each edge
+        for edge in E:
+            (node1, node2) = tuple(edge)
+            # Add an entry in the vertex set for each adjacent vertex
+            neighbours[node1].append(node2)
+            neighbours[node2].append(node1)
+        return neighbours
+
+    def BronKerbosch(self, R, P, X, N):
+        if P == {} and X == {}:
+            return R
+        for v in P.union(X):
+            self.BronKerbosch(R.union(v), P.intersection(N[v]), X.union(N[v]), N)
+
+    def maximalCliques(self, V, E):
+        N = self.neighbourSet(V, E)
+        # Set R and X to be the empty set
+        R = {}
+        X = {}
+        # Set P to be the vertex set
+        P = V
+        R = self.BronKerbosch(R, P, X, N)
+        print(N)
+
+
+class Structure(Network):
     def __init__(self,
                  structureID,
-                 graph={},
+                 graph=None,
                  nodes=None,
                  edges=None):
         self.structureID = structureID
-        self.graph = graph
-        self.nodes = {}
-        self.edges = {}
+        if graph == None:
+            self.graph = {}
+        else:
+            self.graph = graph
+        self.nodes = nodes
+        self.edges = edges
         self.elements[structureID] = {}
         self.joints[structureID] = {}
 
-    def addNode(self,node):
+    def addNode(self, node):
         """Adds node to the graph"""
         if node not in self.graph:
             self.graph[node] = []
@@ -33,7 +101,7 @@ class Structure(Network):
         else:
             return None
     
-    def addEdge(self,edges):
+    def addEdge(self, edges):
         """Add edges to the graph"""
         (node1, node2) = tuple(edges)
         # Add connection to node on graph object
@@ -50,6 +118,7 @@ class Structure(Network):
     def nodeList(self):
         """Returns list of nodes in graph"""
         nodes = list(self.graph.keys())
+        self.nodes = nodes
         return nodes
 
     def edgeList(self):
@@ -60,6 +129,7 @@ class Structure(Network):
                     # Check if set of nodes already exist in edges
                     if {nxtnode, node} not in edges:
                         edges.append({node, nxtnode})
+        self.edges = edges
         return edges
     
     def addElements(self):
@@ -81,3 +151,7 @@ class Structure(Network):
                 self.addEdge(local_joints[jointID][0])
             else:
                 raise ValueError("nodes not found in graph for jointID=" + str(jointID))
+    
+    def addToNetwork(self):
+        """Adds the graph of the structure to the network"""
+        Network.structures[self.structureID] = {'nodes' : self.nodeList(), 'edges': self.edgeList()}

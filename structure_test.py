@@ -3,6 +3,41 @@ from structure import Network
 from structure import Structure
 from unittest.mock import patch
 
+class TestNetworkClass(unittest.TestCase):
+
+    def setUp(self):
+        # Create an instance of the Network class
+        self.network = Network()
+
+    def test_modularProduct(self):
+        # Create the graph for the first structure
+        self.struct1 = Structure('struct1')
+        self.struct1.graph = {'1' : ['D'],
+                              'D' : ['1','3'],
+                              '3' : ['D']}
+        # Create the graph for the second structure
+        self.struct2 = Structure('struct2')
+        self.struct2.graph = {'1' : ['2'],
+                              '2' : ['1','A'],
+                              'A' : ['2']}
+        # Add the two structures to the network
+        self.struct1.addToNetwork()
+        self.struct2.addToNetwork()
+        # Calculate the modular product of the two structures
+        self.modularproduct = self.network.modularProduct('struct1','struct2')
+        self.assertCountEqual(self.modularproduct['nodes'], {('D', '2'), ('D', '1'), ('1', 'A'), ('3', 'A'), ('1', '2'), 
+                                                             ('3', '1'), ('3', '2'), ('D', 'A'), ('1', '1')})
+        # self.assertCountEqual(self.modularproduct['edges'], {(('3', 'A'), ('1', '1')), (('D', '2'), ('3', 'A')), (('3', '2'), ('D', '1')), 
+        #                                                      (('1', '2'), ('D', 'A')), (('1', '2'), ('D', '1')), (('D', '2'), ('1', '1')), 
+        #                                                      (('3', '1'), ('1', 'A')), (('D', '2'), ('3', '1')), (('D', 'A'), ('3', '2')), 
+        #                                                      (('D', '2'), ('1', 'A'))})
+
+    def test_neighbourSet(self):
+        self.edges = self.network.structures['struct1']['edges']
+        self.nodes = self.network.structures['struct1']['nodes']
+        self.neighbours = self.network.neighbourSet(self.nodes, self.edges)
+        self.assertEqual(self.neighbours, {'1' : ['D'], 'D' : ['1','3'], '3' : ['D']})
+
 class TestStructreClass(unittest.TestCase):
 
     def setUp(self):
@@ -14,7 +49,7 @@ class TestStructreClass(unittest.TestCase):
     def test_init(self):
         # Check that Structure initialised correctly
         self.assertEqual(self.struct.structureID, 'struct')
-        self.assertEqual(self.struct.nodes, {})
+        self.assertEqual(self.struct.nodes, None)
         self.assertEqual(self.struct.elements['struct'], {})
 
     def test_addNode(self):
@@ -66,6 +101,13 @@ class TestStructreClass(unittest.TestCase):
         self.struct.joints['struct'][3] = [['c','d'], 1]
         with self.assertRaisesRegex(ValueError, "nodes not found in graph for jointID=3"):
             self.struct.addJoints()
+    
+    def test_addToNetwork(self):
+        # Check that the structure graph is correctly added to the network structure list
+        self.struct.graph = {'a': ['b'], 'b': ['a','c'], 'c': ['b']}
+        self.struct.addToNetwork()
+        self.assertEqual(Network.structures['struct']['nodes'], ['a','b','c'])
+        self.assertEqual(Network.structures['struct']['edges'], [{'a','b'},{'b','c'}])
     
     # def test_graphSeperation(self):
     #     # Test whether two seperate structures can have seperate lists of edges and elements
