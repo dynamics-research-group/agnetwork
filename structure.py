@@ -61,11 +61,16 @@ class Network:
         return neighbours
 
     def BronKerbosch(self, R, P, X, N):
-        print(P, X)
-        if P == {} and X == {}:
+        if P == set() and X == set():
             return R
         for v in P.union(X):
-            self.BronKerbosch(R.union(v), P.intersection(N[v]), X.union(N[v]), N)
+            if R == set():
+                R = {v}
+            else:
+                R.add(v)
+            self.BronKerbosch(R, P.intersection(N[v]), X.intersection(N[v]), N)
+            P = P.remove(v)
+            X = X.add(v)
 
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)

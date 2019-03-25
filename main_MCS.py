@@ -62,8 +62,8 @@ if __name__ == '__main__':
     print(network.structures['struct2'])
     
     modularproduct = network.modularProduct('struct1','struct2')
-    print(modularproduct['edges'])
-    print(modularproduct['nodes'])
+    # print(modularproduct['edges'])
+    # print(modularproduct['nodes'])
 
     network.maximalCliques(modularproduct['nodes'],modularproduct['edges'])
  
