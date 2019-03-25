@@ -70,14 +70,13 @@ class Network:
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
-        R = {}
-        X = {}
+        R = set()
+        X = set()
         # Set P to be the vertex set
-        P = V
+        P = set(V)
         R = self.BronKerbosch(R, P, X, N)
         print(N)
         print(R)
-
 
 class Structure(Network):
     def __init__(self,
