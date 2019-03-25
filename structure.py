@@ -61,6 +61,7 @@ class Network:
         return neighbours
 
     def BronKerbosch(self, R, P, X, N):
+        print(P, X)
         if P == {} and X == {}:
             return R
         for v in P.union(X):
@@ -75,6 +76,7 @@ class Network:
         P = V
         R = self.BronKerbosch(R, P, X, N)
         print(N)
+        print(R)
 
 
 class Structure(Network):
