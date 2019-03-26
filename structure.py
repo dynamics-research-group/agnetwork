@@ -64,13 +64,17 @@ class Network:
         if P == set() and X == set():
             return R
         for v in P.union(X):
-            if R == set():
-                R = {v}
-            else:
-                R.add(v)
+            R.add(v)
+            # for p in P:
+            #     if p in N[v]:
+            #         P2.add(p)
+            # for x in X:
+            #     if x in N[v]:
+            #         X2.add(x)
             self.BronKerbosch(R, P.intersection(N[v]), X.intersection(N[v]), N)
             P = P.remove(v)
             X = X.add(v)
+        # THE PROBLEM LIES IN THE FACT THAT P CHANGES SIZE EVERY ITERATION
 
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)
