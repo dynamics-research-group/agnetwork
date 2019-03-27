@@ -39,7 +39,7 @@ class TestNetworkClass(unittest.TestCase):
         self.assertEqual(self.neighbours, {'1' : ['D'], 'D' : ['1','3'], '3' : ['D']})
     
     def test_maximalCliques(self):
-        self.network.maximalCliques({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)})
+        self.assertEqual(self.network.maximalCliques({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)}), [{1,2,3},{3,4}])
 
 class TestStructreClass(unittest.TestCase):
 

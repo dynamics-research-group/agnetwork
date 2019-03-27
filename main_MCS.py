@@ -65,7 +65,8 @@ if __name__ == '__main__':
     # print(modularproduct['edges'])
     # print(modularproduct['nodes'])
 
-    network.maximalCliques({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)})
+    print(network.maximalCliques({1,2,3,4,5,6,7},
+                                {(1,2),(1,3),(2,3),(2,4),(3,5),(4,5),(4,6),(4,7),(5,6),(6,7),(5,7)}))
  
     modularProductGraph = nx.Graph()
     modularProductGraph.add_edges_from(modularproduct['edges'])

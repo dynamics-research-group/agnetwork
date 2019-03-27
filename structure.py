@@ -63,15 +63,12 @@ class Network:
 
     def BronKerbosch(self, R, P, X, N):
         if P == set() and X == set():
-            self.maxclique.append(R)
-            return
+            yield R
         Pit = P.copy()
         for v in P:
-            if R == set():
-                R = {v}
-            else:
-                R.add(v)
-            self.BronKerbosch(R, Pit.intersection(N[v]), X.intersection(N[v]), N)
+            Rit = R.union({v})
+            for r in self.BronKerbosch(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
+                yield r
             Pit.remove(v)
             X.add(v)
 
@@ -82,8 +79,8 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        self.BronKerbosch(R, P, X, N)
-        print(self.maxclique)
+        r = self.BronKerbosch(R, P, X, N)
+        return list(r)
 
 class Structure(Network):
     def __init__(self,
