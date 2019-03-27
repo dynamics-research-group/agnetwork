@@ -7,7 +7,8 @@ class Network:
     # Create list of joints
     joints = {}
 
-    def __init__(self):
+    def __init__(self,maxclique=None):
+        self.maxclique = []
     #     if structureID not in self.structures.keys():
     #         self.structures[structureID] = {} 
         pass
@@ -62,15 +63,17 @@ class Network:
 
     def BronKerbosch(self, R, P, X, N):
         if P == set() and X == set():
-            return R
-        for v in P.union(X):
+            self.maxclique.append(R)
+            return
+        Pit = P.copy()
+        for v in P:
             if R == set():
                 R = {v}
             else:
                 R.add(v)
-            self.BronKerbosch(R, P.intersection(N[v]), X.intersection(N[v]), N)
-            P = P.remove(v)
-            X = X.add(v)
+            self.BronKerbosch(R, Pit.intersection(N[v]), X.intersection(N[v]), N)
+            Pit.remove(v)
+            X.add(v)
 
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)
@@ -79,9 +82,8 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        R = self.BronKerbosch(R, P, X, N)
-        print(N)
-        print(R)
+        self.BronKerbosch(R, P, X, N)
+        print(self.maxclique)
 
 class Structure(Network):
     def __init__(self,
