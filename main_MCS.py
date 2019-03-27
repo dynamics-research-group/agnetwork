@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     network = Network()
-    """
+    
     bridge1 = Structure('Bridge1')
     bridge1.graph = {'1' : ['A'],
                      '2' : ['B'],
@@ -44,30 +44,29 @@ if __name__ == '__main__':
     bridge3.addToNetwork()
 
     modularproduct = network.modularProduct('Bridge1','Bridge2')
-    """
+    print(len(modularproduct['edges']))
+    print(len(modularproduct['nodes']))
 
-    struct1 = Structure('struct1')
-    struct1.graph = {'1' : ['D'],
-                     'D' : ['1','3'],
-                     '3' : ['D']}
-    struct1.addToNetwork()
-
-    struct2 = Structure('struct2')
-    struct2.graph = {'1' : ['2'],
-                     '2' : ['1','A'],
-                     'A' : ['2']}
-    struct2.addToNetwork()
+    # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    print(network.structures['struct1'])
-    print(network.structures['struct2'])
-    
-    modularproduct = network.modularProduct('struct1','struct2')
-    # print(modularproduct['edges'])
-    # print(modularproduct['nodes'])
+    cliques = network.maximalCliques(modularproduct['nodes'],modularproduct['edges'])
 
-    print(network.maximalCliques({1,2,3,4,5,6,7},
-                                {(1,2),(1,3),(2,3),(2,4),(3,5),(4,5),(4,6),(4,7),(5,6),(6,7),(5,7)}))
- 
+    max_len = 0
+    for clique in cliques:
+        if len(clique) > max_len:
+            max_len = len(clique)
+            max_clique = [clique]
+        elif len(clique) == max_len:
+            max_clique.append(clique)
+    
+    print(max_len)
+    print(max_clique)
+    print(len(max_clique))
+
+    print(cliques[0])
+    print(cliques[1])
+    print(len(cliques))
+    
     modularProductGraph = nx.Graph()
     modularProductGraph.add_edges_from(modularproduct['edges'])
     modularProductGraph.add_nodes_from(modularproduct['nodes'])
