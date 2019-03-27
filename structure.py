@@ -63,7 +63,6 @@ class Network:
 
     def BronKerbosch(self, R, P, X, N):
         if P == set() and X == set():
-<<<<<<< HEAD
             self.maxclique.append(R)
             return
         Pit = P.copy()
@@ -75,21 +74,6 @@ class Network:
             self.BronKerbosch(R, Pit.intersection(N[v]), X.intersection(N[v]), N)
             Pit.remove(v)
             X.add(v)
-=======
-            return R
-        for v in P.union(X):
-            R.add(v)
-            # for p in P:
-            #     if p in N[v]:
-            #         P2.add(p)
-            # for x in X:
-            #     if x in N[v]:
-            #         X2.add(x)
-            self.BronKerbosch(R, P.intersection(N[v]), X.intersection(N[v]), N)
-            P = P.remove(v)
-            X = X.add(v)
-        # THE PROBLEM LIES IN THE FACT THAT P CHANGES SIZE EVERY ITERATION
->>>>>>> 20dbddaaad22691b6cc36c77a515a267e17c5d63
 
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)
