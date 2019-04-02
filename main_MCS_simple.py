@@ -28,13 +28,15 @@ if __name__ == '__main__':
     # print(modularproduct['edges'])
     # print(modularproduct['nodes'])
 
-    print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
+    # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
+    print(network.maximalCliques({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
     
     cliques = network.maximalCliques(modularproduct['nodes'],modularproduct['edges'])
 
-    print(cliques[0])
-    print(cliques[1])
-    print(len(cliques))
+    print(cliques)
+    # print(cliques[0])
+    # print(cliques[1])
+    # print(len(cliques))
     
     modularProductGraph = nx.Graph()
     modularProductGraph.add_edges_from(modularproduct['edges'])

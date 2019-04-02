@@ -1,3 +1,5 @@
+import random
+
 class Network:
     """The network comprises of a set of structures"""
     # Creat list of structures
@@ -71,6 +73,24 @@ class Network:
                 yield r
             Pit.remove(v)
             X.add(v)
+    
+    def BronKerboschPivot(self, R, P, X, N):
+        if P == set():
+            if X == set():
+                yield R
+        else:
+            Pit = P.copy()
+            # Choose vertex with greatest degree to be the pivot vertex
+            vt = None
+            for v in P:
+                if vt == None or len(N[v]) > len(N[vt]) : vt = v
+            for v in P:
+                if v not in N[vt] or v == vt:
+                    Rit = R.union({v})
+                    for r in self.BronKerboschPivot(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
+                        yield r
+                    Pit.remove(v)
+                    X.add(v)
 
     def maximalCliques(self, V, E):
         N = self.neighbourSet(V, E)
@@ -79,7 +99,7 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        r = self.BronKerbosch(R, P, X, N)
+        r = self.BronKerboschPivot(R, P, X, N)
         return list(r)
 
 class Structure(Network):
