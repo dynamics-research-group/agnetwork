@@ -64,17 +64,25 @@ class Network:
         return neighbours
 
     def BronKerbosch(self, R, P, X, N):
+        """Return the maximal cliques of a graph (Bron-Kerbosch algorithm)"""
+        # If there are no more vertices which can be added to R, report clique as maximal
         if P == set() and X == set():
             yield R
+        # Create copy of P to iterate over
         Pit = P.copy()
         for v in P:
+            # Add the current vertex to R
             Rit = R.union({v})
+            # Yield the maximal cliques from previous recursions
             for r in self.BronKerbosch(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
                 yield r
+            # Exclude the current vertex from the list of vertices which can be added to R
             Pit.remove(v)
             X.add(v)
     
     def BronKerboschPivot(self, R, P, X, N):
+        """Return the maximal cliques of a graph (Bron-Kerbosch with pivoting)"""
+        # If there are no more vertices which can be added to R, report clique as maximal
         if P == set():
             if X == set():
                 yield R
@@ -85,10 +93,14 @@ class Network:
             for v in P:
                 if vt == None or len(N[v]) > len(N[vt]) : vt = v
             for v in P:
+                # Only use the current vertex if it is not adjacent to the pivot vertex
                 if v not in N[vt] or v == vt:
+                    # Add the current vertex to R
                     Rit = R.union({v})
+                    # Yield the maximal cliques from previous recursions
                     for r in self.BronKerboschPivot(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
                         yield r
+                    # Exclude the current vertex from the list of vertices which can be added to R
                     Pit.remove(v)
                     X.add(v)
 
