@@ -1,5 +1,3 @@
-import random
-
 class Network:
     """The network comprises of a set of structures"""
     # Creat list of structures
