@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cliques = network.maximalCliques(modularproduct['nodes'],modularproduct['edges'])
+    cliques = network.maximalCliquesBK(modularproduct['nodes'],modularproduct['edges'])
 
     max_len = 0
     for clique in cliques:
