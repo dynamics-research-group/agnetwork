@@ -130,8 +130,7 @@ class Network:
                 # If v1 and v2 in G2 are adjacent
                 if {v1,v2} in E2 or {v2,v1} in E2:
                     cedges.add(edge)
-        return cedges
-            
+        return cedges           
 
 class Structure(Network):
     def __init__(self,

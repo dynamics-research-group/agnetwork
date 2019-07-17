@@ -38,8 +38,8 @@ class TestNetworkClass(unittest.TestCase):
         self.neighbours = self.network.neighbourSet(self.nodes, self.edges)
         self.assertEqual(self.neighbours, {'1' : ['D'], 'D' : ['1','3'], '3' : ['D']})
     
-    def test_maximalCliques(self):
-        self.assertEqual(self.network.maximalCliques({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)}), [{1,2,3},{3,4}])
+    def test_maximalCliquesBK(self):
+        self.assertEqual(self.network.maximalCliquesBK({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)}), [{1,2,3},{3,4}])
 
 class TestStructreClass(unittest.TestCase):
 
