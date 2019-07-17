@@ -1,5 +1,3 @@
-import random
-
 class Network:
     """The network comprises of a set of structures"""
     # Creat list of structures
@@ -104,7 +102,8 @@ class Network:
                     Pit.remove(v)
                     X.add(v)
 
-    def maximalCliques(self, V, E):
+    def maximalCliquesBK(self, V, E):
+        """Initialises Bron-Kerbosch clique finding algorithms"""
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
         R = set()
@@ -113,6 +112,26 @@ class Network:
         P = set(V)
         r = self.BronKerboschPivot(R, P, X, N)
         return list(r)
+
+    def findCEdges(self, E, E1, E2):
+        """Find the c-edges in a product graph"""
+        # Initialise the set of c-edges
+        cedges = set()
+        # For each edge in the modular prodcut, form the edge or vertex pairs to test
+        for edge in E:
+            # Create the edge or vertex pair in G1
+            u1 = edge[0][0]
+            u2 = edge[1][0]
+            # Create the edge or vertex pair in G2
+            v1 = edge[0][1]
+            v2 = edge[1][1]
+            # If u1 and u2 in G1 are adjacent
+            if {u1,u2} in E1 or {u2,u1} in E1:
+                # If v1 and v2 in G2 are adjacent
+                if {v1,v2} in E2 or {v2,v1} in E2:
+                    cedges.add(edge)
+        return cedges
+            
 
 class Structure(Network):
     def __init__(self,

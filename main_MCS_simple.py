@@ -10,15 +10,15 @@ if __name__ == '__main__':
     network = Network()
 
     struct1 = Structure('struct1')
-    struct1.graph = {'1' : ['D'],
-                     'D' : ['1','3'],
-                     '3' : ['D']}
+    struct1.graph = {'1' : ['2'],
+                     '2' : ['1','3'],
+                     '3' : ['2']}
     struct1.addToNetwork()
 
     struct2 = Structure('struct2')
-    struct2.graph = {'1' : ['2'],
-                     '2' : ['1','A'],
-                     'A' : ['2']}
+    struct2.graph = {'a' : ['b'],
+                     'b' : ['a','c'],
+                     'c' : ['b']}
     struct2.addToNetwork()
     
     print(network.structures['struct1'])
@@ -28,10 +28,14 @@ if __name__ == '__main__':
     # print(modularproduct['edges'])
     # print(modularproduct['nodes'])
 
-    # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
-    print(network.maximalCliques({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
+    network.findCEdges(modularproduct['edges'],
+                       network.structures['struct1']['edges'],
+                       network.structures['struct2']['edges'])
+
+    # print(network.maximalCliquesBK({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
+    print(network.maximalCliquesBK({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
     
-    cliques = network.maximalCliques(modularproduct['nodes'],modularproduct['edges'])
+    cliques = network.maximalCliquesBK(modularproduct['nodes'],modularproduct['edges'])
 
     print(cliques)
     # print(cliques[0])
