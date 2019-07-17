@@ -9,7 +9,9 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
     separate structures and performs a similarity
-    comparison between them.'''
+    comparison between them. This work will go into
+    the IMAC paper.'''
+    network = Network()
     # Define the graph for a turbine
     turbine1 = Structure('Turbine')
     turbine1.elements = {'A': ['FRP',      'Aerofoil'], 
