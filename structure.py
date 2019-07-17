@@ -7,7 +7,6 @@ class Network:
         self.maxclique = []
     #     if structureID not in self.structures.keys():
     #         self.structures[structureID] = {} 
-        pass
 
     def modularProduct(self, struct1, struct2):
         """Find the modular product of two graphs"""
@@ -127,6 +126,10 @@ class Network:
                 if {v1,v2} in E2 or {v2,v1} in E2:
                     cedges.add(edge)
         return cedges           
+
+    def inexactGraphComparison(self, graph1, graph2):
+        # Create possible pairs
+        pass
 
 class Structure(Network):
     # Create list of elements
