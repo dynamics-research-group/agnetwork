@@ -1,13 +1,15 @@
 from structure import Structure
 from structure import Network
 from element import Boundary
-from element import Beam
+from element import IrreducibleElement
 from joint import Joint
 import networkx as nx
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-
+    '''This code creates the attributed graph for two
+    separate structures and performs a similarity
+    comparison between them.'''
     # Define the graph for a turbine
     turbine = Structure('Turbine')
     turbine.graph = {'A': ['D'], 
