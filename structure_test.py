@@ -24,7 +24,7 @@ class TestNetworkClass(unittest.TestCase):
         self.struct1.addToNetwork()
         self.struct2.addToNetwork()
         # Calculate the modular product of the two structures
-        self.modularproduct = self.network.modularProduct('struct1','struct2')
+        self.modularproduct = self.network.modularProduct(self.struct1, self.struct2)
         self.assertCountEqual(self.modularproduct['nodes'], {('D', '2'), ('D', '1'), ('1', 'A'), ('3', 'A'), ('1', '2'), 
                                                              ('3', '1'), ('3', '2'), ('D', 'A'), ('1', '1')})
         # self.assertCountEqual(self.modularproduct['edges'], {(('3', 'A'), ('1', '1')), (('D', '2'), ('3', 'A')), (('3', '2'), ('D', '1')), 
@@ -38,8 +38,8 @@ class TestNetworkClass(unittest.TestCase):
         self.neighbours = self.network.neighbourSet(self.nodes, self.edges)
         self.assertEqual(self.neighbours, {'1' : ['D'], 'D' : ['1','3'], '3' : ['D']})
     
-    def test_maximalCliques(self):
-        self.assertEqual(self.network.maximalCliques({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)}), [{1,2,3},{3,4}])
+    def test_maximalCliquesBK(self):
+        self.assertEqual(self.network.maximalCliquesBK({1,2,3,4},{(1,2),(1,3),(2,3),(3,4)}), [{1,2,3},{3,4}])
 
 class TestStructreClass(unittest.TestCase):
 
@@ -88,7 +88,7 @@ class TestStructreClass(unittest.TestCase):
 
     def test_addElements(self):
         # Check that the full list of nodes is added
-        self.struct.elements['struct'] = {'a': [], 'b': [], 'c':[]}
+        self.struct.elements = {'a': [], 'b': [], 'c':[]}
         self.assertEqual(self.struct.addElements(), ['a', 'b', 'c'])
         # Check that addNodes was called correctly
         self.assertEqual(self.struct.graph, {'a': [],'b': [],'c': []})
@@ -96,12 +96,12 @@ class TestStructreClass(unittest.TestCase):
     def test_addJoints(self):
         # Check that graph attribute is modified correctly when adding joints
         self.struct.graph = {'a': [], 'b': [], 'c': []}
-        self.struct.joints['struct'] = {1: [['a','b'], 1], 
+        self.struct.joints = {1: [['a','b'], 1], 
                                         2: [['b','c'], 1]}
         self.struct.addJoints()
         self.assertEqual(self.struct.graph, {'a': ['b'], 'b': ['a','c'], 'c': ['b']})
         # Check that adding a joint where both nodes do not exist in the graph gives an error
-        self.struct.joints['struct'][3] = [['c','d'], 1]
+        self.struct.joints[3] = [['c','d'], 1]
         with self.assertRaisesRegex(ValueError, "nodes not found in graph for jointID=3"):
             self.struct.addJoints()
     

@@ -36,29 +36,27 @@ class Element(Structure):
         self.removeConnections()
         self.remove()
 
-class Beam(Element):
+class IrreducibleElement(Element):
     """Create a beam element with default attributes"""
     def __init__(self,
                  elementID,
                  structureID='global',
-                 length=1,
-                 mass=1):
+                 material=None,
+                 geometry=1):
         Element.__init__(self, elementID, structureID)
-        self.length = length
-        self.mass = mass
-        Element.elements[structureID][elementID] = [mass, length]
+        self.material = material
+        self.geometry = geometry
+        Element.elements[structureID][elementID] = [material, geometry]
 
 class Boundary(Element):
     """Create a boundary condition with default attributes"""
     def __init__(self,
                  elementID,
                  structureID='global',
-                 disp=0,
-                 trac=0):
+                 boundary = 'Ground'):
         Element.__init__(self, elementID, structureID)
-        self.disp = disp
-        self.trac = trac
-        Element.elements[structureID][elementID] = [disp, trac]
+        self.boundary = boundary
+        Element.elements[structureID][elementID] = [boundary]
 
 if __name__ == "__main__":
     pass

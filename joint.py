@@ -19,15 +19,17 @@ class Joint(Structure):
                  jointID,
                  jointSet,
                  location,
+                 classification,
                  structureID='global'):
         if self.checkForElements():
             self.jointID = jointID
             self.structureID = structureID
             self.jointSet = jointSet
             self.location = location
+            self.classification = classification
             if structureID not in Joint.joints:
                 Joint.joints[structureID] = {}
-            Joint.joints[structureID][jointID] = [jointSet, location]
+            Joint.joints[structureID][jointID] = [jointSet, location, classification]
     
     @property
     def jointSet(self):
@@ -45,5 +47,20 @@ class Joint(Structure):
         else:
             raise ValueError("jointSet must contain two existing elements.")
     
+class KinematicJoint(Joint):
+    def __init__(self,
+                 jointID,
+                 jointSet,
+                 location,
+                 classification,
+                 structureID='global',
+                 disp_DoF=['x', 'y', 'z'],
+                 rot_DoF=['x', 'y', 'z']):
+        # Call standard joint initialisation
+        Joint.__init__(self, jointID, jointSet, location, classification, structureID)
+        self.disp_DoF = disp_DoF
+        self.rot_DoF = rot_DoF
+        Joint.joints[structureID][jointID].extend([disp_DoF, rot_DoF])
+
 if __name__ == '__main__':
     pass

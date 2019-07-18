@@ -2,24 +2,19 @@ class Network:
     """The network comprises of a set of structures"""
     # Creat list of structures
     structures = {}
-    # Create list of elements
-    elements = {}
-    # Create list of joints
-    joints = {}
 
     def __init__(self,maxclique=None):
         self.maxclique = []
     #     if structureID not in self.structures.keys():
     #         self.structures[structureID] = {} 
-        pass
 
     def modularProduct(self, struct1, struct2):
         """Find the modular product of two graphs"""
         # Create local sets of edges and vetrices
-        V1 = Network.structures[struct1]['nodes']
-        V2 = Network.structures[struct2]['nodes']
-        E1 = Network.structures[struct1]['edges']
-        E2 = Network.structures[struct2]['edges']
+        V1 = struct1.nodes
+        V2 = struct2.nodes
+        E1 = struct1.edges
+        E2 = struct2.edges
         # Initialise empty sets for modular product edges and vetices
         modprodV = set()
         modprodE = set()
@@ -130,10 +125,18 @@ class Network:
                 # If v1 and v2 in G2 are adjacent
                 if {v1,v2} in E2 or {v2,v1} in E2:
                     cedges.add(edge)
-        return cedges
-            
+        return cedges           
+
+    def inexactGraphComparison(self, graph1, graph2):
+        # Create possible pairs
+        pass
 
 class Structure(Network):
+    # Create list of elements
+    elements = {}
+    # Create list of joints
+    joints = {}
+
     def __init__(self,
                  structureID,
                  graph=None,
@@ -190,21 +193,20 @@ class Structure(Network):
     
     def addElements(self):
         """Adds nodes from list of elements"""
-        nodes = list(self.elements[self.structureID].keys())
+        nodes = list(self.elements.keys())
         for node in nodes:
             self.addNode(node)
         return nodes
     
     def addJoints(self):
         """Adds edges from list of joints"""
-        local_joints = self.joints[self.structureID]
-        for jointID in local_joints:
+        for jointID in self.joints:
             # Check whether the joint is connected to any elements
-            (node1, node2) = local_joints[jointID][0]
+            (node1, node2) = self.joints[jointID][0]
             nodes = self.nodeList()
             if node1 in nodes and node2 in nodes:
                 # Add edge defined for a given join ID
-                self.addEdge(local_joints[jointID][0])
+                self.addEdge(self.joints[jointID][0])
             else:
                 raise ValueError("nodes not found in graph for jointID=" + str(jointID))
     
