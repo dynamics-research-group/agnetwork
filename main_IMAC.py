@@ -78,7 +78,13 @@ if __name__ == '__main__':
                          '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
+
+    print(turbine1.nodes)
+    print(aeroplane1.nodes)
     
+    cliques = network.maximalCliquesBK(aeroplane1,turbine1)
+    print(cliques[0])
+
     # Initiliase nx.Graph object
     turbine1Graph = nx.Graph()
     # Add nodes and edges from turbine1

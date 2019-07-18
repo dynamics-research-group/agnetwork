@@ -38,7 +38,7 @@ class Network:
                         elif {U[0],V[0]} not in E1 and {U[1],V[1]} not in E2:
                             modprodE.add((U,V))
         # Return a dictionary defining the resultant graph
-        return {'nodes' : modprodV, 'edges' : modprodE}
+        return modprodV, modprodE
 
     def neighbourSet(self, V, E):
         """Create the neighbour set for each vertex"""
@@ -97,8 +97,11 @@ class Network:
                     Pit.remove(v)
                     X.add(v)
 
-    def maximalCliquesBK(self, V, E):
+    def maximalCliquesBK(self, struct1, struct2):
         """Initialises Bron-Kerbosch clique finding algorithms"""
+        # Calculate the modular product
+        V, E = self.modularProduct(struct1, struct2)
+        # Initialise other variables required for Bron-Kerbosch
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
         R = set()
