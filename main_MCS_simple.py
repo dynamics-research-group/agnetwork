@@ -1,50 +1,72 @@
 from structure import Structure
 from structure import Network
 from element import Boundary
-from element import Beam
+from element import Element
 from joint import Joint
 import networkx as nx
 import matplotlib.pyplot as plt
+from networkx.algorithms.clique import find_cliques
 
 if __name__ == '__main__':
     network = Network()
 
     struct1 = Structure('struct1')
-    struct1.graph = {'1' : ['2'],
-                     '2' : ['1','3'],
-                     '3' : ['2']}
+    # struct1.graph = {'1' : ['2'],
+    #                  '2' : ['1','3'],
+    #                  '3' : ['2']}
+    struct1.elements = {'a':[], 'b':[], 'c':[]}
+    struct1.joints = {'1': [['a','b']], '2': [['b','c']]}
+    struct1.addElements()
+    struct1.addJoints()
+    struct1.edgeList()
     struct1.addToNetwork()
 
+    print(struct1.nodes)
+
     struct2 = Structure('struct2')
-    struct2.graph = {'a' : ['b'],
-                     'b' : ['a','c'],
-                     'c' : ['b']}
+    # struct2.graph = {'a' : ['b'],
+    #                  'b' : ['a','c'],
+    #                  'c' : ['b']}
+    struct2.elements = {'a':[], 'b':[], 'c':[]}
+    struct2.joints = {'1': [['a','b']], '2': [['b', 'c']]}
+    struct2.addElements()
+    struct2.addJoints()
+    struct2.edgeList()
     struct2.addToNetwork()
     
     print(network.structures['struct1'])
     print(network.structures['struct2'])
     
-    modularproduct = network.modularProduct('struct1','struct2')
+    print(struct1.nodes)
+
+    V, E = network.modularProduct(struct1,struct2)
+    cliques = network.maximalCliquesBK(V,E)
     # print(modularproduct['edges'])
     # print(modularproduct['nodes'])
 
-    network.findCEdges(modularproduct['edges'],
-                       network.structures['struct1']['edges'],
-                       network.structures['struct2']['edges'])
+    cedges = network.findCEdges(E, struct1.edgeList(), struct2.edgeList())
+    print("C-edges:", cedges)
 
     # print(network.maximalCliquesBK({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
-    print(network.maximalCliquesBK({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
+    # print(network.maximalCliquesBK({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
     
-    cliques = network.maximalCliquesBK(modularproduct['nodes'],modularproduct['edges'])
+    cliques = network.maximalCliquesBK(V, E)
+
+    modularProduct = nx.Graph()
+    modularProduct.add_nodes_from(V)
+    modularProduct.add_edges_from(E)
+    cliques2 = find_cliques(modularProduct)
 
     print(cliques)
+
+    print(list(cliques2))
     # print(cliques[0])
     # print(cliques[1])
     # print(len(cliques))
     
     modularProductGraph = nx.Graph()
-    modularProductGraph.add_edges_from(modularproduct['edges'])
-    modularProductGraph.add_nodes_from(modularproduct['nodes'])
+    modularProductGraph.add_edges_from(E)
+    modularProductGraph.add_nodes_from(V)
 
     nx.draw(modularProductGraph, with_labels=True)
     plt.show()

@@ -1,7 +1,7 @@
 from structure import Structure
 from structure import Network
 from element import Boundary
-from element import Beam
+from element import Element
 from joint import Joint
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -43,16 +43,16 @@ if __name__ == '__main__':
     bridge3.addToNetwork()
 
     # Find the modular product of bridge1 and bridge2
-    modularproduct = network.modularProduct('Bridge1','Bridge2')
+    V,E = network.modularProduct(bridge1,bridge2)
     # Print the number of edges in the modular product
-    print(len(modularproduct['edges']))
+    print(len(E))
     # Print the number of nodes in the modular product
-    print(len(modularproduct['nodes']))
+    print(len(V))
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
     # Find the maximal cliques (and hence common subgraphs) in the modular product
-    cliques = network.maximalCliques(modularproduct['nodes'],modularproduct['edges'])
+    cliques = network.maximalCliquesBK(V,E)
 
     # Find the maximum cliques in the modular product. These represent the maximum common subgraphs
     max_len = 0
@@ -80,9 +80,9 @@ if __name__ == '__main__':
     # Initialise the modular product graph as an nx.Graph object
     modularProductGraph = nx.Graph()
     # Add edge information from the modular product graph
-    modularProductGraph.add_edges_from(modularproduct['edges'])
+    modularProductGraph.add_edges_from(E)
     # Add node information from the modular product
-    modularProductGraph.add_nodes_from(modularproduct['nodes'])
+    modularProductGraph.add_nodes_from(V)
 
     # Draw and show the modular product graph
     nx.draw(modularProductGraph, with_labels=True)

@@ -3,8 +3,11 @@ from structure import Network
 from element import Boundary
 from element import IrreducibleElement
 from joint import Joint
+from networkx.algorithms.approximation.clique import max_clique
+from networkx.algorithms.clique import find_cliques
 import networkx as nx
 import matplotlib.pyplot as plt
+import time
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -35,6 +38,7 @@ if __name__ == '__main__':
                        '9': [['I','1'], [15, 15, 0],     'Soil']}
     turbine1.addElements()
     turbine1.addJoints()
+    turbine1.edgeList()
 
     # Define the graph for an aeroplane
     aeroplane1 = Structure('Aeroplane')
@@ -78,12 +82,43 @@ if __name__ == '__main__':
                          '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
+    aeroplane1.edgeList()
 
-    print(turbine1.nodes)
-    print(aeroplane1.nodes)
+    print("Turbine nodes:", turbine1.nodes)
+    print("Aeroplane nodes:", aeroplane1.nodes)
     
-    cliques = network.maximalCliquesBK(aeroplane1,turbine1)
-    print(cliques[0])
+    # Generate the modular product
+    V, E = network.modularProduct(aeroplane1,turbine1)
+    modularProduct = nx.Graph()
+    modularProduct.add_nodes_from(V)
+    modularProduct.add_edges_from(E)
+
+    # Time the networkX algorithm
+    cliques = find_cliques(modularProduct)
+    # Find the largest cliques
+
+    cedges = network.findCEdges(E, aeroplane1.edgeList(), turbine1.edgeList())
+    print(cedges)
+
+    max_len = 0
+    for clique in cliques:
+        if len(clique) > max_len:
+            max_len = len(clique)
+            max_cliques = [clique]
+        elif len(clique) == max_len:
+            max_cliques.append(clique)
+    print(max_cliques[0])
+
+    # cliques = network.maximalCliquesBK(V,E)
+    # # Find the largest cliques
+    # max_len = 0
+    # for clique in cliques:
+    #     if len(clique) > max_len:
+    #         max_len = len(clique)
+    #         max_cliques = [clique]
+    #     elif len(clique) == max_len:
+    #         max_cliques.append(clique)
+    # print(max_cliques[0])
 
     # Initiliase nx.Graph object
     turbine1Graph = nx.Graph()
@@ -102,4 +137,7 @@ if __name__ == '__main__':
     nx.draw(turbine1Graph, with_labels=True)
     plt.subplot(122)
     nx.draw(aeroplane1Graph, with_labels=True)
+    plt.show()
+
+    nx.draw(modularProduct, with_labels=True)
     plt.show()

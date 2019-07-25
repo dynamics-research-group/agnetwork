@@ -43,13 +43,13 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    modularproduct = network.modularProduct('Bridge1','Bridge2')
-    print(len(modularproduct['edges']))
-    print(len(modularproduct['nodes']))
+    V,E = network.modularProduct(bridge1,bridge2)
+    print(len(E))
+    print(len(V))
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cliques = network.maximalCliquesBK(modularproduct['nodes'],modularproduct['edges'])
+    cliques = network.maximalCliquesBK(V,E)
 
     max_len = 0
     for clique in cliques:
@@ -68,8 +68,8 @@ if __name__ == '__main__':
     print(len(cliques))
     
     modularProductGraph = nx.Graph()
-    modularProductGraph.add_edges_from(modularproduct['edges'])
-    modularProductGraph.add_nodes_from(modularproduct['nodes'])
+    modularProductGraph.add_edges_from(E)
+    modularProductGraph.add_nodes_from(V)
 
     nx.draw(modularProductGraph, with_labels=True)
     plt.show()

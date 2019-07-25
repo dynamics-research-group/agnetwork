@@ -32,12 +32,12 @@ class Network:
                     if (U,V) not in modprodE and (V,U) not in modprodE:
                         # Any two vertices (u0, u1) and (v0, v1) are adjacent in the modular product if and only if
                         # u0 is adjacent to v0 and u1 is adjacent to v1
-                        if {U[0],V[0]} in E1 and {U[1],V[1]} in E2:
+                        if ({U[0],V[0]} in E1) and ({U[1],V[1]} in E2):
                             modprodE.add((U,V))
                         # or u0 is NOT adjacent to v0 and u1 is NOT adjacent to v1
-                        elif {U[0],V[0]} not in E1 and {U[1],V[1]} not in E2:
+                        elif ({U[0],V[0]} not in E1) and ({U[1],V[1]} not in E2):
                             modprodE.add((U,V))
-        # Return a dictionary defining the resultant graph
+        # Return the vertices and edges of theresultant graph
         return modprodV, modprodE
 
     def neighbourSet(self, V, E):
@@ -97,10 +97,10 @@ class Network:
                     Pit.remove(v)
                     X.add(v)
 
-    def maximalCliquesBK(self, struct1, struct2):
+    def maximalCliquesBK(self, V, E):
         """Initialises Bron-Kerbosch clique finding algorithms"""
-        # Calculate the modular product
-        V, E = self.modularProduct(struct1, struct2)
+        # # # Calculate the modular product
+        # V, E = self.modularProduct(struct1, struct2)
         # Initialise other variables required for Bron-Kerbosch
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
@@ -108,7 +108,7 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        r = self.BronKerboschPivot(R, P, X, N)
+        r = self.BronKerbosch(R, P, X, N)
         return list(r)
 
     def findCEdges(self, E, E1, E2):
