@@ -130,6 +130,9 @@ class Network:
                     cedges.add(edge)
         return cedges           
 
+    def findCcliques(self, cliques, cedges):
+        
+
     def inexactGraphComparison(self, graph1, graph2):
         # Create possible pairs
         pass
