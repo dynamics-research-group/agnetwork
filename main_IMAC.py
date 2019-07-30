@@ -98,7 +98,7 @@ if __name__ == '__main__':
     # Find the largest cliques
 
     cedges = network.findCEdges(E, aeroplane1.edgeList(), turbine1.edgeList())
-    print(cedges)
+    #print(cedges)
 
     max_len = 0
     for clique in cliques:
