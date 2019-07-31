@@ -94,12 +94,14 @@ if __name__ == '__main__':
     modularProduct.add_edges_from(E)
 
     # Time the networkX algorithm
-    cliques = find_cliques(modularProduct)
+    # cliques = find_cliques(modularProduct)
     # Find the largest cliques
+    start = time.time()
+    cliques = network.maximalCliquesBK(V, E)
+    end = time.time()
+    print("Time to find: ", end - start)
 
     cedges = network.findCEdges(E, aeroplane1.edgeList(), turbine1.edgeList())
-
-    
 
     max_len = 0
     for clique in cliques:
@@ -108,7 +110,9 @@ if __name__ == '__main__':
             max_cliques = [clique]
         elif len(clique) == max_len:
             max_cliques.append(clique)
-    print(max_cliques[0])
+
+    for i, clique in enumerate(max_cliques):
+        print("Max clique", i+1, ":", clique)
 
     # cliques = network.maximalCliquesBK(V,E)
     # # Find the largest cliques
@@ -140,5 +144,5 @@ if __name__ == '__main__':
     nx.draw(aeroplane1Graph, with_labels=True)
     plt.show()
 
-    nx.draw(modularProduct, with_labels=True)
-    plt.show()
+    # nx.draw(modularProduct, with_labels=True)
+    # plt.show()

@@ -64,13 +64,13 @@ class Network:
         # Create copy of P to iterate over
         Pit = P.copy()
         for v in P:
+            # Exclude the current vertex from the list of vertices which can be added to R
+            Pit.remove(v)
             # Add the current vertex to R
             Rit = R.union({v})
             # Yield the maximal cliques from previous recursions
             for r in self.BronKerbosch(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
                 yield r
-            # Exclude the current vertex from the list of vertices which can be added to R
-            Pit.remove(v)
             X.add(v)
     
     def BronKerboschPivot(self, R, P, X, N):
@@ -88,19 +88,17 @@ class Network:
             for v in P:
                 # Only use the current vertex if it is not adjacent to the pivot vertex
                 if v not in N[vt] or v == vt:
+                    # Exclude the current vertex from the list of vertices which can be added to R
+                    Pit.remove(v)
                     # Add the current vertex to R
                     Rit = R.union({v})
                     # Yield the maximal cliques from previous recursions
                     for r in self.BronKerboschPivot(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
                         yield r
-                    # Exclude the current vertex from the list of vertices which can be added to R
-                    Pit.remove(v)
                     X.add(v)
 
     def maximalCliquesBK(self, V, E):
         """Initialises Bron-Kerbosch clique finding algorithms"""
-        # # # Calculate the modular product
-        # V, E = self.modularProduct(struct1, struct2)
         # Initialise other variables required for Bron-Kerbosch
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
@@ -108,7 +106,7 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        r = self.BronKerbosch(R, P, X, N)
+        r = self.BronKerboschPivot(R, P, X, N)
         return list(r)
 
     def findCEdges(self, E, E1, E2):
@@ -130,8 +128,36 @@ class Network:
                     cedges.add(edge)
         return cedges           
 
-    def findCcliques(self, cliques, cedges):
-        
+    def maximalCliquesCEdges(self, V, E, cE):
+        # Set N as neighbour set
+        N = self.neighbourSet(V, E)
+        # Set P as vertex set
+        P = set(V)
+        # Set D, X and C as the empty set
+        D = set()
+        X = set()
+        R = set()
+        # Call c-clique finding algorithm
+        r = self.enumerateCcliques(R, P, D, X, N)
+        return list(r)
+
+    def enumerateCcliques(self, R, P, D, X, N):
+        """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
+        # If there are no more vertices which can be added to R, report clique as maximal
+        if P == set() and X == set():
+            yield R
+        # Create copy of P to iterate over
+        Pit = P.copy()
+        for v in P:
+            # Add the current vertex to R
+            Rit = R.union({v})
+            # Yield the maximal cliques from previous recursions
+            for r in self.BronKerbosch(Rit, Pit.intersection(N[v]), X.intersection(N[v]), N):
+                yield r
+            # Exclude the current vertex from the list of vertices which can be added to R
+            Pit.remove(v)
+            X.add(v)
+        pass
 
     def inexactGraphComparison(self, graph1, graph2):
         # Create possible pairs

@@ -60,7 +60,8 @@ if __name__ == '__main__':
             max_clique.append(clique)
     
     print(max_len)
-    print(max_clique)
+    for i, clique in enumerate(max_clique):
+        print("Max clique", i+1, ":", clique)
     print(len(max_clique))
 
     print(cliques[0])

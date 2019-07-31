@@ -68,5 +68,9 @@ if __name__ == '__main__':
     modularProductGraph.add_edges_from(E)
     modularProductGraph.add_nodes_from(V)
 
-    nx.draw(modularProductGraph, with_labels=True)
+    cedgeProductGraph = nx.Graph()
+    cedgeProductGraph.add_edges_from(cedges)
+    cedgeProductGraph.add_nodes_from(V)
+
+    nx.draw(cedgeProductGraph, with_labels=True)
     plt.show()
