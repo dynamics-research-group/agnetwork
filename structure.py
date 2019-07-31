@@ -106,7 +106,7 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        r = self.BronKerbosch(R, P, X, N)
+        r = self.BronKerboschPivot(R, P, X, N)
         return list(r)
 
     def findCEdges(self, E, E1, E2):
