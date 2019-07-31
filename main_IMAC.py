@@ -102,10 +102,6 @@ if __name__ == '__main__':
     print("Time to find: ", end - start)
 
     cedges = network.findCEdges(E, aeroplane1.edgeList(), turbine1.edgeList())
-<<<<<<< HEAD
-=======
-    #print(cedges)
->>>>>>> 0d46ae0b4bc1da939d8bc83cfa4b3d234a64e533
 
     max_len = 0
     for clique in cliques:

@@ -11,9 +11,11 @@ if __name__ == '__main__':
     
     # Define the graph for bridge1
     bridge1 = Structure('Bridge1')
-    bridge1.graph = {'1' : ['A','A','B'],
-                    'A': ['1', 'B', '1'], 
-                    'B': ['A', '1']}
+    bridge1.graph = {'1' : ['A'],
+                     '2' : ['B'],
+                     '3' : ['A'], 
+                     'A': ['1', 'B', '3'], 
+                     'B': ['A', '2']}
 
     # Define the graph for bridge2
     bridge2 = Structure('Bridge2')
@@ -25,17 +27,13 @@ if __name__ == '__main__':
 
     # Define the graph for bridge3
     bridge3 = Structure('Bridge3')
-    bridge3.graph = {'1': ['A'], 
-                     '2': ['B'], 
-                     '3': ['D'],
-                     '4': ['F'], 
-                     '5': ['E'], 
+    bridge3.graph = {'1': ['A','B','C','D','E','F'],
                      'A': ['1', 'C', 'B'], 
                      'C': ['A', 'D', 'E'],
-                     'B': ['A', '2'], 
-                     'D': ['C', '3'],
-                     'E': ['C','F', '5'],
-                     'F': ['E', '4']}
+                     'B': ['A', '1'], 
+                     'D': ['C', '1'],
+                     'E': ['C','F', '1'],
+                     'F': ['E', '1']}
     
     # Add all three bridge to the network of structures
     bridge1.addToNetwork()
@@ -63,11 +61,9 @@ if __name__ == '__main__':
         elif len(clique) == max_len:
             max_clique.append(clique)
     
-    # Print the size of the maximum clique
     print(max_len)
-    # Print the list of maxmum cliques
-    print("Maximum cliques are: " + str(max_clique))
-    # Print the number of maximum cliques
+    for i, clique in enumerate(max_clique):
+        print("Max clique", i+1, ":", clique)
     print(len(max_clique))
 
     # Print the first clique
