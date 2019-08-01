@@ -129,17 +129,25 @@ class Network:
         return cedges           
 
     def maximalCliquesCedges(self, V, E, Cedges):
-        # Set N as neighbour set
+        T = set()
+        # Create the neighbour set
         N = self.neighbourSet(V, E)
-        # Set P as vertex set
-        P = set(V)
-        # Set D, X and R as the empty set
-        D = set()
-        X = set()
-        R = set()
-        # 
-        # Call c-clique finding algorithm
-        r = self.enumerateCcliques(R, P, D, X, N, cE)
+        # Initialise c-clique finding algorithm for each vertex
+        for u in V:
+            # Set R, D, X and R as the empty set
+            P = set(V)
+            D = set()
+            X = set()
+            # Initilise P with list of neighbouring vertices connected via c-edges
+            # and D with list of neighbouring vertics connected via d-edges
+            for v in N[u]:
+                if {u,v} in Cedges or {v,u} in Cedges:
+                    X.add(v)
+                    P.add(v)
+                else: D.add(v)
+            # Call c-clique finding algorithm
+            r = self.enumerateCcliques(u, P, D, X, N, Cedges)
+            T.add(u)
         return list(r)
 
     def enumerateCcliques(self, R, P, D, X, N, Cedges):
