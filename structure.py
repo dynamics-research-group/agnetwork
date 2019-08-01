@@ -150,10 +150,9 @@ class Network:
                 else: D.add(v)
             R = set({u})
             # Call c-clique finding algorithm
-            r = self.enumerateCcliques(R, P, D, X, N, cEdges)
+            for r in self.enumerateCcliques(R, P, D, X, N, cEdges):
+                yield r
             T.add(u)
-            cliques.append(list(r))
-        return cliques
 
     def enumerateCcliques(self, R, P, D, X, N, cEdges):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
