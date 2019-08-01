@@ -47,33 +47,42 @@ if __name__ == '__main__':
     print(len(E))
     print(len(V))
 
-    # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
-    
-    cliques = network.maximalCliquesBK(V,E)
-
-    max_len = 0
-    for clique in cliques:
-        if len(clique) > max_len:
-            max_len = len(clique)
-            max_clique = [clique]
-        elif len(clique) == max_len:
-            max_clique.append(clique)
-    
-    print(max_len)
-    for i, clique in enumerate(max_clique):
-        print("Max clique", i+1, ":", clique)
-    print(len(max_clique))
-
-    print(cliques[0])
-    print(cliques[1])
-    print(len(cliques))
-    
     modularProductGraph = nx.Graph()
     modularProductGraph.add_edges_from(E)
     modularProductGraph.add_nodes_from(V)
 
     nx.draw(modularProductGraph, with_labels=True)
     plt.show()
+
+    # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
+    
+    cEdges = network.findCEdges(E, bridge1.edgeList(), bridge2.edgeList())
+
+    cEdgeGraph = nx.Graph()
+    cEdgeGraph.add_edges_from(cEdges)
+    cEdgeGraph.add_nodes_from(V)
+
+    nx.draw(cEdgeGraph, with_labels=True)
+    plt.show()
+
+    cliques = network.maximalCliquesCedges(V, E, cEdges)
+
+    # max_len = 0
+    # for clique in cliques:
+    #     if len(clique) > max_len:
+    #         max_len = len(clique)
+    #         max_clique = [clique]
+    #     elif len(clique) == max_len:
+    #         max_clique.append(clique)
+    
+    # print(max_len)
+    # for i, clique in enumerate(max_clique):
+    #     print("Max clique", i+1, ":", clique)
+    # print(len(max_clique))
+
+    print(cliques[0][:3])
+    print(len(cliques))
+    
 
     """
     bridge1Graph = nx.Graph()

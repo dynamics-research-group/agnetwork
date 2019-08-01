@@ -128,7 +128,8 @@ class Network:
                     cedges.add(edge)
         return cedges           
 
-    def maximalCliquesCedges(self, V, E, Cedges):
+    def maximalCliquesCedges(self, V, E, cEdges):
+        cliques = []
         T = set()
         # Create the neighbour set
         N = self.neighbourSet(V, E)
@@ -141,16 +142,20 @@ class Network:
             # Initilise P with list of neighbouring vertices connected via c-edges
             # and D with list of neighbouring vertics connected via d-edges
             for v in N[u]:
-                if {u,v} in Cedges or {v,u} in Cedges:
-                    X.add(v)
-                    P.add(v)
+                if (u,v) in cEdges or (v,u) in cEdges:
+                    if v in T:
+                        X.add(v)
+                    else:
+                        P.add(v)
                 else: D.add(v)
+            R = set({u})
             # Call c-clique finding algorithm
-            r = self.enumerateCcliques(u, P, D, X, N, Cedges)
+            r = self.enumerateCcliques(R, P, D, X, N, cEdges)
             T.add(u)
-        return list(r)
+            cliques.append(list(r))
+        return cliques
 
-    def enumerateCcliques(self, R, P, D, X, N, Cedges):
+    def enumerateCcliques(self, R, P, D, X, N, cEdges):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
         # If there are no more vertices which can be added to R, report clique as maximal
         if P == set() and X == set():
@@ -163,17 +168,19 @@ class Network:
             # Create copy of D for iteration
             Dit = D.copy()
             for v in D:
-                if {u, v} in Cedges or {v, u} in Cedges:
-                    # Add the current vertex to R
-                    Rit = R.union({v})
+                if {u, v} in cEdges or {v, u} in cEdges:
+                    # Add the current vertex to P
+                    Pit = P.union({u})
                     # Remove the current vertex from the list of d-edges
                     Dit.remove(v)
+            # Add the current vertex to R
+            R = R.union({u})
             # Yield the maximal cliques from previous recursions
-            for r in self.enumerateCcliques(Rit, 
+            for r in self.enumerateCcliques(R, 
                                             Pit.intersection(N[u]), 
                                             D.intersection(N[u]),
                                             X.intersection(N[u]), 
-                                            N, Cedges):
+                                            N, cEdges):
                 yield r
             X.add(u)
         pass
