@@ -109,7 +109,7 @@ class Network:
         r = self.BronKerboschPivot(R, P, X, N)
         return list(r)
 
-    def findCEdges(self, E, E1, E2):
+    def findCedges(self, E, E1, E2):
         """Find the c-edges in a product graph"""
         # Initialise the set of c-edges
         cedges = set()

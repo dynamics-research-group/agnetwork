@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cEdges = network.findCEdges(E, bridge1.edgeList(), bridge2.edgeList())
+    cEdges = network.findCedges(E, bridge1.edgeList(), bridge2.edgeList())
 
     cEdgeGraph = nx.Graph()
     cEdgeGraph.add_edges_from(cEdges)
