@@ -65,7 +65,7 @@ if __name__ == '__main__':
     nx.draw(cEdgeGraph, with_labels=True)
     plt.show()
 
-    cliques = network.maximalCliquesCedges(V, E, cEdges)
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges))
 
     # max_len = 0
     # for clique in cliques:
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     #     print("Max clique", i+1, ":", clique)
     # print(len(max_clique))
 
-    print(cliques[0][:3])
+    print(cliques[:3])
     print(len(cliques))
     
 

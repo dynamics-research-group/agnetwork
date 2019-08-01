@@ -136,7 +136,7 @@ class Network:
         # Initialise c-clique finding algorithm for each vertex
         for u in V:
             # Set R, D, X and R as the empty set
-            P = set(V)
+            P = set()
             D = set()
             X = set()
             # Initilise P with list of neighbouring vertices connected via c-edges
@@ -168,22 +168,21 @@ class Network:
             # Create copy of D for iteration
             Dit = D.copy()
             for v in D:
-                if {u, v} in cEdges or {v, u} in cEdges:
+                if (u, v) in cEdges or (v, u) in cEdges:
                     # Add the current vertex to P
-                    Pit = P.union({u})
+                    Pit = P.union({v})
                     # Remove the current vertex from the list of d-edges
                     Dit.remove(v)
             # Add the current vertex to R
-            R = R.union({u})
+            Rit = R.union({u})
             # Yield the maximal cliques from previous recursions
-            for r in self.enumerateCcliques(R, 
+            for r in self.enumerateCcliques(Rit, 
                                             Pit.intersection(N[u]), 
-                                            D.intersection(N[u]),
+                                            Dit.intersection(N[u]),
                                             X.intersection(N[u]), 
                                             N, cEdges):
                 yield r
             X.add(u)
-        pass
 
     def inexactGraphComparison(self, graph1, graph2):
         # Create possible pairs

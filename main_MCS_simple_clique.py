@@ -21,8 +21,6 @@ if __name__ == '__main__':
     struct1.edgeList()
     struct1.addToNetwork()
 
-    print(struct1.nodes)
-
     struct2 = Structure('struct2')
     # struct2.graph = {'a' : ['b'],
     #                  'b' : ['a','c'],
@@ -33,11 +31,6 @@ if __name__ == '__main__':
     struct2.addJoints()
     struct2.edgeList()
     struct2.addToNetwork()
-    
-    print(network.structures['struct1'])
-    print(network.structures['struct2'])
-    
-    print(struct1.nodes)
 
     V, E = network.modularProduct(struct1,struct2)
 
@@ -65,7 +58,7 @@ if __name__ == '__main__':
     
     cliques = network.maximalCliquesCedges(V, E, cEdges)
 
-    print(cliques[0][:3])
+    print(cliques[:3])
 
     # print(cliques[0])
     # print(cliques[1])
