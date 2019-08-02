@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # print(network.maximalCliquesBK({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     # print(network.maximalCliquesBK({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
     
-    cliques = network.maximalCliquesCedges(V, E, cEdges)
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges))
 
     print(cliques[:3])
 

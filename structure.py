@@ -129,7 +129,6 @@ class Network:
         return cedges           
 
     def maximalCliquesCedges(self, V, E, cEdges):
-        cliques = []
         T = set()
         # Create the neighbour set
         N = self.neighbourSet(V, E)
