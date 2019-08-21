@@ -60,6 +60,17 @@ if __name__ == '__main__':
 
     print(cliques[:3])
 
+    max_len = 0
+    for clique in cliques:
+        if len(clique) > max_len:
+            max_len = len(clique)
+            max_cliques = [clique]
+        elif len(clique) == max_len:
+            max_cliques.append(clique)
+
+    for i, clique in enumerate(max_cliques):
+        print("Max clique", i+1, ":", clique)
+
     # print(cliques[0])
     # print(cliques[1])
     # print(len(cliques))

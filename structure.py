@@ -111,8 +111,9 @@ class Network:
 
     def findCedges(self, E, E1, E2):
         """Find the c-edges in a product graph"""
-        # Initialise the set of c-edges
+        # Initialise the set of c-edges and d-edges
         cedges = set()
+        dedges = set()
         # For each edge in the modular prodcut, form the edge or vertex pairs to test
         for edge in E:
             # Create the edge or vertex pair in G1
@@ -126,9 +127,11 @@ class Network:
                 # If v1 and v2 in G2 are adjacent
                 if {v1,v2} in E2 or {v2,v1} in E2:
                     cedges.add(edge)
-        return cedges           
+            else:
+                dedges.add(edge)
+        return cedges, dedges 
 
-    def maximalCliquesCedges(self, V, E, cEdges):
+    def maximalCliquesCedges(self, V, E, cEdges, dEdges):
         T = set()
         # Create the neighbour set
         N = self.neighbourSet(V, E)
@@ -140,20 +143,20 @@ class Network:
             X = set()
             # Initilise P with list of neighbouring vertices connected via c-edges
             # and D with list of neighbouring vertics connected via d-edges
-            for v in N[u]:
+            for v in N:
                 if (u,v) in cEdges or (v,u) in cEdges:
                     if v in T:
                         X.add(v)
                     else:
                         P.add(v)
-                else: D.add(v)
+                elif (u,v) in dEdges or (v,u) in dEdges: D.add(v)
             R = set({u})
             # Call c-clique finding algorithm
-            for r in self.enumerateCcliques(R, P, D, X, N, cEdges):
+            for r in self.enumerateCcliques(R, P, D, X, N, T):
                 yield r
             T.add(u)
 
-    def enumerateCcliques(self, R, P, D, X, N, cEdges):
+    def enumerateCcliques(self, R, P, D, X, N, T):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
         # If there are no more vertices which can be added to R, report clique as maximal
         if P == set() and X == set():
@@ -166,11 +169,16 @@ class Network:
             # Create copy of D for iteration
             Dit = D.copy()
             for v in D:
-                if (u, v) in cEdges or (v, u) in cEdges:
-                    # Add the current vertex to P
-                    Pit = P.union({v})
-                    # Remove the current vertex from the list of d-edges
-                    Dit.remove(v)
+                if v in T: 
+                    X.add(v)
+                else:
+                    Pit = Pit.union({v})
+                # Modification suggested in paper
+                # if (u, v) in cEdges or (v, u) in cEdges:
+                #     # Add the current vertex to P
+                #     Pit = P.union({v})
+                #     # Remove the current vertex from the list of d-edges
+                #     Dit.remove(v)
             # Add the current vertex to R
             Rit = R.union({u})
             # Yield the maximal cliques from previous recursions
@@ -178,7 +186,7 @@ class Network:
                                             Pit.intersection(N[u]), 
                                             Dit.intersection(N[u]),
                                             X.intersection(N[u]), 
-                                            N, cEdges):
+                                            N, T):
                 yield r
             X.add(u)
 

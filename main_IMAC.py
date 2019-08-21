@@ -9,6 +9,16 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import time
 
+def maxCliques(cliques):
+    max_len = 0
+    for clique in cliques:
+        if len(clique) > max_len:
+            max_len = len(clique)
+            max_cliques = [clique]
+        elif len(clique) == max_len:
+            max_cliques.append(clique)
+    return max_cliques
+
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
     separate structures and performs a similarity
@@ -99,22 +109,21 @@ if __name__ == '__main__':
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
     start = time.time()
-    cEdges = network.findCedges(E, aeroplane1.edgeList(), turbine1.edgeList())
-    cliques = list(network.maximalCliquesCedges(V, E, cEdges))
+    cEdges, dEdges = network.findCedges(E, aeroplane1.edgeList(), turbine1.edgeList())
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     end = time.time()
-    print("Time to find:", end - start)
-    print("Number of cliques:", len(cliques))
+
+    # cliquesBK = network.maximalCliquesBK(V, E)
     
-    max_len = 0
-    for clique in cliques:
-        if len(clique) > max_len:
-            max_len = len(clique)
-            max_cliques = [clique]
-        elif len(clique) == max_len:
-            max_cliques.append(clique)
+    max_cliques = maxCliques(cliques)
+    # Remove duplicates in max_cliques
+    max_cliques = [set(item) for item in set(frozenset(item) for item in max_cliques)]
 
     for i, clique in enumerate(max_cliques):
         print("Max clique", i+1, ":", clique)
+
+    print("Time to find:", end - start)
+    print("Number of cliques:", len(cliques))
 
     # cliques = network.maximalCliquesBK(V,E)
     # # Find the largest cliques
