@@ -7,6 +7,16 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.algorithms.clique import find_cliques
 
+def maxCliques(cliques):
+    max_len = 0
+    for clique in cliques:
+        if len(clique) > max_len:
+            max_len = len(clique)
+            max_cliques = [clique]
+        elif len(clique) == max_len:
+            max_cliques.append(clique)
+    return max_cliques
+
 if __name__ == '__main__':
     network = Network()
 
