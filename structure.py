@@ -15,13 +15,15 @@ class Network:
         V2 = struct2.nodes
         E1 = struct1.edges
         E2 = struct2.edges
+
+        if len(V1) > len(V2):
+            raise Exception("Smaller graph first please.")
+
         # Initialise empty sets for modular product edges and vetices
         modprodV = set()
         modprodE = set()
         # Find the cartesian product of the sets of vertices for each graph
-        for u in V1:
-            for v in V2:
-                modprodV.add((u, v))
+        [modprodV.add((u, v)) for u in V1 for v in V2]
         # Loop through each vertex in the modular product
         for U in modprodV:
             # Compare with every other vertex in the modular product
@@ -137,7 +139,7 @@ class Network:
         N = self.neighbourSet(V, E)
         # Initialise c-clique finding algorithm for each vertex
         for u in V:
-            # Set R, D, X and R as the empty set
+            # Set P, D, X and R as the empty set
             P = set()
             D = set()
             X = set()
@@ -145,18 +147,16 @@ class Network:
             # and D with list of neighbouring vertics connected via d-edges
             for v in N:
                 if (u,v) in cEdges or (v,u) in cEdges:
-                    if v in T:
-                        X.add(v)
-                    else:
-                        P.add(v)
+                    if v in T: X.add(v)
+                    else: P.add(v)
                 elif (u,v) in dEdges or (v,u) in dEdges: D.add(v)
             R = set({u})
             # Call c-clique finding algorithm
-            for r in self.enumerateCcliques(R, P, D, X, N, T):
+            for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges):
                 yield r
             T.add(u)
 
-    def enumerateCcliques(self, R, P, D, X, N, T):
+    def enumerateCcliques(self, R, P, D, X, N, T, cEdges):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
         # If there are no more vertices which can be added to R, report clique as maximal
         if P == set() and X == set():
@@ -166,9 +166,9 @@ class Network:
         for u in P:
             # Exclude the current vertex from the list of vertices which can be added to R
             Pit.remove(u)
-            # Create copy of D for iteration
             Dit = D.copy()
             for v in D:
+                # Remove vertices that have previously been used as a start vertex
                 if v in T: 
                     X.add(v)
                 else:
@@ -186,7 +186,7 @@ class Network:
                                             Pit.intersection(N[u]), 
                                             Dit.intersection(N[u]),
                                             X.intersection(N[u]), 
-                                            N, T):
+                                            N, T, cEdges):
                 yield r
             X.add(u)
 
