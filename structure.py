@@ -167,25 +167,26 @@ class Network:
             # Exclude the current vertex from the list of vertices which can be added to R
             Pit.remove(u)
             Dit = D.copy()
+            Xit = X.copy()
             for v in D:
                 # Remove vertices that have previously been used as a start vertex
                 if v in T: 
-                    X.add(v)
+                    Xit.add(v)
                 else:
-                    Pit = Pit.union({v})
+                    Pit.add(v)
                 # Modification suggested in paper
-                # if (u, v) in cEdges or (v, u) in cEdges:
-                #     # Add the current vertex to P
-                #     Pit = P.union({v})
-                #     # Remove the current vertex from the list of d-edges
-                #     Dit.remove(v)
+                if (u, v) in cEdges or (v, u) in cEdges:
+                    # Add the current vertex to P
+                    Pit.add(v)
+                    # Remove the current vertex from the list of d-edges
+                    Dit.remove(v)
             # Add the current vertex to R
             Rit = R.union({u})
             # Yield the maximal cliques from previous recursions
             for r in self.enumerateCcliques(Rit, 
                                             Pit.intersection(N[u]), 
                                             Dit.intersection(N[u]),
-                                            X.intersection(N[u]), 
+                                            Xit.intersection(N[u]), 
                                             N, T, cEdges):
                 yield r
             X.add(u)
