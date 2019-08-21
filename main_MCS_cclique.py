@@ -53,7 +53,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V,E = network.modularProduct(bridge2, bridge3)
+    V,E = network.modularProduct(bridge1, bridge2)
     print(len(E))
     print(len(V))
 
