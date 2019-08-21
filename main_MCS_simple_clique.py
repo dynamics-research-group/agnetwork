@@ -35,8 +35,8 @@ if __name__ == '__main__':
     # struct2.graph = {'a' : ['b'],
     #                  'b' : ['a','c'],
     #                  'c' : ['b']}
-    struct2.elements = {'a':[], 'b':[], 'c':[]}
-    struct2.joints = {'1': [['a','b']], '2': [['b', 'c']]}
+    struct2.elements = {'a':[], 'b':[], 'c':[], 'd':[]}
+    struct2.joints = {'1': [['a','b']], '2': [['b', 'c']], '3': [['c', 'd']]}
     struct2.addElements()
     struct2.addJoints()
     struct2.edgeList()
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     # print(modularproduct['edges'])
     # print(modularproduct['nodes'])
 
-    cEdges = network.findCedges(E, struct1.edgeList(), struct2.edgeList())
+    cEdges, dEdges = network.findCedges(E, struct1.edgeList(), struct2.edgeList())
     cEdgeGraph = nx.Graph()
     cEdgeGraph.add_edges_from(cEdges)
     cEdgeGraph.add_nodes_from(V)
@@ -66,21 +66,47 @@ if __name__ == '__main__':
     # print(network.maximalCliquesBK({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     # print(network.maximalCliquesBK({'A','B','C','D'}, {('A','B'),('B','C'),('A','C'),('C','D')}))
     
-    cliques = list(network.maximalCliquesCedges(V, E, cEdges))
+    cliques_BK = network.maximalCliquesBK(V, E)
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
 
-    print(cliques[:3])
+    # Remove duplicates in cliques
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    cliques_BK = [set(item) for item in set(frozenset(item) for item in cliques_BK)]
 
-    max_len = 0
-    for clique in cliques:
-        if len(clique) > max_len:
-            max_len = len(clique)
-            max_cliques = [clique]
-        elif len(clique) == max_len:
-            max_cliques.append(clique)
+    max_cliques_BK = maxCliques(cliques_BK)
+    max_cliques = maxCliques(cliques)
 
-    for i, clique in enumerate(max_cliques):
+    # Print cliques for BK algorithm
+    print("Largest cliques found using BK pivot")
+    for i, clique in enumerate(max_cliques_BK):
         print("Max clique", i+1, ":", clique)
 
-    # print(cliques[0])
-    # print(cliques[1])
-    # print(len(cliques))
+    print("\n###################################\n")
+
+    # Print cliques for c-clique algorithm
+    print("Largest cliques found using c-edges")
+    for i, clique in enumerate(max_cliques):
+        print("Max clique", i+1, ":", clique)
+    
+    print("\n###################################\n")
+
+    # Check that both max clique sets contain same subgraphs
+    matched = sum([int(sgBK == sg) for sgBK in max_cliques_BK for sg in max_cliques])
+    
+    print("{0} subgraphs matched out of {1}".format(matched, len(max_cliques_BK)))
+
+    print("\n###################################\n")
+
+    print("Number of cliques found using BK:", len(cliques_BK))
+    for i, clique in enumerate(cliques_BK):
+        print("Clique", i+1, ":", clique)
+
+    print("\n###################################\n")
+
+    print("Number of cliques found using c-cliques:", len(cliques))
+    for i, clique in enumerate(cliques):
+        print("Clique", i+1, ":", clique)
+
+
+    
+    

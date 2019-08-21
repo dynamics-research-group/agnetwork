@@ -53,7 +53,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V,E = network.modularProduct(bridge1,bridge2)
+    V,E = network.modularProduct(bridge2, bridge3)
     print(len(E))
     print(len(V))
 
@@ -78,24 +78,23 @@ if __name__ == '__main__':
     cliques_BK = network.maximalCliquesBK(V, E)
     cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
 
+    # Remove duplicates in cliques
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    cliques_BK = [set(item) for item in set(frozenset(item) for item in cliques_BK)]
+
     max_cliques_BK = maxCliques(cliques_BK)
     max_cliques = maxCliques(cliques)
-    
-    # Remove duplicates in max_cliques
-    max_cliques = [set(item) for item in set(frozenset(item) for item in max_cliques)]
 
-    # print(max_len)
-    # for i, clique in enumerate(max_clique):
-    #     print("Max clique", i+1, ":", clique)
-    # print(len(max_clique))
-
+    # Print cliques for BK algorithm
     print("Largest cliques found using BK pivot")
     for i, clique in enumerate(max_cliques_BK):
         print("Max clique", i+1, ":", clique)
 
     print("Number of cliques:", len(cliques_BK))
 
-    print("###################################")
+    print("\n###################################\n")
+
+    # Print cliques for c-clique algorithm
     print("Largest cliques found using c-edges")
     for i, clique in enumerate(max_cliques):
         print("Max clique", i+1, ":", clique)
@@ -103,11 +102,10 @@ if __name__ == '__main__':
     print("Number of cliques:", len(cliques))
     
     # Check that both max clique sets contain same subgraphs
-    matched = 0
-    for sgBK in max_cliques_BK:
-        for sg in max_cliques:
-            if sgBK == sg: matched += 1
+    matched = sum([int(sgBK == sg) for sgBK in max_cliques_BK for sg in max_cliques])
     
+    print("\n###################################\n")
+
     print("{0} subgraphs matched out of {1}".format(matched, len(max_cliques_BK)))
 
     """

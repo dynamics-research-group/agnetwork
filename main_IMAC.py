@@ -98,7 +98,9 @@ if __name__ == '__main__':
     print("Aeroplane nodes:", aeroplane1.nodes)
     
     # Generate the modular product graph
-    V, E = network.modularProduct(aeroplane1,turbine1)
+    V, E = network.modularProduct(turbine1,aeroplane1)
+    print("Modular product edges:", len(E))
+    print("Modular product vertices:", len(V))
     modularProduct = nx.Graph()
     modularProduct.add_nodes_from(V)
     modularProduct.add_edges_from(E)
