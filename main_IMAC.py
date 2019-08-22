@@ -88,7 +88,7 @@ if __name__ == '__main__':
                          '15': [['A3','N'],  [34.2, 64.58, 9.16],  'Lug'],
                          '16': [['A1','O'],  [34.2, 7.75,  1.75],  'Complex'],
                          '17': [['A2','P'],  [34.2, 29.67, 1.75],  'Complex'],
-                         '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
+                        #  '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
                          '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
@@ -98,20 +98,20 @@ if __name__ == '__main__':
     print("Aeroplane nodes:", aeroplane1.nodes)
     
     # Generate the modular product graph
-    V, E = network.modularProduct(turbine1,aeroplane1)
+    V, E = network.modularProduct(turbine1, aeroplane1)
     print("Modular product edges:", len(E))
     print("Modular product vertices:", len(V))
     modularProduct = nx.Graph()
     modularProduct.add_nodes_from(V)
     modularProduct.add_edges_from(E)
-    nx.draw(modularProduct, with_labels=True)
-    plt.show()
+    # nx.draw(modularProduct, with_labels=True)
+    # plt.show()
 
     # Time the networkX algorithm
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
     start = time.time()
-    cEdges, dEdges = network.findCedges(E, aeroplane1.edgeList(), turbine1.edgeList())
+    cEdges, dEdges = network.findCedges(E, turbine1.edgeList(), aeroplane1.edgeList())
     cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     end = time.time()
 

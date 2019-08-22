@@ -53,7 +53,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V,E = network.modularProduct(bridge1, bridge2)
+    V,E = network.modularProduct(bridge2, bridge3)
     print(len(E))
     print(len(V))
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cEdges, dEdges = network.findCedges(E, bridge1.edgeList(), bridge2.edgeList())
+    cEdges, dEdges = network.findCedges(E, bridge2.edgeList(), bridge3.edgeList())
 
     cEdgeGraph = nx.Graph()
     cEdgeGraph.add_edges_from(cEdges)
@@ -79,8 +79,8 @@ if __name__ == '__main__':
     cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
 
     # Remove duplicates in cliques
-    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    cliques_BK = [set(item) for item in set(frozenset(item) for item in cliques_BK)]
+    # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    # cliques_BK = [set(item) for item in set(frozenset(item) for item in cliques_BK)]
 
     max_cliques_BK = maxCliques(cliques_BK)
     max_cliques = maxCliques(cliques)

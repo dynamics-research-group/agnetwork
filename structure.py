@@ -134,9 +134,9 @@ class Network:
         return cedges, dedges 
 
     def maximalCliquesCedges(self, V, E, cEdges, dEdges):
-        T = set()
         # Create the neighbour set
         N = self.neighbourSet(V, E)
+        T = set()
         # Initialise c-clique finding algorithm for each vertex
         for u in V:
             # Set P, D, X and R as the empty set
@@ -152,44 +152,49 @@ class Network:
                 elif (u,v) in dEdges or (v,u) in dEdges: D.add(v)
             R = set({u})
             # Call c-clique finding algorithm
-            for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges):
-                yield r
+            for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges, dEdges): yield r
             T.add(u)
 
-    def enumerateCcliques(self, R, P, D, X, N, T, cEdges):
+    def enumerateCcliques(self, R, P, D, X, N, T, cEdges, dEdges):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
         # If there are no more vertices which can be added to R, report clique as maximal
         if P == set() and X == set():
             yield R
-        # Create copy of P to iterate over
-        Pit = P.copy()
-        for u in P:
-            # Exclude the current vertex from the list of vertices which can be added to R
-            Pit.remove(u)
-            Dit = D.copy()
-            Xit = X.copy()
-            for v in D:
-                # Remove vertices that have previously been used as a start vertex
-                if v in T: 
-                    Xit.add(v)
-                else:
-                    Pit.add(v)
-                # Modification suggested in paper
-                if (u, v) in cEdges or (v, u) in cEdges:
-                    # Add the current vertex to P
-                    Pit.add(v)
-                    # Remove the current vertex from the list of d-edges
-                    Dit.remove(v)
-            # Add the current vertex to R
-            Rit = R.union({u})
-            # Yield the maximal cliques from previous recursions
-            for r in self.enumerateCcliques(Rit, 
-                                            Pit.intersection(N[u]), 
-                                            Dit.intersection(N[u]),
-                                            Xit.intersection(N[u]), 
-                                            N, T, cEdges):
-                yield r
-            X.add(u)
+        else:
+            # Create copy of P to iterate over
+            Pit = P.copy()
+            for u in P:
+                if u not in T:
+                    # Exclude the current vertex from the list of vertices which can be added to R
+                    Pit.remove(u)
+                    Dit = D.copy()
+                    Xit = X.copy()
+                    for v in D:
+                        # Remove vertices that have previously been used as a start vertex
+                        if v in T: 
+                            if v in Pit:
+                                Pit.remove(v)
+                            Xit.add(v)
+                        # Modification suggested in paper
+                        if (u, v) in cEdges or (v, u) in cEdges:
+                            # Add the current vertex to P
+                            Pit.add(v)
+                            # Remove the current vertex from the list of d-edges
+                            Dit.remove(v)
+                        elif (u,v) in dEdges or (v,u) in dEdges: D.add(v)
+                    # Add the current vertex to R
+                    Rit = R.union({u})
+                    # Yield the maximal cliques from previous recursions
+                    for r in self.enumerateCcliques(Rit, 
+                                                    Pit.intersection(N[u]), 
+                                                    Dit.intersection(N[u]),
+                                                    Xit.intersection(N[u]), 
+                                                    N, T, cEdges, dEdges):
+                        yield r
+                    X.add(u)
+                elif u in T:
+                    Pit.remove(u)
+                    X.add
 
     def inexactGraphComparison(self, graph1, graph2):
         # Create possible pairs
