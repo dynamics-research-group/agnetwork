@@ -67,6 +67,7 @@ if __name__ == '__main__':
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
     cEdges, dEdges = network.findCedges(E, bridge2.edgeList(), bridge3.edgeList())
+    print("Number of c-edges:",len(cEdges),"and d-edges:", len(dEdges))
 
     cEdgeGraph = nx.Graph()
     cEdgeGraph.add_edges_from(cEdges)
@@ -100,6 +101,9 @@ if __name__ == '__main__':
         print("Max clique", i+1, ":", clique)
 
     print("Number of cliques:", len(cliques))
+
+    cliques1 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    cliques2 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     
     # Check that both max clique sets contain same subgraphs
     matched = sum([int(sgBK == sg) for sgBK in max_cliques_BK for sg in max_cliques])
@@ -107,6 +111,16 @@ if __name__ == '__main__':
     print("\n###################################\n")
 
     print("{0} subgraphs matched out of {1}".format(matched, len(max_cliques_BK)))
+
+    for clique1 in cliques1:
+        unmatch_cliques = []
+        match =  False
+        for clique2 in cliques2:
+            if set(clique1) == set(clique2): match = True
+        if match == False:
+            unmatch_cliques.append(clique1)
+
+    print(unmatch_cliques)
 
     """
     bridge1Graph = nx.Graph()
