@@ -53,7 +53,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V,E = network.modularProduct(bridge2, bridge3)
+    V,E = network.modularProduct(bridge1, bridge2)
     print(len(E))
     print(len(V))
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cEdges, dEdges = network.findCedges(E, bridge2.edgeList(), bridge3.edgeList())
+    cEdges, dEdges = network.findCedges(E, bridge1.edgeList(), bridge2.edgeList())
     print("Number of c-edges:",len(cEdges),"and d-edges:", len(dEdges))
 
     cEdgeGraph = nx.Graph()
@@ -114,13 +114,16 @@ if __name__ == '__main__':
 
     for clique1 in cliques1:
         unmatch_cliques = []
-        match =  False
+        unmatch = False
         for clique2 in cliques2:
-            if set(clique1) == set(clique2): match = True
-        if match == False:
+            if set(clique1) == set(clique2): unmatch = True
+        if unmatch == True:
             unmatch_cliques.append(clique1)
-
-    print(unmatch_cliques)
+            
+    # Print unmatched cliques for c-clique algorithm
+    print("Unmatched cliques found using c-edges")
+    for i, clique in enumerate(unmatch_cliques):
+        print("Unmatched clique", i+1, ":", clique)
 
     """
     bridge1Graph = nx.Graph()

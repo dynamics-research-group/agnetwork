@@ -154,12 +154,13 @@ class Network:
             # Call c-clique finding algorithm
             for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges): yield r
             T.add(u)
+            print(u)
+
 
     def enumerateCcliques(self, R, P, D, X, N, T, cEdges):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
         # If there are no more vertices which can be added to R, report clique as maximal
-        if P == set():
-            if X == set():
+        if P == set() and X == set():
             yield R
         # Create copy of P to iterate over
         else:
@@ -170,7 +171,6 @@ class Network:
                 Dit = D.copy()
                 Xit = X.copy()
                 for v in D:
-                    
                     # Modification suggested in paper
                     if (u, v) in cEdges or (v, u) in cEdges:
                         # Remove vertices that have previously been used as a start vertex
