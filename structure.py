@@ -154,7 +154,6 @@ class Network:
             # Call c-clique finding algorithm
             for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges): yield r
             T.add(u)
-            print(u)
 
 
     def enumerateCcliques(self, R, P, D, X, N, T, cEdges):

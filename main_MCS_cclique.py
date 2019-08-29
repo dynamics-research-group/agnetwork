@@ -53,7 +53,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V,E = network.modularProduct(bridge1, bridge2)
+    V,E = network.modularProduct(bridge2, bridge3)
     print(len(E))
     print(len(V))
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cEdges, dEdges = network.findCedges(E, bridge1.edgeList(), bridge2.edgeList())
+    cEdges, dEdges = network.findCedges(E, bridge2.edgeList(), bridge3.edgeList())
     print("Number of c-edges:",len(cEdges),"and d-edges:", len(dEdges))
 
     cEdgeGraph = nx.Graph()
@@ -102,7 +102,9 @@ if __name__ == '__main__':
 
     print("Number of cliques:", len(cliques))
 
+    print("Cliques1 starting nodes:")
     cliques1 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print("Cliques2 starting nodes:")
     cliques2 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     
     # Check that both max clique sets contain same subgraphs
