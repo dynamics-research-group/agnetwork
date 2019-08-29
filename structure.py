@@ -160,7 +160,7 @@ class Network:
         # If there are no more vertices which can be added to R, report clique as maximal
         if P == set():
             if X == set():
-                yield R
+            yield R
         # Create copy of P to iterate over
         else:
             Pit = P.copy()
@@ -170,14 +170,15 @@ class Network:
                 Dit = D.copy()
                 Xit = X.copy()
                 for v in D:
+                    
                     # Modification suggested in paper
                     if (u, v) in cEdges or (v, u) in cEdges:
                         # Remove vertices that have previously been used as a start vertex
-                        # if v in T: 
-                        #     Xit.add(v)
-                        # else:
+                        if v in T: 
+                            Xit.add(v)
+                        else:
                             # Add the current vertex to P
-                        Pit.add(v)
+                            Pit.add(v)
                         # Remove the current vertex from the list of d-edges
                         Dit.remove(v)
                 # Add the current vertex to R
