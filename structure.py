@@ -134,11 +134,12 @@ class Network:
         return cedges, dedges 
 
     def maximalCliquesCedges(self, V, E, cEdges, dEdges):
+        cliques = list()
         # Create the neighbour set
         N = self.neighbourSet(V, E)
         T = set()
         # Initialise c-clique finding algorithm for each vertex
-        for u in V:
+        for u in sorted(list(V)):
             # Set P, D, X and R as the empty set
             P = set()
             D = set()
@@ -146,14 +147,20 @@ class Network:
             # Initilise P with list of neighbouring vertices connected via c-edges
             # and D with list of neighbouring vertics connected via d-edges
             for v in N[u]:
+                # Check if vertices connected via a c-edges
                 if (u,v) in cEdges or (v,u) in cEdges:
+                    # Has vertex previously been used as a starting vertex?
                     if v in T: X.add(v)
                     else: P.add(v)
-                elif (u,v) in dEdges or (v,u) in dEdges: D.add(v)
+                # Check if vertices connected via d-edge    
+                if (u,v) in dEdges or (v,u) in dEdges: 
+                    if v in T: X.add(v)
+                    else: D.add(v)
             R = set({u})
             # Call c-clique finding algorithm
-            for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges): yield r
+            [cliques.append(r) for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges)]
             T.add(u)
+        return cliques
 
 
     def enumerateCcliques(self, R, P, D, X, N, T, cEdges):
@@ -167,17 +174,14 @@ class Network:
             for u in P:
                 # Exclude the current vertex from the list of vertices which can be added to R
                 Pit.remove(u)
+                # Create copies 
                 Dit = D.copy()
                 Xit = X.copy()
                 for v in D:
                     # Modification suggested in paper
                     if (u, v) in cEdges or (v, u) in cEdges:
                         # Remove vertices that have previously been used as a start vertex
-                        if v in T: 
-                            Xit.add(v)
-                        else:
-                            # Add the current vertex to P
-                            Pit.add(v)
+                        Pit.add(v)
                         # Remove the current vertex from the list of d-edges
                         Dit.remove(v)
                 # Add the current vertex to R

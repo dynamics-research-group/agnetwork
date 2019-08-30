@@ -53,9 +53,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V,E = network.modularProduct(bridge2, bridge3)
-    print(len(E))
-    print(len(V))
+    V, E = network.modularProduct(bridge2, bridge3)
 
     modularProductGraph = nx.Graph()
     modularProductGraph.add_edges_from(E)
@@ -67,7 +65,12 @@ if __name__ == '__main__':
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
     cEdges, dEdges = network.findCedges(E, bridge2.edgeList(), bridge3.edgeList())
-    print("Number of c-edges:",len(cEdges),"and d-edges:", len(dEdges))
+
+    # Print information about the inputs to the cliques algorithm
+    print("Number of modular product edges:", len(E), "and vertices:", len(V))
+    print("Number of c-edges:", len(cEdges),"and d-edges:", len(dEdges))
+    
+    print("\n###################################\n")
 
     cEdgeGraph = nx.Graph()
     cEdgeGraph.add_edges_from(cEdges)
@@ -82,6 +85,8 @@ if __name__ == '__main__':
     # Remove duplicates in cliques
     # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
     # cliques_BK = [set(item) for item in set(frozenset(item) for item in cliques_BK)]
+
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
 
     max_cliques_BK = maxCliques(cliques_BK)
     max_cliques = maxCliques(cliques)
@@ -102,9 +107,11 @@ if __name__ == '__main__':
 
     print("Number of cliques:", len(cliques))
 
-    print("Cliques1 starting nodes:")
+    # cliques_no_repeat = [set(item) for item in set(frozenset(item) for item in cliques)]
+    #
+    # print("Number of repeated cliques:", len(cliques) - len(cliques_no_repeat))
+
     cliques1 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
-    print("Cliques2 starting nodes:")
     cliques2 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     
     # Check that both max clique sets contain same subgraphs
@@ -113,38 +120,9 @@ if __name__ == '__main__':
     print("\n###################################\n")
 
     print("{0} subgraphs matched out of {1}".format(matched, len(max_cliques_BK)))
-
-    for clique1 in cliques1:
-        unmatch_cliques = []
-        unmatch = False
-        for clique2 in cliques2:
-            if set(clique1) == set(clique2): unmatch = True
-        if unmatch == True:
-            unmatch_cliques.append(clique1)
             
     # Print unmatched cliques for c-clique algorithm
-    print("Unmatched cliques found using c-edges")
-    for i, clique in enumerate(unmatch_cliques):
-        print("Unmatched clique", i+1, ":", clique)
+    print("Cliques 1 found:", len(cliques1))
+    print("Cliques 2 found:", len(cliques2))
 
-    """
-    bridge1Graph = nx.Graph()
-    bridge1Graph.add_nodes_from(bridge1.nodeList())
-    bridge1Graph.add_edges_from(bridge1.edgeList())
-
-    bridge2Graph = nx.Graph()
-    bridge2Graph.add_nodes_from(bridge2.nodeList())
-    bridge2Graph.add_edges_from(bridge2.edgeList())
-    
-    bridge3Graph = nx.Graph()
-    bridge3Graph.add_nodes_from(bridge3.nodeList())
-    bridge3Graph.add_edges_from(bridge3.edgeList())
-
-    plt.subplot(131)
-    nx.draw(bridge1Graph, with_labels=True)
-    plt.subplot(132)
-    nx.draw(bridge2Graph, with_labels=True)
-    plt.subplot(133)
-    nx.draw(bridge3Graph, with_labels=True)
-    plt.show()
-    """
+    #print(cliques)
