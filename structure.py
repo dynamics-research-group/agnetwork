@@ -28,7 +28,7 @@ class Network:
         for U in modprodV:
             # Compare with every other vertex in the modular product
             for V in modprodV:
-                # Exclude any vertices share the same point
+                # Exclude any vertices which share the same point
                 if V[0] != U[0] and V[1] != U[1]:
                     # Exclude any pair of vertices that are already contained in an edge
                     if (U,V) not in modprodE and (V,U) not in modprodE:
@@ -116,7 +116,7 @@ class Network:
         # Initialise the set of c-edges and d-edges
         cedges = set()
         dedges = set()
-        # For each edge in the modular prodcut, form the edge or vertex pairs to test
+        # For each edge in the modular product, form the edge or vertex pairs to test
         for edge in E:
             # Create the edge or vertex pair in G1
             u1 = edge[0][0]
@@ -140,6 +140,7 @@ class Network:
         T = set()
         # Initialise c-clique finding algorithm for each vertex
         for u in sorted(list(V)):
+        # for u in V:
             # Set P, D, X and R as the empty set
             P = set()
             D = set()
@@ -148,14 +149,12 @@ class Network:
             # and D with list of neighbouring vertics connected via d-edges
             for v in N[u]:
                 # Check if vertices connected via a c-edges
-                if (u,v) in cEdges or (v,u) in cEdges:
+                if ((u,v) in cEdges) or ((v,u) in cEdges):
                     # Has vertex previously been used as a starting vertex?
                     if v in T: X.add(v)
                     else: P.add(v)
                 # Check if vertices connected via d-edge    
-                if (u,v) in dEdges or (v,u) in dEdges: 
-                    if v in T: X.add(v)
-                    else: D.add(v)
+                elif ((u,v) in dEdges) or ((v,u) in dEdges): D.add(v)
             R = set({u})
             # Call c-clique finding algorithm
             [cliques.append(r) for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges)]
@@ -179,11 +178,12 @@ class Network:
                 Xit = X.copy()
                 for v in D:
                     # Modification suggested in paper
-                    if (u, v) in cEdges or (v, u) in cEdges:
-                        # Remove vertices that have previously been used as a start vertex
-                        Pit.add(v)
+                    if ((u,v) in cEdges) or ((v,u) in cEdges):
+                        if v in T: X.add(v)
+                        else: Pit.add(v)
                         # Remove the current vertex from the list of d-edges
                         Dit.remove(v)
+                D = Dit
                 # Add the current vertex to R
                 Rit = R.union({u})
                 # Yield the maximal cliques from previous recursions
@@ -191,10 +191,9 @@ class Network:
                                                 Pit.intersection(N[u]), 
                                                 Dit.intersection(N[u]),
                                                 Xit.intersection(N[u]), 
-                                                N, T, cEdges):
-                    yield r
+                                                N, T, cEdges): yield r
                 X.add(u)
-
+            
     def inexactGraphComparison(self, graph1, graph2):
         # Create possible pairs
         pass

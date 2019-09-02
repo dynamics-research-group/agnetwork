@@ -110,33 +110,65 @@ if __name__ == '__main__':
     # Time the networkX algorithm
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
+
+    E1 = turbine1.edgeList()
+    E2 = aeroplane1.edgeList()
+    
+    cEdges, dEdges = network.findCedges(E, E1, E2)
+    print("Number of c-edges:", len(cEdges))
+    print("Number of d-edges:", len(dEdges))
+
+    N = network.neighbourSet(V, E)
+    total = sum([len(N[v]) for v in N])
+    print("Size of neighbour set:", total)
+
+    cEdgeGraph = nx.Graph()
+    cEdgeGraph.add_edges_from(cEdges)
+    cEdgeGraph.add_nodes_from(V)
+
+    nx.draw(cEdgeGraph, with_labels=True)
+    plt.show()
+
     start = time.time()
-    cEdges, dEdges = network.findCedges(E, turbine1.edgeList(), aeroplane1.edgeList())
     cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    max_cliques = maxCliques(cliques)
     end = time.time()
 
-    # cliquesBK = network.maximalCliquesBK(V, E)
+    # Check that all are adjacent in the graphs
+    c_cliques = []
+    for clique in max_cliques:
+        c_vertices = 0
+        for v1 in clique:
+            matched = False
+            for v2 in clique:
+                if v1 != v2:
+                    if ({v1[0], v2[0]} in E1) or ({v2[0],v1[0]} in E1):
+                        if ({v1[1], v2[1]} in E2) or ({v2[1],v1[1]} in E2):
+                            matched = True
+            if matched == True:
+                c_vertices += 1
+        if c_vertices == len(clique):
+            c_cliques.append(clique)
     
-    max_cliques = maxCliques(cliques)
-    # Remove duplicates in max_cliques
-    max_cliques = [set(item) for item in set(frozenset(item) for item in max_cliques)]
+    print
 
-    for i, clique in enumerate(max_cliques):
+    # BK cliques
+    """
+    print("Largest cliques found using BK pivot")
+    for i, clique in enumerate(max_cliques_BK):
+        print("Max clique", i+1, ":", clique)
+
+    print("Number of cliques:", len(cliques_BK))
+
+    print("\n###################################\n")
+    """
+    # Cliques found using c-cliques
+    for i, clique in enumerate(c_cliques):
         print("Max clique", i+1, ":", clique)
 
     print("Time to find:", end - start)
     print("Number of cliques:", len(cliques))
-
-    # cliques = network.maximalCliquesBK(V,E)
-    # # Find the largest cliques
-    # max_len = 0
-    # for clique in cliques:
-    #     if len(clique) > max_len:
-    #         max_len = len(clique)
-    #         max_cliques = [clique]
-    #     elif len(clique) == max_len:
-    #         max_cliques.append(clique)
-    # print(max_cliques[0])
 
     # Initiliase nx.Graph object
     turbine1Graph = nx.Graph()
