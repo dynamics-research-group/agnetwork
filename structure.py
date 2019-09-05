@@ -139,8 +139,8 @@ class Network:
         N = self.neighbourSet(V, E)
         T = set()
         # Initialise c-clique finding algorithm for each vertex
-        for u in sorted(list(V)):
-        # for u in V:
+        # for u in sorted(list(V)):
+        for u in V:
             # Set P, D, X and R as the empty set
             P = set()
             D = set()

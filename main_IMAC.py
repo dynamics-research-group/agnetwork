@@ -19,6 +19,26 @@ def maxCliques(cliques):
             max_cliques.append(clique)
     return max_cliques
 
+def check_adjacency(cliques, cEdges):
+    """Check that all are adjacent in the graphs"""
+    c_cliques = []
+    for clique in cliques:
+        vi = list(clique)[0]
+        v_seen = set()
+        connected = is_connected(clique, v_seen, vi, cEdges)
+        if connected == True:
+            c_cliques.append(clique)
+    return c_cliques
+
+def is_connected(clique, v_seen, vi, cEdges):
+    v_seen.add(vi)
+    if len(v_seen) == len(clique): return True
+    for v2 in clique:
+        if v2 not in v_seen:
+            if ((vi, v2) in cEdges) or ((v2, vi) in cEdges):
+                    return is_connected(clique, v_seen, v2, cEdges)
+    return False
+
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
     separate structures and performs a similarity
@@ -88,7 +108,7 @@ if __name__ == '__main__':
                          '15': [['A3','N'],  [34.2, 64.58, 9.16],  'Lug'],
                          '16': [['A1','O'],  [34.2, 7.75,  1.75],  'Complex'],
                          '17': [['A2','P'],  [34.2, 29.67, 1.75],  'Complex'],
-                        #  '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
+                         '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
                          '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
@@ -132,26 +152,9 @@ if __name__ == '__main__':
     start = time.time()
     cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    max_cliques = maxCliques(cliques)
+    c_cliques = check_adjacency(cliques, cEdges)
+    max_cliques = maxCliques(c_cliques)
     end = time.time()
-
-    # Check that all are adjacent in the graphs
-    c_cliques = []
-    for clique in max_cliques:
-        c_vertices = 0
-        for v1 in clique:
-            matched = False
-            for v2 in clique:
-                if v1 != v2:
-                    if ({v1[0], v2[0]} in E1) or ({v2[0],v1[0]} in E1):
-                        if ({v1[1], v2[1]} in E2) or ({v2[1],v1[1]} in E2):
-                            matched = True
-            if matched == True:
-                c_vertices += 1
-        if c_vertices == len(clique):
-            c_cliques.append(clique)
-    
-    print
 
     # BK cliques
     """
@@ -164,7 +167,7 @@ if __name__ == '__main__':
     print("\n###################################\n")
     """
     # Cliques found using c-cliques
-    for i, clique in enumerate(c_cliques):
+    for i, clique in enumerate(max_cliques):
         print("Max clique", i+1, ":", clique)
 
     print("Time to find:", end - start)

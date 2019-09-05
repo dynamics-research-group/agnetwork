@@ -17,6 +17,26 @@ def maxCliques(cliques):
             max_cliques.append(clique)
     return max_cliques
 
+def check_adjacency(cliques, cEdges):
+    """Check that all are adjacent in the graphs"""
+    c_cliques = []
+    for clique in cliques:
+        vi = list(clique)[0]
+        v_seen = set()
+        connected = is_connected(clique, v_seen, vi, cEdges)
+        if connected == True:
+            c_cliques.append(clique)
+    return c_cliques
+
+def is_connected(clique, v_seen, vi, cEdges):
+    v_seen.add(vi)
+    if len(v_seen) == len(clique): return True
+    for v2 in clique:
+        if v2 not in v_seen:
+            if ((vi, v2) in cEdges) or ((v2, vi) in cEdges):
+                    return is_connected(clique, v_seen, v2, cEdges)
+    return False
+
 if __name__ == '__main__':
     network = Network()
 
@@ -106,6 +126,11 @@ if __name__ == '__main__':
     print("Number of cliques found using c-cliques:", len(cliques))
     for i, clique in enumerate(cliques):
         print("Clique", i+1, ":", clique)
+
+    connected = check_adjacency(cliques, cEdges)
+
+    for i, clique in enumerate(connected):
+        print("Connected", i+1, ":", clique)
 
 
     
