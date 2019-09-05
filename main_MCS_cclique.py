@@ -16,6 +16,28 @@ def maxCliques(cliques):
             max_cliques.append(clique)
     return max_cliques
 
+def check_adjacency(cliques, E1, E2):
+    """Check that all are adjacent in the graphs"""
+    c_cliques = []
+    for clique in cliques:
+        vi = list(clique)[0]
+        v_seen = set()
+        connected = is_connected(clique, v_seen, vi, E1, E2)
+        if connected == True:
+            c_cliques.append(clique)
+    return c_cliques
+
+def is_connected(clique, v_seen, vi, E1, E2):
+    v_seen.add(vi)
+    if len(v_seen) == len(clique): return True
+    for v2 in clique:
+        for vi in v_seen:
+            if v2 not in v_seen:
+                if ({vi[0], v2[0]} in E1) or ({v2[0], vi[0]} in E1):
+                    if ({vi[1], v2[1]} in E2) or ({v2[1], vi[1]} in E2):
+                        return is_connected(clique, v_seen, v2, E1, E2)
+    return False
+
 if __name__ == '__main__':
     network = Network()
     
@@ -64,7 +86,9 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
-    cEdges, dEdges = network.findCedges(E, bridge2.edgeList(), bridge3.edgeList())
+    E1 = bridge2.edgeList()
+    E2 = bridge3.edgeList()
+    cEdges, dEdges = network.findCedges(E, E1, E2)
 
     # Print information about the inputs to the cliques algorithm
     print("Number of modular product edges:", len(E), "and vertices:", len(V))
@@ -126,3 +150,7 @@ if __name__ == '__main__':
     print("Cliques 2 found:", len(cliques2))
 
     #print(cliques)
+
+    c_cliques = check_adjacency(max_cliques, E1, E2)
+    for i, clique in enumerate(c_cliques):
+        print("Connected cliques", i+1, ":", clique)

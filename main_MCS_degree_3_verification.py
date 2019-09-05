@@ -126,12 +126,3 @@ if __name__ == '__main__':
     print("Number of cliques found using c-cliques:", len(cliques))
     for i, clique in enumerate(cliques):
         print("Clique", i+1, ":", clique)
-
-    connected = check_adjacency(cliques, cEdges)
-
-    for i, clique in enumerate(connected):
-        print("Connected", i+1, ":", clique)
-
-
-    
-    
