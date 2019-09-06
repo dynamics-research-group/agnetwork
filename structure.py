@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class Network:
     """The network comprises of a set of structures"""
     # Creat list of structures
@@ -66,13 +68,13 @@ class Network:
         # Create copy of P to iterate over
         Pit = P.copy()
         for u in P:
+            # Add the current vertex to R
+            #Rit = R.union({u})
+            # Yield the maximal cliques from previous recursions
+            for r in self.BronKerbosch(R.union({u}), Pit.intersection(N[u]), X.intersection(N[u]), N):
+                yield r
             # Exclude the current vertex from the list of vertices which can be added to R
             Pit.remove(u)
-            # Add the current vertex to R
-            Rit = R.union({u})
-            # Yield the maximal cliques from previous recursions
-            for r in self.BronKerbosch(Rit, Pit.intersection(N[u]), X.intersection(N[u]), N):
-                yield r
             X.add(u)
             
     
@@ -102,6 +104,7 @@ class Network:
 
     def maximalCliquesBK(self, V, E):
         """Initialises Bron-Kerbosch clique finding algorithms"""
+        cliques = []
         # Initialise other variables required for Bron-Kerbosch
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
@@ -109,8 +112,11 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        r = self.BronKerbosch(R, P, X, N)
-        return list(r)
+        for v in self.degeneracy_ordering(N):
+            [cliques.append(r) for r in self.BronKerbosch(R.union({v}), P.intersection(N[v]), X.intersection(N[v]), N)]
+            P.remove(v)
+            X.add(v)
+        return list(cliques)
 
     def findCedges(self, E, E1, E2):
         """Find the c-edges in a product graph"""
@@ -141,7 +147,7 @@ class Network:
         T = set()
         # Initialise c-clique finding algorithm for each vertex
         # for u in sorted(list(V)):
-        for u in V:
+        for u in self.degeneracy_ordering(N):
             # Set P, D, X and R as the empty set
             P = set()
             D = set()
@@ -197,6 +203,41 @@ class Network:
     def inexactGraphComparison(self, graph1, graph2):
         # Create possible pairs
         pass
+
+    def degeneracy_ordering(self, graph):
+        ordering = []
+        ordering_set = set()
+        degrees = defaultdict(lambda : 0)
+        degen = defaultdict(list)
+        max_deg = -1
+        for v in graph:
+            deg = len(graph[v])
+            degen[deg].append(v)
+            degrees[v] = deg
+            if deg > max_deg:
+                max_deg = deg
+
+        while True:
+            i = 0
+            while i <= max_deg:
+                if len(degen[i]) != 0:
+                    break
+                i += 1
+            else:
+                break
+            v = degen[i].pop()
+            ordering.append(v)
+            ordering_set.add(v)
+            for w in graph[v]:
+                if w not in ordering_set:
+                    deg = degrees[w]
+                    degen[deg].remove(w)
+                    if deg > 0:
+                        degrees[w] -= 1
+                        degen[deg - 1].append(w)
+
+        ordering.reverse()
+        return ordering
 
 class Structure(Network):
     # Create list of elements

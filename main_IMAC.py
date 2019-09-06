@@ -69,7 +69,7 @@ if __name__ == '__main__':
     the IMAC paper.'''
     network = Network()
     # Define the graph for a turbine
-    turbine1 = Structure('Turbine')
+    turbine1 = Structure('Turbine1')
     turbine1.elements = {'A': ['FRP',      'Aerofoil'], 
                          'B': ['FRP',      'Aerofoil'],
                          'C': ['FRP',      'Aerofoil'],
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     turbine1.addJoints()
     turbine1.edgeList()
 
-    # Define the graph for an aeroplane
-    aeroplane1 = Structure('Aeroplane')
+    # Define the graph for an 747
+    aeroplane1 = Structure('Aeroplane1')
     aeroplane1.elements = {'A1': ['FRP',      'Truncated cone'],
                            'A2': ['FRP',      'Cylindrical beam'],
                            'A3': ['FRP',      'Cone'],
@@ -138,6 +138,51 @@ if __name__ == '__main__':
     aeroplane1.addJoints()
     aeroplane1.edgeList()
 
+    # Define the graph for a Cessna 172
+    aeroplane2 = Structure('Aeroplane1')
+    aeroplane2.elements = {'A1': ['FRP',      'Truncated cone'],
+                           'A2': ['FRP',      'Cylindrical beam'],
+                           'A3': ['FRP',      'Cone'],
+                           'B' : ['FRP',      'Aerofoil'], 
+                           'C' : ['FRP',      'Complex'],
+                           'D' : ['Assembly', 'Cylinder'],
+                           'E' : ['FRP',      'Complex'],
+                           'F' : ['Assembly', 'Cylinder'],
+                           'G' : ['FRP',      'Aerofoil'],
+                           'H' : ['FRP',      'Complex'],
+                           'I' : ['Assembly', 'Cylinder'],
+                           'J' : ['FRP',      'Complex'],
+                           'K' : ['Assembly', 'Cylinder'],
+                           'L' : ['FRP',      'Aerofoil'], 
+                           'M' : ['FRP',      'Aerofoil'],
+                           'N' : ['FRP',      'Aerofoil'],
+                           'O' : ['Assembly', 'Assembly'],
+                           'P' : ['Assembly', 'Assembly'],
+                           '1' : ['Ground']}
+
+    aeroplane2.joints = {'1':  [['A1','A2'], [34.2, 14.68, 5.165], 'Perfect'],
+                         '2':  [['A2','A3'], [34.2, 60.96, 5.165], 'Perfect'],
+                         '3':  [['A2','B'],  [32.2, 29.79, 2.89],  'Lug'],
+                         '4':  [['B', 'C'],  [13.2, 42.67, 4.74],  'Complex'],
+                         '5':  [['C', 'D'],  [13.2, 40.17, 4.74],  'Complex'],
+                         '6':  [['B', 'E'],  [23.2, 30.79, 3.57],  'Complex'],
+                         '7':  [['E', 'F'],  [23.2, 28.29, 3.57],  'Complex'],
+                         '8':  [['A2','G'],  [36.2, 29.79, 2.89],  'Lug'],
+                         '9':  [['G', 'H'],  [45.2, 30.79, 3.57],  'Complex'],
+                         '10': [['H', 'I'],  [45.2, 28.29, 3.57],  'Complex'],
+                         '11': [['G', 'J'],  [55.2, 42.67, 4.74],  'Complex'],
+                         '12': [['J', 'K'],  [55.2, 40.17, 4.74],  'Complex'],
+                         '13': [['A3','L'],  [33.2, 68.58, 7.55],  'Lug'],
+                         '14': [['A3','M'],  [35.2, 68.58, 7.55],  'Lug'],
+                         '15': [['A3','N'],  [34.2, 64.58, 9.16],  'Lug'],
+                         '16': [['A1','O'],  [34.2, 7.75,  1.75],  'Complex'],
+                         '17': [['A2','P'],  [34.2, 29.67, 1.75],  'Complex'],
+                         '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
+                         '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
+    aeroplane2.addElements()
+    aeroplane2.addJoints()
+    aeroplane2.edgeList()
+
     print("Turbine nodes:", turbine1.nodes)
     print("Aeroplane nodes:", aeroplane1.nodes)
     
@@ -175,20 +220,20 @@ if __name__ == '__main__':
 
     # c-clique algorithm (broken)
 
-    # start = time.time()
-    # cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
-    # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    # c_cliques = check_adjacency(cliques, cEdges)
-    # max_cliques = maxCliques(cliques)
-    # end = time.time()
+    start = time.time()
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    c_cliques = check_adjacency(cliques, cEdges)
+    max_cliques = maxCliques(cliques)
+    end = time.time()
 
     # BK cliques (also broken)
 
-    start = time.time()
-    cliques_BK = network.maximalCliquesBK(V, E)
-    c_cliques = check_adjacency(cliques_BK, cEdges)
-    max_cliques = maxCliques(c_cliques)
-    end = time.time()
+    # start = time.time()
+    # cliques_BK = network.maximalCliquesBK(V, E)
+    # c_cliques = check_adjacency(cliques_BK, cEdges)
+    # max_cliques = maxCliques(c_cliques)
+    # end = time.time()
 
     """
     print("Largest cliques found using BK pivot")

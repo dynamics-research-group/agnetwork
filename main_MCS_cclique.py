@@ -144,10 +144,8 @@ if __name__ == '__main__':
     print("\n###################################\n")
 
     print("{0} subgraphs matched out of {1}".format(matched, len(max_cliques_BK)))
-            
-    # Print unmatched cliques for c-clique algorithm
-    print("Cliques 1 found:", len(cliques1))
-    print("Cliques 2 found:", len(cliques2))
+
+    print("\n###################################\n")
 
     #print(cliques)
 
