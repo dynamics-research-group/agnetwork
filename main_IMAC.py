@@ -19,26 +19,47 @@ def maxCliques(cliques):
             max_cliques.append(clique)
     return max_cliques
 
-def check_adjacency(cliques, E1, E2):
+# def check_adjacency(cliques, E1, E2):
+#     """Check that all are adjacent in the graphs"""
+#     c_cliques = []
+#     for clique in cliques:
+#         vi = list(clique)[0]
+#         v_seen = set()
+#         connected = is_connected(clique, v_seen, vi, E1, E2)
+#         if connected == True:
+#             c_cliques.append(clique)
+#     return c_cliques
+
+# def is_connected(clique, v_seen, vi, E1, E2):
+#     v_seen.add(vi)
+#     if len(v_seen) == len(clique): return True
+#     for v2 in clique:
+#         for vi in v_seen:
+#             if v2 not in v_seen:
+#                 if ({vi[0], v2[0]} in E1) or ({v2[0], vi[0]} in E1):
+#                     if ({vi[1], v2[1]} in E2) or ({v2[1], vi[1]} in E2):
+#                         return is_connected(clique, v_seen, v2, E1, E2)
+#     return False
+
+def check_adjacency(cliques, cEdges):
     """Check that all are adjacent in the graphs"""
     c_cliques = []
     for clique in cliques:
         vi = list(clique)[0]
         v_seen = set()
-        connected = is_connected(clique, v_seen, vi, E1, E2)
+        connected = is_connected(clique, v_seen, vi, cEdges)
         if connected == True:
             c_cliques.append(clique)
     return c_cliques
 
-def is_connected(clique, v_seen, vi, E1, E2):
+def is_connected(clique, v_seen, vi, cEdges):
     v_seen.add(vi)
     if len(v_seen) == len(clique): return True
     for v2 in clique:
         for vi in v_seen:
             if v2 not in v_seen:
-                if ({vi[0], v2[0]} in E1) or ({v2[0], vi[0]} in E1):
-                    if ({vi[1], v2[1]} in E2) or ({v2[1], vi[1]} in E2):
-                        return is_connected(clique, v_seen, v2, E1, E2)
+                if ((vi, v2) in cEdges) or ((v2,vi) in cEdges):
+                    return is_connected(clique, v_seen, v2, cEdges)
     return False
 
 if __name__ == '__main__':
@@ -92,8 +113,8 @@ if __name__ == '__main__':
                            'N' : ['FRP',      'Aerofoil'],
                            'O' : ['Assembly', 'Assembly'],
                            'P' : ['Assembly', 'Assembly'],
-                           '1' : ['Ground'],
-                           '2' : ['Ground']}
+                           '1' : ['Ground']}
+
     aeroplane1.joints = {'1':  [['A1','A2'], [34.2, 14.68, 5.165], 'Perfect'],
                          '2':  [['A2','A3'], [34.2, 60.96, 5.165], 'Perfect'],
                          '3':  [['A2','B'],  [32.2, 29.79, 2.89],  'Lug'],
@@ -112,7 +133,7 @@ if __name__ == '__main__':
                          '16': [['A1','O'],  [34.2, 7.75,  1.75],  'Complex'],
                          '17': [['A2','P'],  [34.2, 29.67, 1.75],  'Complex'],
                          '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
-                         '19': [['P', '2'],  [34.2, 29.67, 0],     'Friction']}
+                         '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
     aeroplane1.edgeList()
@@ -157,7 +178,7 @@ if __name__ == '__main__':
     # start = time.time()
     # cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
     # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    # c_cliques = check_adjacency(cliques, E1, E2)
+    # c_cliques = check_adjacency(cliques, cEdges)
     # max_cliques = maxCliques(cliques)
     # end = time.time()
 
@@ -165,7 +186,7 @@ if __name__ == '__main__':
 
     start = time.time()
     cliques_BK = network.maximalCliquesBK(V, E)
-    c_cliques = check_adjacency(cliques_BK, E1, E2)
+    c_cliques = check_adjacency(cliques_BK, cEdges)
     max_cliques = maxCliques(c_cliques)
     end = time.time()
 
@@ -185,6 +206,22 @@ if __name__ == '__main__':
     print("Time to find:", end - start)
     print("Number of cliques:", len(c_cliques))
 
+    # Found
+    # Max clique 8 : {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
+    # VERRRY BOTCHY code to produce the graph for the above subgraph, regardless of which cliques the subgraph matching algorithm finds
+
+    # mcs = {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
+    mcs = max_cliques[0]
+    subgraph_edges = []
+    for v1 in mcs:
+        for v2 in mcs:
+            if ((v1,v2) in cEdges) or ((v2,v1) in cEdges):
+                subgraph_edges.append((v1,v2))
+    
+    subgraph = nx.Graph()
+    subgraph.add_nodes_from(mcs)
+    subgraph.add_edges_from(subgraph_edges)
+
     # Initiliase nx.Graph object
     turbine1Graph = nx.Graph()
     # Add nodes and edges from turbine1
@@ -197,12 +234,12 @@ if __name__ == '__main__':
     aeroplane1Graph.add_nodes_from(aeroplane1.nodeList())
     aeroplane1Graph.add_edges_from(aeroplane1.edgeList())
 
-    # Found
-    # Max clique 8 : {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
-
     # Create subplots with bridge graphs
     plt.subplot(121)
-    nx.draw(turbine1Graph, with_labels=True)
+    nx.draw(turbine1Graph, with_labels=True, pos=nx.spring_layout(turbine1Graph))
     plt.subplot(122)
-    nx.draw(aeroplane1Graph, with_labels=True)
+    nx.draw(aeroplane1Graph, with_labels=True, pos=nx.spring_layout(aeroplane1Graph))
+    plt.show()
+
+    nx.draw(subgraph, with_labels=True)
     plt.show()
