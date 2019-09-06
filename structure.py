@@ -74,6 +74,7 @@ class Network:
             for r in self.BronKerbosch(Rit, Pit.intersection(N[u]), X.intersection(N[u]), N):
                 yield r
             X.add(u)
+            
     
     def BronKerboschPivot(self, R, P, X, N):
         """Return the maximal cliques of a graph (Bron-Kerbosch with pivoting)"""
@@ -108,14 +109,14 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        r = self.BronKerboschPivot(R, P, X, N)
+        r = self.BronKerbosch(R, P, X, N)
         return list(r)
 
     def findCedges(self, E, E1, E2):
         """Find the c-edges in a product graph"""
         # Initialise the set of c-edges and d-edges
-        cedges = set()
-        dedges = set()
+        cEdges = set()
+        dEdges = set()
         # For each edge in the modular product, form the edge or vertex pairs to test
         for edge in E:
             # Create the edge or vertex pair in G1
@@ -128,10 +129,10 @@ class Network:
             if {u1,u2} in E1 or {u2,u1} in E1:
                 # If v1 and v2 in G2 are adjacent
                 if {v1,v2} in E2 or {v2,v1} in E2:
-                    cedges.add(edge)
+                    cEdges.add(edge)
             else:
-                dedges.add(edge)  
-        return cedges, dedges 
+                dEdges.add(edge)  
+        return cEdges, dEdges 
 
     def maximalCliquesCedges(self, V, E, cEdges, dEdges):
         cliques = list()
@@ -160,7 +161,6 @@ class Network:
             [cliques.append(r) for r in self.enumerateCcliques(R, P, D, X, N, T, cEdges)]
             T.add(u)
         return cliques
-
 
     def enumerateCcliques(self, R, P, D, X, N, T, cEdges):
         """Return the maximal c-cliques of a graph (modified Bron-Kerbosch algorithm)"""
