@@ -65,17 +65,18 @@ class Network:
         # If there are no more vertices which can be added to R, report clique as maximal
         if P == set() and X == set():
             yield R
-        # Create copy of P to iterate over
-        Pit = P.copy()
-        for u in P:
-            # Add the current vertex to R
-            #Rit = R.union({u})
-            # Yield the maximal cliques from previous recursions
-            for r in self.BronKerbosch(R.union({u}), Pit.intersection(N[u]), X.intersection(N[u]), N):
-                yield r
-            # Exclude the current vertex from the list of vertices which can be added to R
-            Pit.remove(u)
-            X.add(u)
+        else:
+            # Create copy of P to iterate over
+            Pit = P.copy()
+            for u in P:
+                # Add the current vertex to R
+                #Rit = R.union({u})
+                # Yield the maximal cliques from previous recursions
+                for r in self.BronKerbosch(R.union({u}), Pit.intersection(N[u]), X.intersection(N[u]), N):
+                    yield r
+                # Exclude the current vertex from the list of vertices which can be added to R
+                Pit.remove(u)
+                X.add(u)
             
     
     def BronKerboschPivot(self, R, P, X, N):
