@@ -113,11 +113,12 @@ class Network:
         X = set()
         # Set P to be the vertex set
         P = set(V)
-        for v in self.degeneracy_ordering(N):
-            [cliques.append(r) for r in self.BronKerbosch(R.union({v}), P.intersection(N[v]), X.intersection(N[v]), N)]
-            P.remove(v)
-            X.add(v)
-        return list(cliques)
+        # for v in self.degeneracy_ordering(N):
+        #     [cliques.append(r) for r in self.BronKerbosch(R.union({v}), P.intersection(N[v]), X.intersection(N[v]), N)]
+        #     P.remove(v)
+        #     X.add(v)
+        # return list(cliques)
+        return list(self.BronKerbosch(R, P, X, N))
 
     def findCedges(self, E, E1, E2):
         """Find the c-edges in a product graph"""
