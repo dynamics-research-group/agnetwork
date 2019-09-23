@@ -8,6 +8,7 @@ from networkx.algorithms.clique import find_cliques
 import networkx as nx
 import matplotlib.pyplot as plt
 import time
+import maximal_cliques as mc
 
 def maxCliques(cliques):
     max_len = 0
@@ -220,20 +221,40 @@ if __name__ == '__main__':
 
     # c-clique algorithm (broken)
 
-    start = time.time()
-    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
-    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    c_cliques = check_adjacency(cliques, cEdges)
-    max_cliques = maxCliques(cliques)
-    end = time.time()
+    # start = time.time()
+    # print("Finding cliques...")
+    # cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    # print("Removing duplicates...")
+    # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    # print("Checking cliques for adjacency...")
+    # c_cliques = check_adjacency(cliques, cEdges)
+    # print("Finding largest cliques...")
+    # max_cliques = maxCliques(cliques)
+    # end = time.time()
 
-    # BK cliques (also broken)
+    # BK cliques (misses 8-clique with degree 3, 'The Cross')
 
     # start = time.time()
+    # print("Finding cliques...")
     # cliques_BK = network.maximalCliquesBK(V, E)
+    # print("Checking cliques for adjacency...")
     # c_cliques = check_adjacency(cliques_BK, cEdges)
+    # print("Finding largest cliques...")
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
+
+    # Maximal cliques (downloaded)
+
+    start = time.time()
+    print("Create graph...")
+    G = network.neighbourSet(V, E)
+    print("Finding cliques...")
+    cliques, length = mc.find_cliques(G)
+    print("Checking cliques for adjacency...")
+    c_cliques = check_adjacency(cliques, cEdges)
+    print("Finding largest cliques...")
+    max_cliques = maxCliques(c_cliques)
+    end = time.time()
 
     """
     print("Largest cliques found using BK pivot")
@@ -249,13 +270,23 @@ if __name__ == '__main__':
         print("Max clique", i+1, ":", clique)
 
     print("Time to find:", end - start)
-    print("Number of cliques:", len(c_cliques))
+    print("Number of c-cliques:", len(c_cliques))
+    try:
+        print("Number of cliques:", len(cliques_BK))
+        print({('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques_BK)
+    except:
+        print("Number of cliques:", len(cliques))
+        print({('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques)
 
     # Found
     # Max clique 8 : {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
     # VERRRY BOTCHY code to produce the graph for the above subgraph, regardless of which cliques the subgraph matching algorithm finds
 
+    
+
     # mcs = {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
+
+    """
     mcs = max_cliques[0]
     subgraph_edges = []
     for v1 in mcs:
@@ -288,3 +319,5 @@ if __name__ == '__main__':
 
     nx.draw(subgraph, with_labels=True)
     plt.show()
+
+    """
