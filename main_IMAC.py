@@ -9,6 +9,46 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import time
 
+# define alternative bron_kerbosches
+
+class Reporter(object):
+    def __init__(self, name):
+        self.name = name
+        self.cnt = 0
+        self.cliques = []
+ 
+    def inc_count(self):
+        self.cnt += 1
+ 
+    def record(self, clique):
+        self.cliques.append(clique)
+ 
+    def print_report(self):
+        print (self.name)
+        print ('{0} recursive calls'.format(self.cnt))
+
+def bronker_bosch2(clique, candidates, excluded, reporter, neighbours):
+    '''Bron–Kerbosch algorithm with pivot'''
+    reporter.inc_count()
+    if not candidates and not excluded:
+        if len(clique) >= 3:
+            reporter.record(clique)
+        return
+ 
+    pivot = pick_random(candidates) or pick_random(excluded)
+    for v in list(candidates.difference(neighbours[pivot])):
+        new_candidates = candidates.intersection(neighbours[v])
+        new_excluded = excluded.intersection(neighbours[v])
+        bronker_bosch2(clique + [v], new_candidates, new_excluded, reporter, neighbours)
+        candidates.remove(v)
+        excluded.add(v)
+
+def pick_random(s):
+    if s:
+        elem = s.pop()
+        s.add(elem)
+        return elem
+
 def maxCliques(cliques):
     max_len = 0
     for clique in cliques:
@@ -234,6 +274,11 @@ if __name__ == '__main__':
     # c_cliques = check_adjacency(cliques_BK, cEdges)
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
+
+    # Bron_kerbosch from internet
+
+    reporter = Reporter()
+    cliques =  bronker_bosch2(set(), V, set(), reporter, N)
 
     """
     print("Largest cliques found using BK pivot")
