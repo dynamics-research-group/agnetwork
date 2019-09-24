@@ -86,9 +86,12 @@ if __name__ == '__main__':
 
     # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
+    V1 = bridge2.nodeList()
     E1 = bridge2.edgeList()
     E2 = bridge3.edgeList()
     cEdges, dEdges = network.findCedges(E, E1, E2)
+
+    print("Neighbours:", network.neighbourSet(V1, E1))
 
     # Print information about the inputs to the cliques algorithm
     print("Number of modular product edges:", len(E), "and vertices:", len(V))

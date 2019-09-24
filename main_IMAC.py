@@ -59,7 +59,7 @@ def is_connected(clique, v_seen, vi, cEdges):
     for v2 in clique:
         for vi in v_seen:
             if v2 not in v_seen:
-                if ((vi, v2) in cEdges) or ((v2,vi) in cEdges):
+                if ((vi,v2) in cEdges) or ((v2,vi) in cEdges):
                     return is_connected(clique, v_seen, v2, cEdges)
     return False
 
@@ -212,25 +212,25 @@ if __name__ == '__main__':
     total = sum([len(N[v]) for v in N])
     print("Size of neighbour set:", total)
 
-    # cEdgeGraph = nx.Graph()
-    # cEdgeGraph.add_edges_from(cEdges)
-    # cEdgeGraph.add_nodes_from(V)
+    cEdgeGraph = nx.Graph()
+    cEdgeGraph.add_edges_from(cEdges)
+    cEdgeGraph.add_nodes_from(V)
 
     # nx.draw(cEdgeGraph, with_labels=True)
     # plt.show()
 
     # c-clique algorithm (broken)
 
-    # start = time.time()
-    # print("Finding cliques...")
-    # cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
-    # print("Removing duplicates...")
-    # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    # print("Checking cliques for adjacency...")
-    # c_cliques = check_adjacency(cliques, cEdges)
-    # print("Finding largest cliques...")
-    # max_cliques = maxCliques(cliques)
-    # end = time.time()
+    start = time.time()
+    print("Finding cliques...")
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print("Removing duplicates...")
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    print("Checking cliques for adjacency...")
+    c_cliques = check_adjacency(cliques, cEdges)
+    print("Finding largest cliques...")
+    max_cliques = maxCliques(c_cliques)
+    end = time.time()
 
     # BK cliques (misses 8-clique with degree 3, 'The Cross')
 
@@ -245,16 +245,16 @@ if __name__ == '__main__':
 
     # Maximal cliques (downloaded)
 
-    start = time.time()
-    print("Create graph...")
-    G = network.neighbourSet(V, E)
-    print("Finding cliques...")
-    cliques, length = mc.find_cliques(G)
-    print("Checking cliques for adjacency...")
-    c_cliques = check_adjacency(cliques, cEdges)
-    print("Finding largest cliques...")
-    max_cliques = maxCliques(c_cliques)
-    end = time.time()
+    # start = time.time()
+    # print("Create graph...")
+    # G = network.neighbourSet(V, E)
+    # print("Finding cliques...")
+    # cliques = mc.find_cliques(G)
+    # print("Checking cliques for adjacency...")
+    # c_cliques = check_adjacency(cliques, cEdges)
+    # print("Finding largest cliques...")
+    # max_cliques = maxCliques(c_cliques)
+    # end = time.time()
 
     """
     print("Largest cliques found using BK pivot")

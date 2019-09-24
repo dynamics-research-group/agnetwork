@@ -78,7 +78,6 @@ class Network:
                 Pit.remove(u)
                 X.add(u)
             
-    
     def BronKerboschPivot(self, R, P, X, N):
         """Return the maximal cliques of a graph (Bron-Kerbosch with pivoting)"""
         # If there are no more vertices which can be added to R, report clique as maximal
@@ -105,7 +104,6 @@ class Network:
 
     def maximalCliquesBK(self, V, E):
         """Initialises Bron-Kerbosch clique finding algorithms"""
-        cliques = []
         # Initialise other variables required for Bron-Kerbosch
         N = self.neighbourSet(V, E)
         # Set R and X to be the empty set
@@ -134,9 +132,9 @@ class Network:
             v1 = edge[0][1]
             v2 = edge[1][1]
             # If u1 and u2 in G1 are adjacent
-            if {u1,u2} in E1 or {u2,u1} in E1:
+            if ({u1,u2} in E1) or ({u2,u1} in E1):
                 # If v1 and v2 in G2 are adjacent
-                if {v1,v2} in E2 or {v2,v1} in E2:
+                if ({v1,v2} in E2) or ({v2,v1} in E2):
                     cEdges.add(edge)
             else:
                 dEdges.add(edge)  
@@ -150,6 +148,7 @@ class Network:
         # Initialise c-clique finding algorithm for each vertex
         # for u in sorted(list(V)):
         for u in self.degeneracy_ordering(N):
+        # for u in V:
             # Set P, D, X and R as the empty set
             P = set()
             D = set()
