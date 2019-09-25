@@ -178,6 +178,7 @@ if __name__ == '__main__':
     start = time.time()
     print("Finding cliques...")
     cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print()
     print("Removing duplicates...")
     cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
     print("Checking cliques for adjacency...")

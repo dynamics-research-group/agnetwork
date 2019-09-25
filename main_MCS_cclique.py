@@ -76,8 +76,11 @@ if __name__ == '__main__':
     nx.draw(cEdgeGraph, with_labels=True)
     plt.show()
 
+    print("Finding cliques...")
     cliques_BK = gc.maximalCliquesBK(V, E)
     cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print()
+    print("\n###################################\n")
 
     # Remove duplicates in cliques
     # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
