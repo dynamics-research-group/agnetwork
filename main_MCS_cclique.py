@@ -56,6 +56,7 @@ if __name__ == '__main__':
     # print(gc.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
     V1 = bridge2.nodeList()
+    V2 = bridge3.nodeList()
     E1 = bridge2.edgeList()
     E2 = bridge3.edgeList()
     cEdges, dEdges = gc.findCedges(E, E1, E2)
@@ -124,3 +125,8 @@ if __name__ == '__main__':
     c_cliques = gc.check_adjacency(max_cliques, cEdges)
     for i, clique in enumerate(c_cliques):
         print("Connected cliques", i+1, ":", clique)
+    
+    print("\n###################################\n")
+
+    ss = gc.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Similarity score:", round(ss, 2) , "%")

@@ -11,7 +11,7 @@ import time
 import maximal_cliques as mc
 import graph_comparison as gc
 
-
+divide = "\n###################################\n"
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -136,6 +136,7 @@ if __name__ == '__main__':
 
     print("Turbine nodes:", turbine1.nodes)
     print("Aeroplane nodes:", aeroplane1.nodes)
+    print(divide)
     
     # Generate the modular product graph
     V, E = gc.modularProduct(turbine1, aeroplane1)
@@ -151,6 +152,8 @@ if __name__ == '__main__':
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
 
+    V1 = turbine1.nodeList()
+    V2 = aeroplane1.nodeList()
     E1 = turbine1.edgeList()
     E2 = aeroplane1.edgeList()
     
@@ -161,6 +164,7 @@ if __name__ == '__main__':
     N = gc.neighbourSet(V, E)
     total = sum([len(N[v]) for v in N])
     print("Size of neighbour set:", total)
+    print(divide)
 
     cEdgeGraph = nx.Graph()
     cEdgeGraph.add_edges_from(cEdges)
@@ -181,6 +185,7 @@ if __name__ == '__main__':
     print("Finding largest cliques...")
     max_cliques = gc.maxCliques(c_cliques)
     end = time.time()
+    print(divide)
 
     # BK cliques (misses 8-clique with degree 3, 'The Cross')
 
@@ -192,6 +197,7 @@ if __name__ == '__main__':
     # print("Finding largest cliques...")
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
+    # print(divide)
 
     # Maximal cliques (downloaded)
 
@@ -205,6 +211,7 @@ if __name__ == '__main__':
     # print("Finding largest cliques...")
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
+    # print(divide)
 
     """
     print("Largest cliques found using BK pivot")
@@ -213,26 +220,25 @@ if __name__ == '__main__':
 
     print("Number of cliques:", len(cliques_BK))
 
-    print("\n###################################\n")
+    print(divide)
     """
+
     # Cliques found using c-cliques
     for i, clique in enumerate(max_cliques):
         print("Max clique", i+1, ":", clique)
+    print(divide)
 
-    print("Time to find:", end - start)
+    print("Time to find:", round(end - start, 2), "seconds")
     print("Number of c-cliques:", len(c_cliques))
     try:
         print("Number of cliques:", len(cliques_BK))
-        print({('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques_BK)
+        print("The Cross?", {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques_BK)
     except:
         print("Number of cliques:", len(cliques))
-        print({('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques)
+        print("The Cross?", {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques)
 
-    # Found
-    # Max clique 8 : {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
-    # VERRRY BOTCHY code to produce the graph for the above subgraph, regardless of which cliques the subgraph matching algorithm finds
-
-    
+    ss = gc.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Similarity score:", round(ss, 2) , "%")
 
     # mcs = {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
 

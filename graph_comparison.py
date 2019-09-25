@@ -237,7 +237,10 @@ def enumerateCcliques(R, P, D, X, N, T, cEdges):
                                         Xit.intersection(N[u]), 
                                         N, T, cEdges): yield r
             X.add(u)
-        
+
+def mcsSimilarityScore(mcs, g1, g2):
+    return (len(mcs) * 100) / (len(g1) + len(g2) - len(mcs))
+
 def inexactGraphComparison(graph1, graph2):
     # Create possible pairs
     pass
