@@ -1,34 +1,51 @@
 from collections import defaultdict
 
 def maxCliques(cliques):
+    """Find the set of largest cliques"""
     max_len = 0
     for clique in cliques:
+        # Has a larger clique has been found?
         if len(clique) > max_len:
+            # Update the maximum clique length
             max_len = len(clique)
+            # Reset the maximum clique list
             max_cliques = [clique]
+        # Is the current clique a maximum clique?
         elif len(clique) == max_len:
+            # Add it to the list
             max_cliques.append(clique)
     return max_cliques
 
 def check_adjacency(cliques, cEdges):
-    """Check that all are adjacent in the graphs"""
+    """Check that all vertices are adjacent in the cliques found"""
     c_cliques = []
     for clique in cliques:
+        # Set the initial vertex for adjacency search
         vi = list(clique)[0]
         v_seen = set()
         connected = is_connected(clique, v_seen, vi, cEdges)
+        # Does the clique represent a connected graph?
         if connected == True:
             c_cliques.append(clique)
     return c_cliques
 
 def is_connected(clique, v_seen, vi, cEdges):
+    """"This algorithm attempts to visit every vertex in the graph once from
+    an initial vertex. It checks whether previously visited vertices are connected
+    to any of the remaining vertices."""
+    # Add the vertex that initiated the search to the list of seen vertices
     v_seen.add(vi)
+    # If all vertices in the clique can be visited, it must be connected
     if len(v_seen) == len(clique): return True
+    # Check if the vertices in the clique are connected to any of the seen vertices
     for v2 in clique:
         for vi in v_seen:
+            # Exclude any vertices that have already been 'visited'
             if v2 not in v_seen:
+                # If the two vertices are connected, proceed
                 if ((vi,v2) in cEdges) or ((v2,vi) in cEdges):
                     return is_connected(clique, v_seen, v2, cEdges)
+    # If not all vertices can be visited, the graph is disconnected
     return False
 
 def modularProduct(struct1, struct2):
@@ -38,10 +55,9 @@ def modularProduct(struct1, struct2):
     V2 = struct2.nodes
     E1 = struct1.edges
     E2 = struct2.edges
-
+    # The modular product function misses edges if the larger graph is called first
     if len(V1) > len(V2):
         raise Exception("Smaller graph first please.")
-
     # Initialise empty sets for modular product edges and vetices
     modprodV = set()
     modprodE = set()
@@ -167,8 +183,8 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
     N = neighbourSet(V, E)
     T = set()
     # Initialise c-clique finding algorithm for each vertex
-    # for u in sorted(list(V)):
-    for u in degeneracy_ordering(N):
+    for u in sorted(list(V)):
+    # for u in degeneracy_ordering(N):
     # for u in V:
         # Set P, D, X and R as the empty set
         P = set()
@@ -227,6 +243,7 @@ def inexactGraphComparison(graph1, graph2):
     pass
 
 def degeneracy_ordering(graph):
+    """Order vertices by degree. Not my code"""
     ordering = []
     ordering_set = set()
     degrees = defaultdict(lambda : 0)
