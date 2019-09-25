@@ -134,12 +134,12 @@ if __name__ == '__main__':
     aeroplane2.addJoints()
     aeroplane2.edgeList()
 
-    print("Turbine nodes:", turbine1.nodes)
-    print("Aeroplane nodes:", aeroplane1.nodes)
+    print("Turbine nodes:", aeroplane1.nodes)
+    print("Aeroplane nodes:", aeroplane2.nodes)
     print(divide)
     
     # Generate the modular product graph
-    V, E = gc.modularProduct(turbine1, aeroplane1)
+    V, E = gc.modularProduct(aeroplane1, aeroplane2)
     print("Modular product edges:", len(E))
     print("Modular product vertices:", len(V))
     modularProduct = nx.Graph()
@@ -152,10 +152,10 @@ if __name__ == '__main__':
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
 
-    V1 = turbine1.nodeList()
-    V2 = aeroplane1.nodeList()
-    E1 = turbine1.edgeList()
-    E2 = aeroplane1.edgeList()
+    V1 = aeroplane1.nodeList()
+    V2 = aeroplane2.nodeList()
+    E1 = aeroplane1.edgeList()
+    E2 = aeroplane2.edgeList()
     
     cEdges, dEdges = gc.findCedges(E, E1, E2)
     print("Number of c-edges:", len(cEdges))
@@ -275,5 +275,4 @@ if __name__ == '__main__':
 
     nx.draw(subgraph, with_labels=True)
     plt.show()
-
     """

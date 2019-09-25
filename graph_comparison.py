@@ -183,7 +183,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
     N = neighbourSet(V, E)
     T = set()
     # Initialise c-clique finding algorithm for each vertex
-    for u in sorted(list(V)):
+    for i, u in enumerate(sorted(list(V))):
     # for u in degeneracy_ordering(N):
     # for u in V:
         # Set P, D, X and R as the empty set
@@ -204,6 +204,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
         # Call c-clique finding algorithm
         [cliques.append(r) for r in enumerateCcliques(R, P, D, X, N, T, cEdges)]
         T.add(u)
+        printProgressBar(i, len(V), "Progress:", "Complete")
     return cliques
 
 def enumerateCcliques(R, P, D, X, N, T, cEdges):
@@ -245,8 +246,32 @@ def inexactGraphComparison(graph1, graph2):
     # Create possible pairs
     pass
 
+# Not my code!!!
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+    """
+    Print iterations progress
+
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
+
+# Not my code!!!
 def degeneracy_ordering(graph):
-    """Order vertices by degree. Not my code"""
+    """Order vertices by degree"""
     ordering = []
     ordering_set = set()
     degrees = defaultdict(lambda : 0)
