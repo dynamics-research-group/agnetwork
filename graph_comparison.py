@@ -182,7 +182,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
     # Create the neighbour set
     N = neighbourSet(V, E)
     T = set()
-    printProgressBar(0, len(V), "Progress:", "Complete")
+    printProgress(0, len(V), "Progress:", "of vertices checked")
     # Initialise c-clique finding algorithm for each vertex
     for i, u in enumerate(sorted(list(V))):
     # for u in degeneracy_ordering(N):
@@ -205,7 +205,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
         # Call c-clique finding algorithm
         [cliques.append(r) for r in enumerateCcliques(R, P, D, X, N, T, cEdges)]
         T.add(u)
-        printProgressBar(i, len(V), "Progress:", "Complete")
+        printProgress(i, len(V), "Progress:", "of vertices checked")
     print()
     return cliques
 
@@ -247,6 +247,24 @@ def mcsSimilarityScore(mcs, g1, g2):
 def inexactGraphComparison(graph1, graph2):
     # Create possible pairs
     pass
+
+def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
+    """
+    Print iterations progress
+
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    print('\r%s %s%% %s' % (prefix, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 # Not my code!!!
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
