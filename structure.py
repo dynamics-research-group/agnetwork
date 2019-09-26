@@ -148,8 +148,8 @@ class Network:
         N = self.neighbourSet(V, E)
         T = set()
         # Initialise c-clique finding algorithm for each vertex
-        # for u in sorted(list(V)):
-        for u in self.degeneracy_ordering(N):
+        for u in sorted(list(V)):
+        # for u in self.degeneracy_ordering(N):
             # Set P, D, X and R as the empty set
             P = set()
             D = set()

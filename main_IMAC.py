@@ -81,6 +81,7 @@ if __name__ == '__main__':
                          'H': ['Metal',    'Cylindrical beam'],
                          'I': ['Concrete', 'Cylindrical plate'],
                          '1': ['Ground']}
+                         
     turbine1.joints = {'1': [['A','D'], [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
                        '2': [['B','D'], [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
                        '3': [['C','D'], [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     turbine1.addJoints()
     turbine1.edgeList()
 
-    # Define the graph for an 747
+    # Define the graph for a 747
     aeroplane1 = Structure('Aeroplane1')
     aeroplane1.elements = {'A1': ['FRP',      'Truncated cone'],
                            'A2': ['FRP',      'Cylindrical beam'],
@@ -221,16 +222,16 @@ if __name__ == '__main__':
 
     # c-clique algorithm (broken)
 
-    # start = time.time()
-    # print("Finding cliques...")
-    # cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
-    # print("Removing duplicates...")
-    # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    # print("Checking cliques for adjacency...")
-    # c_cliques = check_adjacency(cliques, cEdges)
-    # print("Finding largest cliques...")
-    # max_cliques = maxCliques(cliques)
-    # end = time.time()
+    start = time.time()
+    print("Finding cliques...")
+    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print("Removing duplicates...")
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    print("Checking cliques for adjacency...")
+    c_cliques = check_adjacency(cliques, cEdges)
+    print("Finding largest cliques...")
+    max_cliques = maxCliques(c_cliques)
+    end = time.time()
 
     # BK cliques (misses 8-clique with degree 3, 'The Cross')
 
@@ -245,16 +246,16 @@ if __name__ == '__main__':
 
     # Maximal cliques (downloaded)
 
-    start = time.time()
-    print("Create graph...")
-    G = network.neighbourSet(V, E)
-    print("Finding cliques...")
-    cliques, length = mc.find_cliques(G)
-    print("Checking cliques for adjacency...")
-    c_cliques = check_adjacency(cliques, cEdges)
-    print("Finding largest cliques...")
-    max_cliques = maxCliques(c_cliques)
-    end = time.time()
+    # start = time.time()
+    # print("Create graph...")
+    # G = network.neighbourSet(V, E)
+    # print("Finding cliques...")
+    # cliques, length = mc.find_cliques(G)
+    # print("Checking cliques for adjacency...")
+    # c_cliques = check_adjacency(cliques, cEdges)
+    # print("Finding largest cliques...")
+    # max_cliques = maxCliques(c_cliques)
+    # end = time.time()
 
     """
     print("Largest cliques found using BK pivot")
