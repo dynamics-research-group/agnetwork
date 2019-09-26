@@ -215,17 +215,7 @@ if __name__ == '__main__':
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
     # print(divide)
-
     
-    # print("Largest cliques found using BK pivot")
-    # for i, clique in enumerate(max_cliques_BK):
-    #     print("Max clique", i+1, ":", clique)
-
-    # print("Number of cliques:", len(cliques_BK))
-
-    # print(divide)
-    
-
     # Cliques found using c-cliques
     for i, clique in enumerate(max_cliques):
         print("Max clique", i+1, ":", clique)
