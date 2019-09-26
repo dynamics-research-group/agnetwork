@@ -134,12 +134,15 @@ if __name__ == '__main__':
     aeroplane2.addJoints()
     aeroplane2.edgeList()
 
-    print("Turbine nodes:", aeroplane1.nodes)
-    print("Aeroplane nodes:", aeroplane2.nodes)
+    graph1 = aeroplane1
+    graph2 = aeroplane2
+    
+    print("Turbine nodes:", graph1.nodes)
+    print("Aeroplane nodes:", graph2.nodes)
     print(divide)
     
     # Generate the modular product graph
-    V, E = gc.modularProduct(aeroplane1, aeroplane2)
+    V, E = gc.modularProduct(graph1, graph2)
     print("Modular product edges:", len(E))
     print("Modular product vertices:", len(V))
     modularProduct = nx.Graph()
@@ -152,10 +155,10 @@ if __name__ == '__main__':
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
 
-    V1 = aeroplane1.nodeList()
-    V2 = aeroplane2.nodeList()
-    E1 = aeroplane1.edgeList()
-    E2 = aeroplane2.edgeList()
+    V1 = graph1.nodeList()
+    V2 = graph2.nodeList()
+    E1 = graph1.edgeList()
+    E2 = graph2.edgeList()
     
     cEdges, dEdges = gc.findCedges(E, E1, E2)
     print("Number of c-edges:", len(cEdges))
@@ -178,7 +181,6 @@ if __name__ == '__main__':
     start = time.time()
     print("Finding cliques...")
     cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
-    print()
     print("Removing duplicates...")
     cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
     print("Checking cliques for adjacency...")
@@ -214,15 +216,15 @@ if __name__ == '__main__':
     # end = time.time()
     # print(divide)
 
-    """
-    print("Largest cliques found using BK pivot")
-    for i, clique in enumerate(max_cliques_BK):
-        print("Max clique", i+1, ":", clique)
+    
+    # print("Largest cliques found using BK pivot")
+    # for i, clique in enumerate(max_cliques_BK):
+    #     print("Max clique", i+1, ":", clique)
 
-    print("Number of cliques:", len(cliques_BK))
+    # print("Number of cliques:", len(cliques_BK))
 
-    print(divide)
-    """
+    # print(divide)
+    
 
     # Cliques found using c-cliques
     for i, clique in enumerate(max_cliques):
@@ -243,6 +245,25 @@ if __name__ == '__main__':
 
     # mcs = {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
 
+    # Initiliase nx.Graph object
+    graph1nx = nx.Graph()
+    # Add nodes and edges from graph1
+    graph1nx.add_nodes_from(graph1.nodeList())
+    graph1nx.add_edges_from(graph1.edgeList())
+
+    # Initiliase nx.Graph object
+    graph2nx = nx.Graph()
+    # Add nodes and edges from graph2   
+    graph2nx.add_nodes_from(graph2.nodeList())
+    graph2nx.add_edges_from(graph2.edgeList())
+
+    # Create subplots with bridge graphs
+    plt.subplot(121)
+    nx.draw(graph1nx, with_labels=True, pos=nx.spring_layout(graph1nx))
+    plt.subplot(122)
+    nx.draw(graph2nx, with_labels=True, pos=nx.spring_layout(graph2nx))
+    plt.show()
+
     """
     mcs = max_cliques[0]
     subgraph_edges = []
@@ -255,25 +276,7 @@ if __name__ == '__main__':
     subgraph.add_nodes_from(mcs)
     subgraph.add_edges_from(subgraph_edges)
 
-    # Initiliase nx.Graph object
-    turbine1Graph = nx.Graph()
-    # Add nodes and edges from turbine1
-    turbine1Graph.add_nodes_from(turbine1.nodeList())
-    turbine1Graph.add_edges_from(turbine1.edgeList())
-
-    # Initiliase nx.Graph object
-    aeroplane1Graph = nx.Graph()
-    # Add nodes and edges from aeroplane    
-    aeroplane1Graph.add_nodes_from(aeroplane1.nodeList())
-    aeroplane1Graph.add_edges_from(aeroplane1.edgeList())
-
-    # Create subplots with bridge graphs
-    plt.subplot(121)
-    nx.draw(turbine1Graph, with_labels=True, pos=nx.spring_layout(turbine1Graph))
-    plt.subplot(122)
-    nx.draw(aeroplane1Graph, with_labels=True, pos=nx.spring_layout(aeroplane1Graph))
-    plt.show()
-
     nx.draw(subgraph, with_labels=True)
     plt.show()
+
     """

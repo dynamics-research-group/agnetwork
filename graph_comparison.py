@@ -182,6 +182,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
     # Create the neighbour set
     N = neighbourSet(V, E)
     T = set()
+    printProgressBar(0, len(V), "Progress:", "Complete")
     # Initialise c-clique finding algorithm for each vertex
     for i, u in enumerate(sorted(list(V))):
     # for u in degeneracy_ordering(N):
@@ -205,6 +206,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
         [cliques.append(r) for r in enumerateCcliques(R, P, D, X, N, T, cEdges)]
         T.add(u)
         printProgressBar(i, len(V), "Progress:", "Complete")
+    print()
     return cliques
 
 def enumerateCcliques(R, P, D, X, N, T, cEdges):
