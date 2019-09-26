@@ -14,7 +14,7 @@ def find_cliques(graph):
     find_cliques_pivot(graph, r.union([v]), p.intersection(neighs), x.intersection(neighs), cliques)
     p.remove(v)
     x.add(v)
-  return sorted(cliques, lambda x: len(x))
+  return sorted(cliques)
 
 def find_cliques_pivot(graph, r, p, x, cliques):
   if len(p) == 0 and len(x) == 0:

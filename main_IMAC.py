@@ -9,59 +9,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import time
 import maximal_cliques as mc
+import graph_comparison as gc
 
-def maxCliques(cliques):
-    max_len = 0
-    for clique in cliques:
-        if len(clique) > max_len:
-            max_len = len(clique)
-            max_cliques = [clique]
-        elif len(clique) == max_len:
-            max_cliques.append(clique)
-    return max_cliques
-
-# def check_adjacency(cliques, E1, E2):
-#     """Check that all are adjacent in the graphs"""
-#     c_cliques = []
-#     for clique in cliques:
-#         vi = list(clique)[0]
-#         v_seen = set()
-#         connected = is_connected(clique, v_seen, vi, E1, E2)
-#         if connected == True:
-#             c_cliques.append(clique)
-#     return c_cliques
-
-# def is_connected(clique, v_seen, vi, E1, E2):
-#     v_seen.add(vi)
-#     if len(v_seen) == len(clique): return True
-#     for v2 in clique:
-#         for vi in v_seen:
-#             if v2 not in v_seen:
-#                 if ({vi[0], v2[0]} in E1) or ({v2[0], vi[0]} in E1):
-#                     if ({vi[1], v2[1]} in E2) or ({v2[1], vi[1]} in E2):
-#                         return is_connected(clique, v_seen, v2, E1, E2)
-#     return False
-
-def check_adjacency(cliques, cEdges):
-    """Check that all are adjacent in the graphs"""
-    c_cliques = []
-    for clique in cliques:
-        vi = list(clique)[0]
-        v_seen = set()
-        connected = is_connected(clique, v_seen, vi, cEdges)
-        if connected == True:
-            c_cliques.append(clique)
-    return c_cliques
-
-def is_connected(clique, v_seen, vi, cEdges):
-    v_seen.add(vi)
-    if len(v_seen) == len(clique): return True
-    for v2 in clique:
-        for vi in v_seen:
-            if v2 not in v_seen:
-                if ((vi, v2) in cEdges) or ((v2,vi) in cEdges):
-                    return is_connected(clique, v_seen, v2, cEdges)
-    return False
+divide = "\n###################################\n"
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -185,11 +135,12 @@ if __name__ == '__main__':
     aeroplane2.addJoints()
     aeroplane2.edgeList()
 
-    print("Turbine nodes:", turbine1.nodes)
-    print("Aeroplane nodes:", aeroplane1.nodes)
+    print("Turbine nodes:", aeroplane1.nodes)
+    print("Aeroplane nodes:", aeroplane2.nodes)
+    print(divide)
     
     # Generate the modular product graph
-    V, E = network.modularProduct(turbine1, aeroplane1)
+    V, E = gc.modularProduct(aeroplane1, aeroplane2)
     print("Modular product edges:", len(E))
     print("Modular product vertices:", len(V))
     modularProduct = nx.Graph()
@@ -202,20 +153,23 @@ if __name__ == '__main__':
     # cliques = find_cliques(modularProduct)
     # Find the largest cliques
 
-    E1 = turbine1.edgeList()
-    E2 = aeroplane1.edgeList()
+    V1 = aeroplane1.nodeList()
+    V2 = aeroplane2.nodeList()
+    E1 = aeroplane1.edgeList()
+    E2 = aeroplane2.edgeList()
     
-    cEdges, dEdges = network.findCedges(E, E1, E2)
+    cEdges, dEdges = gc.findCedges(E, E1, E2)
     print("Number of c-edges:", len(cEdges))
     print("Number of d-edges:", len(dEdges))
 
-    N = network.neighbourSet(V, E)
+    N = gc.neighbourSet(V, E)
     total = sum([len(N[v]) for v in N])
     print("Size of neighbour set:", total)
+    print(divide)
 
-    # cEdgeGraph = nx.Graph()
-    # cEdgeGraph.add_edges_from(cEdges)
-    # cEdgeGraph.add_nodes_from(V)
+    cEdgeGraph = nx.Graph()
+    cEdgeGraph.add_edges_from(cEdges)
+    cEdgeGraph.add_nodes_from(V)
 
     # nx.draw(cEdgeGraph, with_labels=True)
     # plt.show()
@@ -224,14 +178,16 @@ if __name__ == '__main__':
 
     start = time.time()
     print("Finding cliques...")
-    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print()
     print("Removing duplicates...")
     cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
     print("Checking cliques for adjacency...")
-    c_cliques = check_adjacency(cliques, cEdges)
+    c_cliques = gc.check_adjacency(cliques, cEdges)
     print("Finding largest cliques...")
-    max_cliques = maxCliques(c_cliques)
+    max_cliques = gc.maxCliques(c_cliques)
     end = time.time()
+    print(divide)
 
     # BK cliques (misses 8-clique with degree 3, 'The Cross')
 
@@ -243,6 +199,7 @@ if __name__ == '__main__':
     # print("Finding largest cliques...")
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
+    # print(divide)
 
     # Maximal cliques (downloaded)
 
@@ -250,12 +207,13 @@ if __name__ == '__main__':
     # print("Create graph...")
     # G = network.neighbourSet(V, E)
     # print("Finding cliques...")
-    # cliques, length = mc.find_cliques(G)
+    # cliques = mc.find_cliques(G)
     # print("Checking cliques for adjacency...")
     # c_cliques = check_adjacency(cliques, cEdges)
     # print("Finding largest cliques...")
     # max_cliques = maxCliques(c_cliques)
     # end = time.time()
+    # print(divide)
 
     """
     print("Largest cliques found using BK pivot")
@@ -264,26 +222,25 @@ if __name__ == '__main__':
 
     print("Number of cliques:", len(cliques_BK))
 
-    print("\n###################################\n")
+    print(divide)
     """
+
     # Cliques found using c-cliques
     for i, clique in enumerate(max_cliques):
         print("Max clique", i+1, ":", clique)
+    print(divide)
 
-    print("Time to find:", end - start)
+    print("Time to find:", round(end - start, 2), "seconds")
     print("Number of c-cliques:", len(c_cliques))
     try:
         print("Number of cliques:", len(cliques_BK))
-        print({('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques_BK)
+        print("The Cross?", {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques_BK)
     except:
         print("Number of cliques:", len(cliques))
-        print({('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques)
+        print("The Cross?", {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques)
 
-    # Found
-    # Max clique 8 : {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
-    # VERRRY BOTCHY code to produce the graph for the above subgraph, regardless of which cliques the subgraph matching algorithm finds
-
-    
+    ss = gc.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Similarity score:", round(ss, 2) , "%")
 
     # mcs = {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
 
@@ -320,5 +277,4 @@ if __name__ == '__main__':
 
     nx.draw(subgraph, with_labels=True)
     plt.show()
-
     """

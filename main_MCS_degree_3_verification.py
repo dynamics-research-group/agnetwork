@@ -56,7 +56,7 @@ if __name__ == '__main__':
     #                  'b' : ['a','c'],
     #                  'c' : ['b']}
     struct2.elements = {'a':[], 'b':[], 'c':[], 'd':[], 'e':[]}
-    struct2.joints = {'1': [['a','b']], '2': [['b', 'c']], '3': [['b', 'd']], '4': [['d','e']]}
+    struct2.joints = {'1': [['a','b']], '2': [['b', 'c']], '3': [['b', 'd']], '4': [['d','e']], '5': [['c','e']]}
     struct2.addElements()
     struct2.addJoints()
     struct2.edgeList()

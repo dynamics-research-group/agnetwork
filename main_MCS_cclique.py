@@ -5,38 +5,7 @@ from element import IrreducibleElement
 from joint import Joint
 import networkx as nx
 import matplotlib.pyplot as plt
-
-def maxCliques(cliques):
-    max_len = 0
-    for clique in cliques:
-        if len(clique) > max_len:
-            max_len = len(clique)
-            max_cliques = [clique]
-        elif len(clique) == max_len:
-            max_cliques.append(clique)
-    return max_cliques
-
-def check_adjacency(cliques, E1, E2):
-    """Check that all are adjacent in the graphs"""
-    c_cliques = []
-    for clique in cliques:
-        vi = list(clique)[0]
-        v_seen = set()
-        connected = is_connected(clique, v_seen, vi, E1, E2)
-        if connected == True:
-            c_cliques.append(clique)
-    return c_cliques
-
-def is_connected(clique, v_seen, vi, E1, E2):
-    v_seen.add(vi)
-    if len(v_seen) == len(clique): return True
-    for v2 in clique:
-        for vi in v_seen:
-            if v2 not in v_seen:
-                if ({vi[0], v2[0]} in E1) or ({v2[0], vi[0]} in E1):
-                    if ({vi[1], v2[1]} in E2) or ({v2[1], vi[1]} in E2):
-                        return is_connected(clique, v_seen, v2, E1, E2)
-    return False
+import graph_comparison as gc
 
 if __name__ == '__main__':
     network = Network()
@@ -75,7 +44,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    V, E = network.modularProduct(bridge2, bridge3)
+    V, E = gc.modularProduct(bridge2, bridge3)
 
     modularProductGraph = nx.Graph()
     modularProductGraph.add_edges_from(E)
@@ -84,11 +53,15 @@ if __name__ == '__main__':
     nx.draw(modularProductGraph, with_labels=True)
     plt.show()
 
-    # print(network.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
+    # print(gc.maximalCliques({(1,2),(3,4),(5,6),(7,8)}, {((1,2),(3,4)),((3,4),(5,6)),((1,2),(5,6)),((5,6),(7,8))}))
     
+    V1 = bridge2.nodeList()
+    V2 = bridge3.nodeList()
     E1 = bridge2.edgeList()
     E2 = bridge3.edgeList()
-    cEdges, dEdges = network.findCedges(E, E1, E2)
+    cEdges, dEdges = gc.findCedges(E, E1, E2)
+
+    print("Neighbours:", gc.neighbourSet(V1, E1))
 
     # Print information about the inputs to the cliques algorithm
     print("Number of modular product edges:", len(E), "and vertices:", len(V))
@@ -103,8 +76,11 @@ if __name__ == '__main__':
     nx.draw(cEdgeGraph, with_labels=True)
     plt.show()
 
-    cliques_BK = network.maximalCliquesBK(V, E)
-    cliques = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print("Finding cliques...")
+    cliques_BK = gc.maximalCliquesBK(V, E)
+    cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print()
+    print("\n###################################\n")
 
     # Remove duplicates in cliques
     # cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
@@ -112,8 +88,8 @@ if __name__ == '__main__':
 
     cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
 
-    max_cliques_BK = maxCliques(cliques_BK)
-    max_cliques = maxCliques(cliques)
+    max_cliques_BK = gc.maxCliques(cliques_BK)
+    max_cliques = gc.maxCliques(cliques)
 
     # Print cliques for BK algorithm
     print("Largest cliques found using BK pivot")
@@ -135,8 +111,8 @@ if __name__ == '__main__':
     #
     # print("Number of repeated cliques:", len(cliques) - len(cliques_no_repeat))
 
-    cliques1 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
-    cliques2 = list(network.maximalCliquesCedges(V, E, cEdges, dEdges))
+    cliques1 = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
+    cliques2 = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
     
     # Check that both max clique sets contain same subgraphs
     matched = sum([int(sgBK == sg) for sgBK in max_cliques_BK for sg in max_cliques])
@@ -149,6 +125,11 @@ if __name__ == '__main__':
 
     #print(cliques)
 
-    c_cliques = check_adjacency(max_cliques, E1, E2)
+    c_cliques = gc.check_adjacency(max_cliques, cEdges)
     for i, clique in enumerate(c_cliques):
         print("Connected cliques", i+1, ":", clique)
+    
+    print("\n###################################\n")
+
+    ss = gc.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Similarity score:", round(ss, 2) , "%")
