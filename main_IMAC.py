@@ -31,6 +31,7 @@ if __name__ == '__main__':
                          'H': ['Metal',    'Cylindrical beam'],
                          'I': ['Concrete', 'Cylindrical plate'],
                          '1': ['Ground']}
+                         
     turbine1.joints = {'1': [['A','D'], [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
                        '2': [['B','D'], [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
                        '3': [['C','D'], [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
