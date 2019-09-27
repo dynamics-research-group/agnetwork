@@ -21,15 +21,15 @@ if __name__ == '__main__':
     network = Network()
     # Define the graph for a turbine
     turbine1 = Structure('Turbine1')
-    turbine1.elements = {'A': ['FRP',      'Aerofoil'], 
-                         'B': ['FRP',      'Aerofoil'],
-                         'C': ['FRP',      'Aerofoil'],
-                         'D': ['FRP',      'Complex'],
-                         'E': ['FRP',      'Complex'],
-                         'F': ['Metal',    'Cylindrical beam'],
-                         'G': ['Metal',    'Cylindrical beam'],
-                         'H': ['Metal',    'Cylindrical beam'],
-                         'I': ['Concrete', 'Cylindrical plate'],
+    turbine1.elements = {'A': ['FRP',      ['Beam', 'Aerofoil']], 
+                         'B': ['FRP',      ['Beam', 'Aerofoil']],
+                         'C': ['FRP',      ['Beam', 'Aerofoil']],
+                         'D': ['FRP',      ['Complex', 'Rotor hub']],
+                         'E': ['FRP',      ['Shell', 'Cuboid']],
+                         'F': ['Metal',    ['Beam', 'Cylindrical']],
+                         'G': ['Metal',    ['Beam', 'Cylindrical']],
+                         'H': ['Metal',    ['Beam', 'Cylindrical']],
+                         'I': ['Concrete', ['Plate', 'Cylindrical']],
                          '1': ['Ground']}
                          
     turbine1.joints = {'1': [['A','D'], [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
@@ -47,24 +47,24 @@ if __name__ == '__main__':
 
     # Define the graph for an 747
     aeroplane1 = Structure('Boeing-747')
-    aeroplane1.elements = {'A1': ['FRP',      'Truncated cone'],
-                           'A2': ['FRP',      'Cylindrical beam'],
-                           'A3': ['FRP',      'Cone'],
-                           'B' : ['FRP',      'Aerofoil'], 
-                           'C' : ['FRP',      'Complex'],
-                           'D' : ['Assembly', 'Cylinder'],
-                           'E' : ['FRP',      'Complex'],
-                           'F' : ['Assembly', 'Cylinder'],
-                           'G' : ['FRP',      'Aerofoil'],
-                           'H' : ['FRP',      'Complex'],
-                           'I' : ['Assembly', 'Cylinder'],
-                           'J' : ['FRP',      'Complex'],
-                           'K' : ['Assembly', 'Cylinder'],
-                           'L' : ['FRP',      'Aerofoil'], 
-                           'M' : ['FRP',      'Aerofoil'],
-                           'N' : ['FRP',      'Aerofoil'],
-                           'O' : ['Assembly', 'Assembly'],
-                           'P' : ['Assembly', 'Assembly'],
+    aeroplane1.elements = {'A1': ['FRP',      ['Shell', 'Truncated cone']],
+                           'A2': ['FRP',      ['Beam', 'Cylindrical']],
+                           'A3': ['FRP',      ['Shell', 'Cone']],
+                           'B' : ['FRP',      ['Beam', 'Aerofoil']], 
+                           'C' : ['FRP',      ['Complex', 'Pylon']],
+                           'D' : ['Assembly', ['Shell', 'Cylinder']],
+                           'E' : ['FRP',      ['Complex', 'Pylon']],
+                           'F' : ['Assembly', ['Shell', 'Cylinder']],
+                           'G' : ['FRP',      ['Beam', 'Aerofoil']],
+                           'H' : ['FRP',      ['Complex', 'Pylon']],
+                           'I' : ['Assembly', ['Shell', 'Cylinder']],
+                           'J' : ['FRP',      ['Complex', 'Pylon']],
+                           'K' : ['Assembly', ['Shell', 'Cylinder']],
+                           'L' : ['FRP',      ['Beam', 'Aerofoil']], 
+                           'M' : ['FRP',      ['Beam', 'Aerofoil']],
+                           'N' : ['FRP',      ['Beam', 'Aerofoil']],
+                           'O' : ['Mixed',    ['Complex', 'Assembly']],
+                           'P' : ['Mixed',    ['Complex', 'Assembly']],
                            '1' : ['Ground']}
 
     aeroplane1.joints = {'1':  [['A1','A2'], [34.2, 14.68, 5.165], 'Perfect'],
@@ -92,21 +92,21 @@ if __name__ == '__main__':
 
     # Define the graph for a Cessna 172
     aeroplane2 = Structure('Cessna-172')
-    aeroplane2.elements = {'A' : ['Aluminium',  'Aerofoil'],
-                           'B' : ['Aluminium',  'Aerofoil'],
-                           'C' : ['Aluminium',  'Complex'],
-                           'D1': ['FRP',        'Rectangular shell'], 
-                           'D2': ['Mixed',      'Trapezoid'],
-                           'D3': ['FRP',        'Trapezoid'],
-                           'E' : ['FRP',        'Aerofoil'],
-                           'F' : ['FRP',        'Aerofoil'],
-                           'G' : ['Aluminium',  'Cylindrical beam'],
-                           'H' : ['Aluminium',  'Cylindrical beam'],
-                           'I' : ['FRP',        'Aerofoil'],
-                           'J' : ['FRP',        'Aerofoil'],
-                           'K' : ['FRP',        'Aerofoil'],
-                           'L' : ['Assembly',   'Assembly'], 
-                           'M' : ['Assembly',   'Assembly'],
+    aeroplane2.elements = {'A' : ['Aluminium',  ['Beam', 'Aerofoil']],
+                           'B' : ['Aluminium',  ['Beam', 'Aerofoil']],
+                           'C' : ['Aluminium',  ['Complex', 'Rotor hub']],
+                           'D1': ['FRP',        ['Shell', 'Rectangular']], 
+                           'D2': ['Mixed',      ['Sehll', 'Trapezoid']],
+                           'D3': ['FRP',        ['Sehll', 'Trapezoid']],
+                           'E' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'F' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'G' : ['Aluminium',  ['Beam', 'Cylindrical']],
+                           'H' : ['Aluminium',  ['Beam', 'Cylindrical']],
+                           'I' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'J' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'K' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'L' : ['Mixed',      ['Complex', 'Assembly']], 
+                           'M' : ['Mixed',      ['Complex', 'Assembly']],
                            '1' : ['Ground']}
 
     aeroplane2.joints = {'1':  [['A', 'C'],   [0, 0, 0], 'Bolted'],
@@ -166,8 +166,8 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    graph1 = bridge3
-    graph2 = aeroplane2
+    graph1 = bridge2
+    graph2 = bridge3
     
     print("Turbine nodes:", graph1.nodes)
     print("Aeroplane nodes:", graph2.nodes)
@@ -177,14 +177,14 @@ if __name__ == '__main__':
     V, E = gc.modularProduct(graph1, graph2)
     print("Modular product edges:", len(E))
     print("Modular product vertices:", len(V))
-    modularProduct = nx.Graph()
-    modularProduct.add_nodes_from(V)
-    modularProduct.add_edges_from(E)
+
+    # Draw the modular product graph
+    # modularProduct = nx.Graph()
+    # modularProduct.add_nodes_from(V)
+    # modularProduct.add_edges_from(E)
     # nx.draw(modularProduct, with_labels=True)
     # plt.show()
 
-    # Time the networkX algorithm
-    # cliques = find_cliques(modularProduct)
     # Find the largest cliques
 
     V1 = graph1.nodeList()
@@ -201,14 +201,14 @@ if __name__ == '__main__':
     print("Size of neighbour set:", total)
     print(divide)
 
-    cEdgeGraph = nx.Graph()
-    cEdgeGraph.add_edges_from(cEdges)
-    cEdgeGraph.add_nodes_from(V)
-
+    # Draw the c-edge graph
+    # cEdgeGraph = nx.Graph()
+    # cEdgeGraph.add_edges_from(cEdges)
+    # cEdgeGraph.add_nodes_from(V)
     # nx.draw(cEdgeGraph, with_labels=True)
     # plt.show()
 
-    # c-clique algorithm (broken)
+    # c-clique algorithm 
 
     start = time.time()
     print("Finding cliques...")
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     end = time.time()
     print(divide)
 
-    # BK cliques (misses 8-clique with degree 3, 'The Cross')
+    # BK cliques 
 
     # start = time.time()
     # print("Finding cliques...")
@@ -257,15 +257,21 @@ if __name__ == '__main__':
     print("Number of c-cliques:", len(c_cliques))
     try:
         print("Number of cliques:", len(cliques_BK))
-        print("The Cross?", {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques_BK)
     except:
         print("Number of cliques:", len(cliques))
-        print("The Cross?", {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')} in cliques)
 
     ss = gc.mcsSimilarityScore(max_cliques[0], V1, V2)
-    print("Similarity score:", round(ss, 2) , "%")
+    print("Vertex similarity score:", round(ss, 2) , "%")
 
-    # mcs = {('H', 'K'), ('C', 'M'), ('D', 'A3'), ('E', 'A2'), ('F', 'G'), ('G', 'J'), ('B', 'N'), ('A', 'L')}
+    mcs = max_cliques[0]
+    subgraph_edges = []
+    for v1 in mcs:
+        for v2 in mcs:
+            if (v1,v2) in cEdges:
+                subgraph_edges.append((v1,v2))
+    
+    ssE = gc.mcsSimilarityScore(subgraph_edges, E1, E2)
+    print('Edge similarity score:', round(ssE,2), '%')
 
     # Initiliase nx.Graph object
     graph1nx = nx.Graph()
@@ -286,13 +292,6 @@ if __name__ == '__main__':
     nx.draw(graph2nx, with_labels=True, pos=nx.spring_layout(graph2nx))
     plt.show()
 
-    mcs = max_cliques[0]
-    subgraph_edges = []
-    for v1 in mcs:
-        for v2 in mcs:
-            if ((v1,v2) in cEdges) or ((v2,v1) in cEdges):
-                subgraph_edges.append((v1,v2))
-    
     subgraph = nx.Graph()
     subgraph.add_nodes_from(mcs)
     subgraph.add_edges_from(subgraph_edges)
