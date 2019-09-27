@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import time
 import maximal_cliques as mc
 import graph_comparison as gc
+import similarity_score as ss
 
 divide = "\n###################################\n"
 
@@ -166,8 +167,8 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    graph1 = bridge2
-    graph2 = bridge3
+    graph1 = turbine1
+    graph2 = aeroplane2
     
     print("Turbine nodes:", graph1.nodes)
     print("Aeroplane nodes:", graph2.nodes)
@@ -260,8 +261,8 @@ if __name__ == '__main__':
     except:
         print("Number of cliques:", len(cliques))
 
-    ss = gc.mcsSimilarityScore(max_cliques[0], V1, V2)
-    print("Vertex similarity score:", round(ss, 2) , "%")
+    ssV = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Vertex similarity score:", round(ssV, 2) , "%")
 
     mcs = max_cliques[0]
     subgraph_edges = []
@@ -270,8 +271,9 @@ if __name__ == '__main__':
             if (v1,v2) in cEdges:
                 subgraph_edges.append((v1,v2))
     
-    ssE = gc.mcsSimilarityScore(subgraph_edges, E1, E2)
+    ssE = ss.mcsSimilarityScore(subgraph_edges, E1, E2)
     print('Edge similarity score:', round(ssE,2), '%')
+    print(divide)
 
     # Initiliase nx.Graph object
     graph1nx = nx.Graph()
