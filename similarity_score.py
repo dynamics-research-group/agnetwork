@@ -1,2 +1,31 @@
 def mcsSimilarityScore(mcs, g1, g2):
     return (len(mcs) * 100) / (len(g1) + len(g2) - len(mcs))
+
+def attributeMatching(sg_nodes, elements1, elements2):
+    percentage_match = 0
+    for node in sg_nodes:
+        # Extract the element IDs from the subgraph nodes
+        id1 = node[0]
+        id2 = node[1]
+        # Check if the elements are ground nodes
+        if (elements1[id1][0] != 'Ground') and (elements2[id2][0] != 'Ground'):
+            # If either of the elements only contains geometry class information, not other match is possible
+            if (len(elements1[id1][1]) == 1) or (len(elements2[id2][1]) == 1):
+                # Does the geometry class match?
+                if elements1[id1][1][0] == elements2[id2][1][0]:
+                    print('Geometry class match on', node)
+                    percentage_match += 0.5
+            # If both of the elements contain shape information, then attempt to match both class and shape
+            elif (len(elements1[id1][1]) == 2) and (len(elements2[id2][1]) == 2):
+                # Does the geometry class match?
+                if elements1[id1][1][0] == elements2[id2][1][0]:
+                    # Does the shape match?
+                    if elements1[id1][1][1] == elements2[id2][1][1]:
+                        print('Shape match on', node)
+                        percentage_match += 1
+                    else:
+                        print('Geometry class match on', node)
+                        percentage_match += 0.5
+
+    # Return the average percentage match
+    return percentage_match/len(sg_nodes)

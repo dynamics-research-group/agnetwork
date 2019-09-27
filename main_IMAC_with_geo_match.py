@@ -1,0 +1,260 @@
+from structure import Structure
+from structure import Network
+from element import Boundary
+from element import IrreducibleElement
+from joint import Joint
+from networkx.algorithms.approximation.clique import max_clique
+from networkx.algorithms.clique import find_cliques
+import networkx as nx
+import matplotlib.pyplot as plt
+import time
+import maximal_cliques as mc
+import graph_comparison as gc
+import similarity_score as ss
+
+divide = "\n###################################\n"
+
+if __name__ == '__main__':
+    '''This code creates the attributed graph for two
+    separate structures and performs a similarity
+    comparison between them. This work will go into
+    the IMAC paper.'''
+    network = Network()
+    # Define the graph for a turbine
+    turbine1 = Structure('Turbine1')
+    turbine1.elements = {'A': ['FRP',      ['Beam', 'Aerofoil']], 
+                         'B': ['FRP',      ['Beam', 'Aerofoil']],
+                         'C': ['FRP',      ['Beam', 'Aerofoil']],
+                         'D': ['FRP',      ['Complex', 'Rotor hub']],
+                         'E': ['FRP',      ['Shell', 'Cuboid']],
+                         'F': ['Metal',    ['Beam', 'Cylindrical']],
+                         'G': ['Metal',    ['Beam', 'Cylindrical']],
+                         'H': ['Metal',    ['Beam', 'Cylindrical']],
+                         'I': ['Concrete', ['Plate', 'Cylindrical']],
+                         '1': ['Ground']}
+                         
+    turbine1.joints = {'1': [['A','D'], [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
+                       '2': [['B','D'], [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
+                       '3': [['C','D'], [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
+                       '4': [['D','E'], [10, 15, 253],   'Bearing', ['x','y','z'], ['x','y']],
+                       '5': [['E','F'], [15, 15, 250],   'Bearing', ['x','y','z'], ['x','y']],
+                       '6': [['F','G'], [15, 15, 183],   'Bolted'],
+                       '7': [['G','H'], [15, 15, 105],   'Bolted'],
+                       '8': [['H','I'], [15, 15, 5],     'Bolted'],
+                       '9': [['I','1'], [15, 15, 0],     'Soil']}
+    turbine1.addElements()
+    turbine1.addJoints()
+    turbine1.edgeList()
+
+    # Define the graph for an 747
+    aeroplane1 = Structure('Boeing-747')
+    aeroplane1.elements = {'A1': ['FRP',      ['Shell', 'Truncated cone']],
+                           'A2': ['FRP',      ['Beam', 'Cylindrical']],
+                           'A3': ['FRP',      ['Shell', 'Cone']],
+                           'B' : ['FRP',      ['Beam', 'Aerofoil']], 
+                           'C' : ['FRP',      ['Complex', 'Pylon']],
+                           'D' : ['Assembly', ['Shell', 'Cylinder']],
+                           'E' : ['FRP',      ['Complex', 'Pylon']],
+                           'F' : ['Assembly', ['Shell', 'Cylinder']],
+                           'G' : ['FRP',      ['Beam', 'Aerofoil']],
+                           'H' : ['FRP',      ['Complex', 'Pylon']],
+                           'I' : ['Assembly', ['Shell', 'Cylinder']],
+                           'J' : ['FRP',      ['Complex', 'Pylon']],
+                           'K' : ['Assembly', ['Shell', 'Cylinder']],
+                           'L' : ['FRP',      ['Beam', 'Aerofoil']], 
+                           'M' : ['FRP',      ['Beam', 'Aerofoil']],
+                           'N' : ['FRP',      ['Beam', 'Aerofoil']],
+                           'O' : ['Mixed',    ['Complex', 'Assembly']],
+                           'P' : ['Mixed',    ['Complex', 'Assembly']],
+                           '1' : ['Ground']}
+
+    aeroplane1.joints = {'1':  [['A1','A2'], [34.2, 14.68, 5.165], 'Perfect'],
+                         '2':  [['A2','A3'], [34.2, 60.96, 5.165], 'Perfect'],
+                         '3':  [['A2','B'],  [32.2, 29.79, 2.89],  'Lug'],
+                         '4':  [['B', 'C'],  [13.2, 42.67, 4.74],  'Complex'],
+                         '5':  [['C', 'D'],  [13.2, 40.17, 4.74],  'Complex'],
+                         '6':  [['B', 'E'],  [23.2, 30.79, 3.57],  'Complex'],
+                         '7':  [['E', 'F'],  [23.2, 28.29, 3.57],  'Complex'],
+                         '8':  [['A2','G'],  [36.2, 29.79, 2.89],  'Lug'],
+                         '9':  [['G', 'H'],  [45.2, 30.79, 3.57],  'Complex'],
+                         '10': [['H', 'I'],  [45.2, 28.29, 3.57],  'Complex'],
+                         '11': [['G', 'J'],  [55.2, 42.67, 4.74],  'Complex'],
+                         '12': [['J', 'K'],  [55.2, 40.17, 4.74],  'Complex'],
+                         '13': [['A3','L'],  [33.2, 68.58, 7.55],  'Lug'],
+                         '14': [['A3','M'],  [35.2, 68.58, 7.55],  'Lug'],
+                         '15': [['A3','N'],  [34.2, 64.58, 9.16],  'Lug'],
+                         '16': [['A1','O'],  [34.2, 7.75,  1.75],  'Complex'],
+                         '17': [['A2','P'],  [34.2, 29.67, 1.75],  'Complex'],
+                         '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
+                         '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
+    aeroplane1.addElements()
+    aeroplane1.addJoints()
+    aeroplane1.edgeList()
+
+    # Define the graph for a Cessna 172
+    aeroplane2 = Structure('Cessna-172')
+    aeroplane2.elements = {'A' : ['Aluminium',  ['Beam', 'Aerofoil']],
+                           'B' : ['Aluminium',  ['Beam', 'Aerofoil']],
+                           'C' : ['Aluminium',  ['Complex', 'Rotor hub']],
+                           'D1': ['FRP',        ['Shell', 'Rectangular']], 
+                           'D2': ['Mixed',      ['Sehll', 'Trapezoid']],
+                           'D3': ['FRP',        ['Sehll', 'Trapezoid']],
+                           'E' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'F' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'G' : ['Aluminium',  ['Beam', 'Cylindrical']],
+                           'H' : ['Aluminium',  ['Beam', 'Cylindrical']],
+                           'I' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'J' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'K' : ['FRP',        ['Beam', 'Aerofoil']],
+                           'L' : ['Mixed',      ['Complex', 'Assembly']], 
+                           'M' : ['Mixed',      ['Complex', 'Assembly']],
+                           '1' : ['Ground']}
+
+    aeroplane2.joints = {'1':  [['A', 'C'],   [0, 0, 0], 'Bolted'],
+                         '2':  [['B', 'C'],   [0, 0, 0], 'Bolted'],
+                         '3':  [['C', 'D1'],  [0, 0, 0], 'Lug'],
+                         '4':  [['D1', 'D2'], [0, 0, 0], 'Perfect'],
+                         '5':  [['D1', 'D3'], [0, 0, 0], 'Perfect'],
+                         '6':  [['E', 'D2'],  [0, 0, 0], 'Complex'],
+                         '7':  [['F', 'D2'],  [0, 0, 0], 'Complex'],
+                         '8':  [['D3', 'I'],  [0, 0, 0], 'Lug'],
+                         '9':  [['D3', 'J'],  [0, 0, 0], 'Complex'],
+                         '10': [['D3', 'K'],  [0, 0, 0], 'Complex'],
+                         '11': [['D1', 'L'],  [0, 0, 0], 'Complex'],
+                         '12': [['D1', 'M'],  [0, 0, 0], 'Complex'],
+                         '13': [['D1', 'G'],  [0, 0, 0], 'Pinned'],
+                         '14': [['D1', 'H'],  [0, 0, 0], 'Pinned'],
+                         '15': [['E', 'G'],   [0, 0, 0], 'Pinned'],
+                         '16': [['F', 'H'],   [0, 0, 0], 'Pinned'],
+                         '17': [['L', '1'],   [0, 0, 0], 'Friction'],
+                         '18': [['M', '1'],   [0, 0, 0], 'Friction']}
+    
+    aeroplane2.addElements()
+    aeroplane2.addJoints()
+    aeroplane2.edgeList()
+
+    bridge1 = Structure('Bridge1')
+    bridge1.graph = {'1' : ['A'],
+                     '2' : ['B'],
+                     '3' : ['A'], 
+                     'A': ['1', 'B', '3'], 
+                     'B': ['A', '2']}
+
+    bridge2 = Structure('Bridge2')
+    bridge2.graph = {'1': ['A'], 
+                     '2': ['B'], 
+                     '3': ['D'],
+                     '4': ['C'], 
+                     'A': ['1', 'C', 'B'], 
+                     'C': ['A', 'D', '4'],
+                     'B': ['A', '2'], 
+                     'D': ['C', '3']}
+
+    bridge3 = Structure('Bridge3')
+    bridge3.graph = {'1': ['A'], 
+                     '2': ['B'], 
+                     '3': ['D'],
+                     '4': ['F'], 
+                     '5': ['E'], 
+                     'A': ['1', 'C', 'B'], 
+                     'C': ['A', 'D', 'E'],
+                     'B': ['A', '2'], 
+                     'D': ['C', '3'],
+                     'E': ['C','F', '5'],
+                     'F': ['E', '4']}
+    
+    bridge1.addToNetwork()
+    bridge2.addToNetwork()
+    bridge3.addToNetwork()
+
+    graph1 = aeroplane2
+    graph2 = aeroplane1
+    
+    print("Graph 1 nodes:", graph1.nodes)
+    print("Graph 2 nodes:", graph2.nodes)
+    print(divide)
+    
+    # Generate the modular product graph
+    V, E = gc.modularProduct(graph1, graph2)
+    print("Modular product edges:", len(E))
+    print("Modular product vertices:", len(V))
+    
+    ############################
+    # Find the largest cliques #
+    ############################
+
+    V1 = graph1.nodeList()
+    V2 = graph2.nodeList()
+    E1 = graph1.edgeList()
+    E2 = graph2.edgeList()
+    
+    cEdges, dEdges = gc.findCedges(E, E1, E2)
+    print("Number of c-edges:", len(cEdges))
+    print("Number of d-edges:", len(dEdges))
+
+    N = gc.neighbourSet(V, E)
+    total = sum([len(N[v]) for v in N])
+    print("Size of neighbour set:", total)
+    print(divide)
+
+    # c-clique algorithm 
+
+    start = time.time()
+    print("Finding cliques...")
+    cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
+    print("Removing duplicates...")
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    print("Checking cliques for adjacency...")
+    c_cliques = gc.check_adjacency(cliques, cEdges)
+    print("Finding largest cliques...")
+    max_cliques = gc.maxCliques(c_cliques)
+    end = time.time()
+    print(divide)
+    
+    # Cliques found using c-cliques
+
+    print("Time to find:", round(end - start, 2), "seconds")
+    print("Number of c-cliques:", len(c_cliques))
+    print("Number of cliques:", len(cliques))
+
+    ssV = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Vertex similarity score:", round(ssV, 2) , "%")
+
+    mcs = max_cliques[0]
+    subgraph_edges = []
+    for v1 in mcs:
+        for v2 in mcs:
+            if (v1,v2) in cEdges:
+                subgraph_edges.append((v1,v2))
+    
+    ssE = ss.mcsSimilarityScore(subgraph_edges, E1, E2)
+    print('Edge similarity score:', round(ssE,2), '%')
+    print(divide)
+
+    print(ss.attributeMatching(mcs, graph1.elements, graph2.elements))
+
+    # Initiliase nx.Graph object
+    graph1nx = nx.Graph()
+    # Add nodes and edges from graph1
+    graph1nx.add_nodes_from(graph1.nodeList())
+    graph1nx.add_edges_from(graph1.edgeList())
+
+    # Initiliase nx.Graph object
+    graph2nx = nx.Graph()
+    # Add nodes and edges from graph2   
+    graph2nx.add_nodes_from(graph2.nodeList())
+    graph2nx.add_edges_from(graph2.edgeList())
+
+    # Create subplots with bridge graphs
+    plt.subplot(121)
+    nx.draw(graph1nx, with_labels=True, pos=nx.spring_layout(graph1nx))
+    plt.subplot(122)
+    nx.draw(graph2nx, with_labels=True, pos=nx.spring_layout(graph2nx))
+    plt.show()
+
+    subgraph = nx.Graph()
+    subgraph.add_nodes_from(mcs)
+    subgraph.add_edges_from(subgraph_edges)
+
+    nx.draw(subgraph, with_labels=True)
+    plt.show()
