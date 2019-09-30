@@ -1,4 +1,5 @@
 from collections import defaultdict
+import itertools
 
 def maxCliques(cliques):
     """Find the set of largest cliques"""
@@ -62,22 +63,20 @@ def modularProduct(struct1, struct2):
     modprodV = set()
     modprodE = set()
     # Find the cartesian product of the sets of vertices for each graph
-    [modprodV.add((u, v)) for u in V1 for v in V2]
+    modprodV = set(itertools.product(V1, V2))
     # Loop through each vertex in the modular product
-    for U in modprodV:
-        # Compare with every other vertex in the modular product
-        for V in modprodV:
-            # Exclude any vertices which share the same point
-            if V[0] != U[0] and V[1] != U[1]:
-                # Exclude any pair of vertices that are already contained in an edge
-                if (U,V) not in modprodE and (V,U) not in modprodE:
-                    # Any two vertices (u0, u1) and (v0, v1) are adjacent in the modular product if and only if
-                    # u0 is adjacent to v0 and u1 is adjacent to v1
-                    if ({U[0],V[0]} in E1) and ({U[1],V[1]} in E2):
-                        modprodE.add((U,V))
-                    # or u0 is NOT adjacent to v0 and u1 is NOT adjacent to v1
-                    elif ({U[0],V[0]} not in E1) and ({U[1],V[1]} not in E2):
-                        modprodE.add((U,V))
+    for U, V in itertools.product(modprodV, modprodV):
+        # Exclude any vertices which share the same point
+        if V[0] != U[0] and V[1] != U[1]:
+            # Exclude any pair of vertices that are already contained in an edge
+            if (U,V) not in modprodE and (V,U) not in modprodE:
+                # Any two vertices (u0, u1) and (v0, v1) are adjacent in the modular product if and only if
+                # u0 is adjacent to v0 and u1 is adjacent to v1
+                if ({U[0],V[0]} in E1) and ({U[1],V[1]} in E2):
+                    modprodE.add((U,V))
+                # or u0 is NOT adjacent to v0 and u1 is NOT adjacent to v1
+                elif ({U[0],V[0]} not in E1) and ({U[1],V[1]} not in E2):
+                    modprodE.add((U,V))
     # Return the vertices and edges of theresultant graph
     return modprodV, modprodE
 

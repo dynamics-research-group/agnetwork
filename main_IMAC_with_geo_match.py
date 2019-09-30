@@ -167,12 +167,8 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    graph1 = aeroplane2
+    graph1 = turbine1
     graph2 = aeroplane1
-    
-    print("Graph 1 nodes:", graph1.nodes)
-    print("Graph 2 nodes:", graph2.nodes)
-    print(divide)
     
     # Generate the modular product graph
     V, E = gc.modularProduct(graph1, graph2)
@@ -221,17 +217,20 @@ if __name__ == '__main__':
     print("Vertex similarity score:", round(ssV, 2) , "%")
 
     mcs = max_cliques[0]
-    subgraph_edges = []
+    sg_edges = []
     for v1 in mcs:
         for v2 in mcs:
             if (v1,v2) in cEdges:
-                subgraph_edges.append((v1,v2))
+                sg_edges.append((v1,v2))
     
-    ssE = ss.mcsSimilarityScore(subgraph_edges, E1, E2)
+    ssE = ss.mcsSimilarityScore(sg_edges, E1, E2)
     print('Edge similarity score:', round(ssE,2), '%')
     print(divide)
 
-    print(ss.attributeMatching(mcs, graph1.elements, graph2.elements))
+    print(ss.elementAttributeMatching(mcs, graph1.elements, graph2.elements))
+
+    print(sg_edges)
+    ss.jointAttributeMatching(mcs, sg_edges, graph1.joints, graph2.joints)
 
     # Initiliase nx.Graph object
     graph1nx = nx.Graph()
@@ -254,7 +253,7 @@ if __name__ == '__main__':
 
     subgraph = nx.Graph()
     subgraph.add_nodes_from(mcs)
-    subgraph.add_edges_from(subgraph_edges)
+    subgraph.add_edges_from(sg_edges)
 
     nx.draw(subgraph, with_labels=True)
     plt.show()
