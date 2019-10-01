@@ -11,6 +11,13 @@ import time
 import maximal_cliques as mc
 import graph_comparison as gc
 import similarity_score as ss
+import itertools
+
+def takeSecond(elem):
+    return elem[1]
+
+def takeAverageMatch(elem):
+    return (elem[1] + elem[2])/2
 
 divide = "\n###################################\n"
 
@@ -167,7 +174,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    graph1 = turbine1
+    graph1 = aeroplane2
     graph2 = aeroplane1
     
     # Generate the modular product graph
@@ -213,8 +220,8 @@ if __name__ == '__main__':
     print("Number of c-cliques:", len(c_cliques))
     print("Number of cliques:", len(cliques))
 
-    ssV = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
-    print("Vertex similarity score:", round(ssV, 2) , "%")
+    vertex_match = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
+    print("Vertex similarity score:", round(vertex_match, 2) , "%")
 
     mcs = max_cliques[0]
     sg_edges = []
@@ -223,14 +230,30 @@ if __name__ == '__main__':
             if (v1,v2) in cEdges:
                 sg_edges.append((v1,v2))
     
-    ssE = ss.mcsSimilarityScore(sg_edges, E1, E2)
-    print('Edge similarity score:', round(ssE,2), '%')
+    edge_match = ss.mcsSimilarityScore(sg_edges, E1, E2)
+    print('Edge similarity score:', round(edge_match,2), '%')
     print(divide)
 
-    print(ss.elementAttributeMatching(mcs, graph1.elements, graph2.elements))
+    max_cliques_with_ss = []
+    for sg in max_cliques:
+        sg_edges = []
+        for v1, v2 in itertools.product(sg, sg):
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
+        element_match = ss.elementAttributeMatching(sg, graph1.elements, graph2.elements)
+        joint_match = ss.jointAttributeMatching(sg_edges, graph1.joints, graph2.joints)
+        max_cliques_with_ss.append([sg, element_match, joint_match])
+    max_cliques_with_ss.sort(key=takeAverageMatch, reverse=True)
 
-    print(sg_edges)
-    ss.jointAttributeMatching(mcs, sg_edges, graph1.joints, graph2.joints)
+    for clique in max_cliques_with_ss[:50]:
+        print(clique[0], round(clique[1]*100, 2), round(clique[2]*100, 2))
+
+    mcs = max_cliques_with_ss[0][0]
+    sg_edges = []
+    for v1 in mcs:
+        for v2 in mcs:
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
 
     # Initiliase nx.Graph object
     graph1nx = nx.Graph()
