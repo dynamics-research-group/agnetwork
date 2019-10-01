@@ -40,7 +40,7 @@ class Joint(Structure):
         """Check that there are the correct number of elements in jointSet"""
         elements = Joint.elements[self.structureID].keys()
         if len(jointSet) != 2:
-            raise ValueError("jointSet must contain two elements")
+            raise ValueError("jointSet must contain two elements.")
         # Check the existence of both elements in jointSet
         elif jointSet[0] and jointSet[0] in elements:
             self.__jointSet = jointSet
