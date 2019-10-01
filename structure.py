@@ -77,15 +77,15 @@ class Structure(Network):
     
     def addJoints(self):
         """Adds edges from list of joints"""
-        for jointID in self.joints:
+        for key in self.joints.keys():
             # Check whether the joint is connected to any elements
-            (node1, node2) = self.joints[jointID][0]
+            (node1, node2) = key
             nodes = self.nodeList()
             if node1 in nodes and node2 in nodes:
                 # Add edge defined for a given join ID
-                self.addEdge(self.joints[jointID][0])
+                self.addEdge(list(key))
             else:
-                raise ValueError("nodes not found in graph for jointID=" + str(jointID))
+                raise ValueError("nodes not found in graph for jointID=" + str(self.joints[key][0]))
     
     def addToNetwork(self):
         """Adds the graph of the structure to the network"""
