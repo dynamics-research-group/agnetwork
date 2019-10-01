@@ -2,6 +2,8 @@ def mcsSimilarityScore(mcs, g1, g2):
     return (len(mcs) * 100) / (len(g1) + len(g2) - len(mcs))
 
 def elementAttributeMatching(sg_nodes, elements1, elements2):
+    """Check whether the nodes in G1 and G2, which are associated
+    with nodes in the subgraph, have matching attributes"""
     match = 0
     for node in sg_nodes:
         # Extract the element IDs from the subgraph nodes
@@ -13,7 +15,6 @@ def elementAttributeMatching(sg_nodes, elements1, elements2):
             if (len(elements1[id1][1]) == 1) or (len(elements2[id2][1]) == 1):
                 # Does the geometry class match?
                 if elements1[id1][1][0] == elements2[id2][1][0]:
-                    print('Geometry class match on', node)
                     match += 0.5
             # If both of the elements contain shape information, then attempt to match both class and shape
             elif (len(elements1[id1][1]) == 2) and (len(elements2[id2][1]) == 2):
@@ -21,15 +22,36 @@ def elementAttributeMatching(sg_nodes, elements1, elements2):
                 if elements1[id1][1][0] == elements2[id2][1][0]:
                     # Does the shape match?
                     if elements1[id1][1][1] == elements2[id2][1][1]:
-                        print('Shape match on', node)
                         match += 1
                     else:
-                        print('Geometry class match on', node)
                         match += 0.5
 
     # Return the average percentage match
     return match/len(sg_nodes)
 
-def jointAttributeMatching(sg_nodes, sg_edges, joints1, joints2):
+def jointAttributeMatching(sg_edges, joints1, joints2):
+    """Check whether the edges in G1 and G2, which are associated
+    with the edges in the subgraph, have matching attributes."""
     match = 0
-    
+    # Cycle 
+    for edge in sg_edges:
+        v1 = edge[0][0]
+        v2 = edge[1][0]
+        u1 = edge[0][1]
+        u2 = edge[1][1]
+        # Fetch joint attribute for edge in graph 1
+        if (v1,v2) in joints1.keys():
+            type1 = joints1[(v1,v2)][2]
+        elif (v2,v1) in joints1.keys():
+            type1 = joints1[(v2,v1)][2]
+        else:
+            raise NameError(str(v1,v2) + "edge does not exist in joint list.")
+        # Fetch joint attribute for edge in graph 2
+        if (u1, u2) in joints2.keys():
+            type2 = joints2[(u1, u2)][2]
+        elif (u2, u1) in joints2.keys():
+            type2 = joints2[(u2, u1)][2]
+        else:
+            raise NameError(str(u1, u2) + "edge does not exist in joint list.")
+        if type1 == type2: match += 1
+    return match/len(sg_edges)
