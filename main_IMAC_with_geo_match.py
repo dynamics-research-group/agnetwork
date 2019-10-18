@@ -174,7 +174,7 @@ if __name__ == '__main__':
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    graph1 = aeroplane2
+    graph1 = turbine1
     graph2 = aeroplane1
     
     # Generate the modular product graph
