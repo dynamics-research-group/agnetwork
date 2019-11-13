@@ -41,7 +41,7 @@ if __name__ == '__main__':
                        ('F','G') : ['6', [15, 15, 183],   'Bolted'],
                        ('G','H') : ['7', [15, 15, 105],   'Bolted'],
                        ('H','I') : ['8', [15, 15, 5],     'Bolted'],
-                       ('I','1') : ['9', [15, 15, 0],     'Soil']}
+                       ('I','1') : ['9', [15, 15, 0],     'Boundary']}
     turbine1.addElements()
     turbine1.addJoints()
     turbine1.edgeList()
@@ -126,49 +126,79 @@ if __name__ == '__main__':
                          ('D1', 'H') : ['14', [0, 0, 0], 'Pinned'],
                          ('E', 'G')  : ['15', [0, 0, 0], 'Pinned'],
                          ('F', 'H')  : ['16', [0, 0, 0], 'Pinned'],
-                         ('L', '1')  : ['17', [0, 0, 0], 'Friction'],
-                         ('M', '1')  : ['18', [0, 0, 0], 'Friction']}
+                         ('L', '1')  : ['17', [0, 0, 0], 'Boundary'],
+                         ('M', '1')  : ['18', [0, 0, 0], 'Boundary']}
     
     aeroplane2.addElements()
     aeroplane2.addJoints()
     aeroplane2.edgeList()
 
     bridge1 = Structure('Bridge1')
-    bridge1.graph = {'1' : ['A'],
-                     '2' : ['B'],
-                     '3' : ['A'], 
-                     'A': ['1', 'B', '3'], 
-                     'B': ['A', '2']}
+    bridge1.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam']}
+    bridge1.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
+                      ('3','A') : ['2', [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3', [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['4', [0, 0, 0], 'Joined']}
+    bridge1.addElements()
+    bridge1.addJoints()
+    bridge1.edgeList()
 
     bridge2 = Structure('Bridge2')
-    bridge2.graph = {'1': ['A'], 
-                     '2': ['B'], 
-                     '3': ['D'],
-                     '4': ['C'], 
-                     'A': ['1', 'C', 'B'], 
-                     'C': ['A', 'D', '4'],
-                     'B': ['A', '2'], 
-                     'D': ['C', '3']}
+    bridge2.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        '4' : ['Ground'],
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam'],
+                        'C' : ['Concrete', 'Beam'], 
+                        'D' : ['Concrete', 'Beam']}
+    bridge2.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
+                      ('4','C') : ['2', [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3', [0, 0, 0], 'Clamped'],
+                      ('3','D') : ['4', [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['5', [0, 0, 0], 'Joined'],
+                      ('A','C') : ['6', [0, 0, 0], 'Joined'],
+                      ('C','D') : ['7', [0, 0, 0], 'Joined']}
+    bridge2.addElements()
+    bridge2.addJoints()
+    bridge2.edgeList()
 
     bridge3 = Structure('Bridge3')
-    bridge3.graph = {'1': ['A'], 
-                     '2': ['B'], 
-                     '3': ['D'],
-                     '4': ['F'], 
-                     '5': ['E'], 
-                     'A': ['1', 'C', 'B'], 
-                     'C': ['A', 'D', 'E'],
-                     'B': ['A', '2'], 
-                     'D': ['C', '3'],
-                     'E': ['C','F', '5'],
-                     'F': ['E', '4']}
+    bridge3.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        '4' : ['Ground'],
+                        '5' : ['Ground'],
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam'],
+                        'C' : ['Concrete', 'Beam'], 
+                        'D' : ['Concrete', 'Beam'],
+                        'E' : ['Concrete', 'Beam'],
+                        'F' : ['Concrete', 'Beam']}
+    bridge3.joints = {('1','A') : ['1',  [0, 0, 0], 'Simply supported'],
+                      ('5','E') : ['2',  [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3',  [0, 0, 0], 'Clamped'],
+                      ('3','D') : ['4',  [0, 0, 0], 'Clamped'],
+                      ('4','F') : ['5',  [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['6',  [0, 0, 0], 'Joined'],
+                      ('A','C') : ['7',  [0, 0, 0], 'Joined'],
+                      ('C','D') : ['8',  [0, 0, 0], 'Joined'],
+                      ('C','E') : ['9',  [0, 0, 0], 'Joined'],
+                      ('E','F') : ['10', [0, 0, 0], 'Joined']}
+    bridge3.addElements()
+    bridge3.addJoints()
+    bridge3.edgeList()
     
     bridge1.addToNetwork()
     bridge2.addToNetwork()
     bridge3.addToNetwork()
 
-    graph1 = turbine1
-    graph2 = aeroplane1
+    graph1 = bridge1
+    graph2 = bridge2
     
     # Generate the modular product graph
     V, E = gc.modularProduct(graph1, graph2)
@@ -231,12 +261,27 @@ if __name__ == '__main__':
     print(divide)
 
     # Generate a similarity score based on the element and joint attributes
-    max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
+    # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
 
-    for clique in max_cliques_with_ss[:50]:
-        print(clique[0], "Element:", round(clique[1]*100, 2), "% Joint:", round(clique[2]*100, 2), "%")
+    # for clique in max_cliques_with_ss[:50]:
+    #     print(clique[0], "Element:", round(clique[1]*100, 2), "% Joint:", round(clique[2]*100, 2), "%")
 
-    mcs = max_cliques_with_ss[0][0]
+    # mcs = max_cliques_with_ss[0][0]
+    # sg_edges = []
+    # for v1 in mcs:
+    #     for v2 in mcs:
+    #         if (v1,v2) in cEdges:
+    #             sg_edges.append((v1,v2))
+
+    # Match on boundary conditions alone
+    boundary_match = ss.boundaryConditionMatch(c_cliques, graph1, graph2)
+    boundary_match.sort(key=len, reverse=True)
+    for graph in boundary_match[:5]:
+        print(graph)
+    vertex_match = ss.JaccardIndex(boundary_match[0], V1, V2)
+    print("Vertex similarity score:", round(vertex_match, 2) , "%")
+
+    mcs = boundary_match[0]
     sg_edges = []
     for v1 in mcs:
         for v2 in mcs:

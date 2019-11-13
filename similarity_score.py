@@ -76,3 +76,32 @@ def attributeSimilarityScore(max_cliques, cEdges, graph1, graph2):
         max_cliques_with_ss.append([sg, element_match, joint_match])
     max_cliques_with_ss.sort(key=takeAverageMatch, reverse=True)
     return max_cliques_with_ss
+
+def createSubgraphs(max_cliques, cEdges):
+    for sg in max_cliques:
+        sg_edges = []
+        for v1, v2 in itertools.product(sg, sg):
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
+    return sg, sg_edges
+
+def boundaryConditionMatch(max_cliques, graph1, graph2):
+    struct_equiv_graphs = []
+    elements1 = graph1.elements
+    elements2 = graph2.elements
+    for sg in max_cliques:
+        match = True
+        for node in sg:
+            # Extract the element IDs from the subgraph nodes
+            id1 = node[0]
+            id2 = node[1]
+            if (elements1[id1][0] != 'Ground') and (elements2[id2][0] != 'Ground'):
+                pass
+            elif (elements1[id1][0] == 'Ground') and (elements2[id2][0] == 'Ground'):
+                pass
+            else:
+                match = False
+        if match == True:
+            struct_equiv_graphs.append(sg)
+    return struct_equiv_graphs
+    
