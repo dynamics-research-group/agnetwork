@@ -261,7 +261,7 @@ if __name__ == '__main__':
     except:
         print("Number of cliques:", len(cliques))
 
-    ssV = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
+    ssV = ss.JaccardIndex(max_cliques[0], V1, V2)
     print("Vertex similarity score:", round(ssV, 2) , "%")
 
     mcs = max_cliques[0]
@@ -271,7 +271,7 @@ if __name__ == '__main__':
             if (v1,v2) in cEdges:
                 subgraph_edges.append((v1,v2))
     
-    ssE = ss.mcsSimilarityScore(subgraph_edges, E1, E2)
+    ssE = ss.JaccardIndex(subgraph_edges, E1, E2)
     print('Edge similarity score:', round(ssE,2), '%')
     print(divide)
 

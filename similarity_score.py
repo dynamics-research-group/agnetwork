@@ -1,5 +1,13 @@
-def mcsSimilarityScore(mcs, g1, g2):
+import itertools
+
+def JaccardIndex(mcs, g1, g2):
     return (len(mcs) * 100) / (len(g1) + len(g2) - len(mcs))
+
+def takeSecond(elem):
+    return elem[1]
+
+def takeAverageMatch(elem):
+    return (elem[1] + elem[2])/2
 
 def elementAttributeMatching(sg_nodes, elements1, elements2):
     """Check whether the nodes in G1 and G2, which are associated
@@ -55,3 +63,16 @@ def jointAttributeMatching(sg_edges, joints1, joints2):
             raise NameError(str(u1, u2) + "edge does not exist in joint list.")
         if type1 == type2: match += 1
     return match/len(sg_edges)
+
+def attributeSimilarityScore(max_cliques, cEdges, graph1, graph2):
+    max_cliques_with_ss = []
+    for sg in max_cliques:
+        sg_edges = []
+        for v1, v2 in itertools.product(sg, sg):
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
+        element_match = elementAttributeMatching(sg, graph1.elements, graph2.elements)
+        joint_match = jointAttributeMatching(sg_edges, graph1.joints, graph2.joints)
+        max_cliques_with_ss.append([sg, element_match, joint_match])
+    max_cliques_with_ss.sort(key=takeAverageMatch, reverse=True)
+    return max_cliques_with_ss

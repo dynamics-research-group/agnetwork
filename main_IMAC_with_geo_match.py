@@ -11,13 +11,6 @@ import time
 import maximal_cliques as mc
 import graph_comparison as gc
 import similarity_score as ss
-import itertools
-
-def takeSecond(elem):
-    return elem[1]
-
-def takeAverageMatch(elem):
-    return (elem[1] + elem[2])/2
 
 divide = "\n###################################\n"
 
@@ -220,33 +213,28 @@ if __name__ == '__main__':
     print("Number of c-cliques:", len(c_cliques))
     print("Number of cliques:", len(cliques))
 
-    vertex_match = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
-    print("Vertex similarity score:", round(vertex_match, 2) , "%")
-
+    # Create edges in mcs graph
     mcs = max_cliques[0]
     sg_edges = []
     for v1 in mcs:
         for v2 in mcs:
             if (v1,v2) in cEdges:
                 sg_edges.append((v1,v2))
+
+    # Calculate the Jaccard index using the mcs as the overlap between the two graphs
+
+    vertex_match = ss.JaccardIndex(max_cliques[0], V1, V2)
+    print("Vertex similarity score:", round(vertex_match, 2) , "%")
     
-    edge_match = ss.mcsSimilarityScore(sg_edges, E1, E2)
+    edge_match = ss.JaccardIndex(sg_edges, E1, E2)
     print('Edge similarity score:', round(edge_match,2), '%')
     print(divide)
 
-    max_cliques_with_ss = []
-    for sg in max_cliques:
-        sg_edges = []
-        for v1, v2 in itertools.product(sg, sg):
-            if (v1,v2) in cEdges:
-                sg_edges.append((v1,v2))
-        element_match = ss.elementAttributeMatching(sg, graph1.elements, graph2.elements)
-        joint_match = ss.jointAttributeMatching(sg_edges, graph1.joints, graph2.joints)
-        max_cliques_with_ss.append([sg, element_match, joint_match])
-    max_cliques_with_ss.sort(key=takeAverageMatch, reverse=True)
+    # Generate a similarity score based on the element and joint attributes
+    max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
 
     for clique in max_cliques_with_ss[:50]:
-        print(clique[0], round(clique[1]*100, 2), round(clique[2]*100, 2))
+        print(clique[0], "Element:", round(clique[1]*100, 2), "% Joint:", round(clique[2]*100, 2), "%")
 
     mcs = max_cliques_with_ss[0][0]
     sg_edges = []
