@@ -20,6 +20,7 @@ if __name__ == '__main__':
     comparison between them. This work will go into
     the IMAC paper.'''
     network = Network()
+
     # Define the graph for a turbine
     turbine1 = Structure('Turbine1')
     turbine1.elements = {'A': ['FRP',      ['Beam', 'Aerofoil']], 
@@ -31,8 +32,7 @@ if __name__ == '__main__':
                          'G': ['Metal',    ['Beam', 'Cylindrical']],
                          'H': ['Metal',    ['Beam', 'Cylindrical']],
                          'I': ['Concrete', ['Plate', 'Cylindrical']],
-                         '1': ['Ground']}
-                         
+                         '1': ['Ground']}                
     turbine1.joints = {('A','D') : ['1', [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
                        ('B','D') : ['2', [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
                        ('C','D') : ['3', [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
@@ -67,7 +67,6 @@ if __name__ == '__main__':
                            'O' : ['Mixed',    ['Complex', 'Assembly']],
                            'P' : ['Mixed',    ['Complex', 'Assembly']],
                            '1' : ['Ground']}
-
     aeroplane1.joints = {('A1','A2') : ['1',  [34.2, 14.68, 5.165], 'Perfect'],
                          ('A2','A3') : ['2',  [34.2, 60.96, 5.165], 'Perfect'],
                          ('A2','B')  : ['3',  [32.2, 29.79, 2.89],  'Lug'],
@@ -109,7 +108,6 @@ if __name__ == '__main__':
                            'L' : ['Mixed',      ['Complex', 'Assembly']], 
                            'M' : ['Mixed',      ['Complex', 'Assembly']],
                            '1' : ['Ground']}
-
     aeroplane2.joints = {('A', 'C')  : ['1',  [0, 0, 0], 'Bolted'],
                          ('B', 'C')  : ['2',  [0, 0, 0], 'Bolted'],
                          ('C', 'D1') : ['3',  [0, 0, 0], 'Lug'],
@@ -128,11 +126,11 @@ if __name__ == '__main__':
                          ('F', 'H')  : ['16', [0, 0, 0], 'Pinned'],
                          ('L', '1')  : ['17', [0, 0, 0], 'Boundary'],
                          ('M', '1')  : ['18', [0, 0, 0], 'Boundary']}
-    
     aeroplane2.addElements()
     aeroplane2.addJoints()
     aeroplane2.edgeList()
 
+    # Define the graph for Bridge 1
     bridge1 = Structure('Bridge1')
     bridge1.elements = {'1' : ['Ground'],
                         '2' : ['Ground'],
@@ -147,6 +145,7 @@ if __name__ == '__main__':
     bridge1.addJoints()
     bridge1.edgeList()
 
+    # Define the graph for Bridge 2
     bridge2 = Structure('Bridge2')
     bridge2.elements = {'1' : ['Ground'],
                         '2' : ['Ground'],
@@ -167,6 +166,7 @@ if __name__ == '__main__':
     bridge2.addJoints()
     bridge2.edgeList()
 
+    # Define the graph for Bridge 3
     bridge3 = Structure('Bridge3')
     bridge3.elements = {'1' : ['Ground'],
                         '2' : ['Ground'],
@@ -192,10 +192,6 @@ if __name__ == '__main__':
     bridge3.addElements()
     bridge3.addJoints()
     bridge3.edgeList()
-    
-    bridge1.addToNetwork()
-    bridge2.addToNetwork()
-    bridge3.addToNetwork()
 
     graph1 = bridge1
     graph2 = bridge2
@@ -224,7 +220,6 @@ if __name__ == '__main__':
     print(divide)
 
     # c-clique algorithm 
-
     start = time.time()
     print("Finding cliques...")
     cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
@@ -238,12 +233,11 @@ if __name__ == '__main__':
     print(divide)
     
     # Cliques found using c-cliques
-
     print("Time to find:", round(end - start, 2), "seconds")
     print("Number of c-cliques:", len(c_cliques))
     print("Number of cliques:", len(cliques))
 
-    # Create edges in mcs graph
+    # Create edges in mcs
     mcs = max_cliques[0]
     sg_edges = []
     for v1 in mcs:
@@ -252,20 +246,18 @@ if __name__ == '__main__':
                 sg_edges.append((v1,v2))
 
     # Calculate the Jaccard index using the mcs as the overlap between the two graphs
-
     vertex_match = ss.JaccardIndex(max_cliques[0], V1, V2)
-    print("Vertex similarity score:", round(vertex_match, 2) , "%")
-    
+    print("Vertex similarity score:", round(vertex_match, 2))
     edge_match = ss.JaccardIndex(sg_edges, E1, E2)
-    print('Edge similarity score:', round(edge_match,2), '%')
+    print('Edge similarity score:', round(edge_match,2))
     print(divide)
 
     # Generate a similarity score based on the element and joint attributes
     # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
-
     # for clique in max_cliques_with_ss[:50]:
-    #     print(clique[0], "Element:", round(clique[1]*100, 2), "% Joint:", round(clique[2]*100, 2), "%")
-
+    #     print(clique[0], "Element:", round(clique[1], 2), "Joint:", round(clique[2], 2))
+    #
+    # Produce largest subgraph when sorted by similarity score
     # mcs = max_cliques_with_ss[0][0]
     # sg_edges = []
     # for v1 in mcs:
@@ -279,8 +271,9 @@ if __name__ == '__main__':
     for graph in boundary_match[:5]:
         print(graph)
     vertex_match = ss.JaccardIndex(boundary_match[0], V1, V2)
-    print("Vertex similarity score:", round(vertex_match, 2) , "%")
+    print("Vertex similarity score:", round(vertex_match, 2))
 
+    # Produce largest subgraph with boundary matches
     mcs = boundary_match[0]
     sg_edges = []
     for v1 in mcs:
