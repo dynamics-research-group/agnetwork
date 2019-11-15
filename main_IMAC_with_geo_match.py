@@ -3,8 +3,6 @@ from structure import Network
 from element import Boundary
 from element import IrreducibleElement
 from joint import Joint
-from networkx.algorithms.approximation.clique import max_clique
-from networkx.algorithms.clique import find_cliques
 import networkx as nx
 import matplotlib.pyplot as plt
 import time
