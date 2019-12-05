@@ -12,6 +12,28 @@ import similarity_score as ss
 
 divide = "\n###################################\n"
 
+def findGroundNodes(node_list):
+    ground_nodes = []
+    for node in node_list:
+        if node[0].isdigit():
+            ground_nodes.append(node)
+    normal_nodes = [x for x in node_list if x not in ground_nodes]
+    return ground_nodes, normal_nodes
+
+def graphPlot(nodes, edges):
+    G = nx.Graph()
+
+    G.add_edges_from(edges)
+    pos = nx.spring_layout(G)
+
+    grnd, nrml = findGroundNodes(nodes)
+
+    nx.draw_networkx_nodes(G, pos, grnd, node_color='b')
+    nx.draw_networkx_nodes(G, pos, nrml, node_color='r')
+    nx.draw_networkx_edges(G, pos)
+    plt.axis('off')
+    plt.show()
+
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
     separate structures and performs a similarity
@@ -191,8 +213,8 @@ if __name__ == '__main__':
     bridge3.addJoints()
     bridge3.edgeList()
 
-    graph1 = bridge1
-    graph2 = bridge2
+    graph1 = bridge2
+    graph2 = turbine1
     
     # Generate the modular product graph
     V, E = gc.modularProduct(graph1, graph2)
@@ -279,28 +301,8 @@ if __name__ == '__main__':
             if (v1,v2) in cEdges:
                 sg_edges.append((v1,v2))
 
-    # Initiliase nx.Graph object
-    graph1nx = nx.Graph()
-    # Add nodes and edges from graph1
-    graph1nx.add_nodes_from(graph1.nodeList())
-    graph1nx.add_edges_from(graph1.edgeList())
+    graphPlot(graph1.nodeList(), graph1.edgeList())
 
-    # Initiliase nx.Graph object
-    graph2nx = nx.Graph()
-    # Add nodes and edges from graph2   
-    graph2nx.add_nodes_from(graph2.nodeList())
-    graph2nx.add_edges_from(graph2.edgeList())
+    graphPlot(graph2.nodeList(), graph2.edgeList())
 
-    # Create subplots with bridge graphs
-    plt.subplot(121)
-    nx.draw(graph1nx, with_labels=True, pos=nx.spring_layout(graph1nx))
-    plt.subplot(122)
-    nx.draw(graph2nx, with_labels=True, pos=nx.spring_layout(graph2nx))
-    plt.show()
-
-    subgraph = nx.Graph()
-    subgraph.add_nodes_from(mcs)
-    subgraph.add_edges_from(sg_edges)
-
-    nx.draw(subgraph, with_labels=True)
-    plt.show()
+    graphPlot(mcs, sg_edges)
