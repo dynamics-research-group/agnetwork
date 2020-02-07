@@ -3,36 +3,7 @@ from structure import Network
 from element import Boundary
 from element import IrreducibleElement
 from joint import Joint
-import networkx as nx
-import matplotlib.pyplot as plt
-import time
-import maximal_cliques as mc
 import graph_comparison as gc
-import similarity_score as ss
-
-divide = "\n###################################\n"
-
-def findGroundNodes(node_list):
-    ground_nodes = []
-    for node in node_list:
-        if node[0].isdigit():
-            ground_nodes.append(node)
-    normal_nodes = [x for x in node_list if x not in ground_nodes]
-    return ground_nodes, normal_nodes
-
-def graphPlot(nodes, edges):
-    G = nx.Graph()
-
-    G.add_edges_from(edges)
-    pos = nx.spring_layout(G)
-
-    grnd, nrml = findGroundNodes(nodes)
-
-    nx.draw_networkx_nodes(G, pos, grnd, node_color='b')
-    nx.draw_networkx_nodes(G, pos, nrml, node_color='r')
-    nx.draw_networkx_edges(G, pos)
-    plt.axis('off')
-    plt.show()
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -213,96 +184,10 @@ if __name__ == '__main__':
     bridge3.addJoints()
     bridge3.edgeList()
 
-    graph1 = bridge2
-    graph2 = turbine1
-    
-    # Generate the modular product graph
-    V, E = gc.modularProduct(graph1, graph2)
-    print("Modular product edges:", len(E))
-    print("Modular product vertices:", len(V))
-    
-    ############################
-    # Find the largest cliques #
-    ############################
+    graph_list = [turbine1, bridge1, bridge2, bridge3]
+    gc.createJaccardDistanceMatrix(graph_list, True)
 
-    V1 = graph1.nodeList()
-    V2 = graph2.nodeList()
-    E1 = graph1.edgeList()
-    E2 = graph2.edgeList()
-    
-    cEdges, dEdges = gc.findCedges(E, E1, E2)
-    print("Number of c-edges:", len(cEdges))
-    print("Number of d-edges:", len(dEdges))
-
-    N = gc.neighbourSet(V, E)
-    total = sum([len(N[v]) for v in N])
-    print("Size of neighbour set:", total)
-    print(divide)
-
-    # c-clique algorithm 
-    start = time.time()
-    print("Finding cliques...")
-    cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
-    print("Removing duplicates...")
-    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    print("Checking cliques for adjacency...")
-    c_cliques = gc.check_adjacency(cliques, cEdges)
-    print("Finding largest cliques...")
-    max_cliques = gc.maxCliques(c_cliques)
-    end = time.time()
-    print(divide)
-    
-    # Cliques found using c-cliques
-    print("Time to find:", round(end - start, 2), "seconds")
-    print("Number of c-cliques:", len(c_cliques))
-    print("Number of cliques:", len(cliques))
-
-    # Create edges in mcs
-    mcs = max_cliques[0]
-    sg_edges = []
-    for v1 in mcs:
-        for v2 in mcs:
-            if (v1,v2) in cEdges:
-                sg_edges.append((v1,v2))
-
-    # Calculate the Jaccard index using the mcs as the overlap between the two graphs
-    vertex_match = ss.JaccardIndex(max_cliques[0], V1, V2)
-    print("Vertex similarity score:", round(vertex_match, 2))
-    edge_match = ss.JaccardIndex(sg_edges, E1, E2)
-    print('Edge similarity score:', round(edge_match,2))
-    print(divide)
-
-    # Generate a similarity score based on the element and joint attributes
+    # # Generate a similarity score based on the element and joint attributes
     # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
     # for clique in max_cliques_with_ss[:50]:
     #     print(clique[0], "Element:", round(clique[1], 2), "Joint:", round(clique[2], 2))
-    #
-    # Produce largest subgraph when sorted by similarity score
-    # mcs = max_cliques_with_ss[0][0]
-    # sg_edges = []
-    # for v1 in mcs:
-    #     for v2 in mcs:
-    #         if (v1,v2) in cEdges:
-    #             sg_edges.append((v1,v2))
-
-    # Match on boundary conditions alone
-    boundary_match = ss.boundaryConditionMatch(c_cliques, graph1, graph2)
-    boundary_match.sort(key=len, reverse=True)
-    for graph in boundary_match[:5]:
-        print(graph)
-    vertex_match = ss.JaccardIndex(boundary_match[0], V1, V2)
-    print("Vertex similarity score:", round(vertex_match, 2))
-
-    # Produce largest subgraph with boundary matches
-    mcs = boundary_match[0]
-    sg_edges = []
-    for v1 in mcs:
-        for v2 in mcs:
-            if (v1,v2) in cEdges:
-                sg_edges.append((v1,v2))
-
-    graphPlot(graph1.nodeList(), graph1.edgeList())
-
-    graphPlot(graph2.nodeList(), graph2.edgeList())
-
-    graphPlot(mcs, sg_edges)
