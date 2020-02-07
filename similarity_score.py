@@ -104,4 +104,3 @@ def boundaryConditionMatch(max_cliques, graph1, graph2):
         if match == True:
             struct_equiv_graphs.append(sg)
     return struct_equiv_graphs
-    
