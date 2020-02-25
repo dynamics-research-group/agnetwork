@@ -180,11 +180,11 @@ if __name__ == '__main__':
     print("Modular product vertices:", len(V))
 
     # Draw the modular product graph
-    # modularProduct = nx.Graph()
-    # modularProduct.add_nodes_from(V)
-    # modularProduct.add_edges_from(E)
-    # nx.draw(modularProduct, with_labels=True)
-    # plt.show()
+    modularProduct = nx.Graph()
+    modularProduct.add_nodes_from(V)
+    modularProduct.add_edges_from(E)
+    nx.draw(modularProduct, with_labels=True)
+    plt.show()
 
     # Find the largest cliques
 

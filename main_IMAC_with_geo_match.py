@@ -181,6 +181,12 @@ if __name__ == '__main__':
     V, E = gc.modularProduct(graph1, graph2)
     print("Modular product edges:", len(E))
     print("Modular product vertices:", len(V))
+
+    modularProduct = nx.Graph()
+    modularProduct.add_nodes_from(V)
+    modularProduct.add_edges_from(E)
+    nx.draw(modularProduct, with_labels=True)
+    plt.show()
     
     ############################
     # Find the largest cliques #
