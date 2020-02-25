@@ -3,16 +3,7 @@ from structure import Network
 from element import Boundary
 from element import IrreducibleElement
 from joint import Joint
-from networkx.algorithms.approximation.clique import max_clique
-from networkx.algorithms.clique import find_cliques
-import networkx as nx
-import matplotlib.pyplot as plt
-import time
-import maximal_cliques as mc
 import graph_comparison as gc
-import similarity_score as ss
-
-divide = "\n###################################\n"
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -20,6 +11,7 @@ if __name__ == '__main__':
     comparison between them. This work will go into
     the IMAC paper.'''
     network = Network()
+
     # Define the graph for a turbine
     turbine1 = Structure('Turbine1')
     turbine1.elements = {'A': ['FRP',      ['Beam', 'Aerofoil']], 
@@ -31,17 +23,16 @@ if __name__ == '__main__':
                          'G': ['Metal',    ['Beam', 'Cylindrical']],
                          'H': ['Metal',    ['Beam', 'Cylindrical']],
                          'I': ['Concrete', ['Plate', 'Cylindrical']],
-                         '1': ['Ground']}
-                         
-    turbine1.joints = {'1': [['A','D'], [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
-                       '2': [['B','D'], [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
-                       '3': [['C','D'], [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
-                       '4': [['D','E'], [10, 15, 253],   'Bearing', ['x','y','z'], ['x','y']],
-                       '5': [['E','F'], [15, 15, 250],   'Bearing', ['x','y','z'], ['x','y']],
-                       '6': [['F','G'], [15, 15, 183],   'Bolted'],
-                       '7': [['G','H'], [15, 15, 105],   'Bolted'],
-                       '8': [['H','I'], [15, 15, 5],     'Bolted'],
-                       '9': [['I','1'], [15, 15, 0],     'Soil']}
+                         '1': ['Ground']}                
+    turbine1.joints = {('A','D') : ['1', [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
+                       ('B','D') : ['2', [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
+                       ('C','D') : ['3', [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
+                       ('D','E') : ['4', [10, 15, 253],   'Bearing', ['x','y','z'], ['x','y']],
+                       ('E','F') : ['5', [15, 15, 250],   'Bearing', ['x','y','z'], ['x','y']],
+                       ('F','G') : ['6', [15, 15, 183],   'Bolted'],
+                       ('G','H') : ['7', [15, 15, 105],   'Bolted'],
+                       ('H','I') : ['8', [15, 15, 5],     'Bolted'],
+                       ('I','1') : ['9', [15, 15, 0],     'Boundary']}
     turbine1.addElements()
     turbine1.addJoints()
     turbine1.edgeList()
@@ -67,26 +58,25 @@ if __name__ == '__main__':
                            'O' : ['Mixed',    ['Complex', 'Assembly']],
                            'P' : ['Mixed',    ['Complex', 'Assembly']],
                            '1' : ['Ground']}
-
-    aeroplane1.joints = {'1':  [['A1','A2'], [34.2, 14.68, 5.165], 'Perfect'],
-                         '2':  [['A2','A3'], [34.2, 60.96, 5.165], 'Perfect'],
-                         '3':  [['A2','B'],  [32.2, 29.79, 2.89],  'Lug'],
-                         '4':  [['B', 'C'],  [13.2, 42.67, 4.74],  'Complex'],
-                         '5':  [['C', 'D'],  [13.2, 40.17, 4.74],  'Complex'],
-                         '6':  [['B', 'E'],  [23.2, 30.79, 3.57],  'Complex'],
-                         '7':  [['E', 'F'],  [23.2, 28.29, 3.57],  'Complex'],
-                         '8':  [['A2','G'],  [36.2, 29.79, 2.89],  'Lug'],
-                         '9':  [['G', 'H'],  [45.2, 30.79, 3.57],  'Complex'],
-                         '10': [['H', 'I'],  [45.2, 28.29, 3.57],  'Complex'],
-                         '11': [['G', 'J'],  [55.2, 42.67, 4.74],  'Complex'],
-                         '12': [['J', 'K'],  [55.2, 40.17, 4.74],  'Complex'],
-                         '13': [['A3','L'],  [33.2, 68.58, 7.55],  'Lug'],
-                         '14': [['A3','M'],  [35.2, 68.58, 7.55],  'Lug'],
-                         '15': [['A3','N'],  [34.2, 64.58, 9.16],  'Lug'],
-                         '16': [['A1','O'],  [34.2, 7.75,  1.75],  'Complex'],
-                         '17': [['A2','P'],  [34.2, 29.67, 1.75],  'Complex'],
-                         '18': [['O', '1'],  [34.2, 7.75,  0],     'Friction'],
-                         '19': [['P', '1'],  [34.2, 29.67, 0],     'Friction']}
+    aeroplane1.joints = {('A1','A2') : ['1',  [34.2, 14.68, 5.165], 'Perfect'],
+                         ('A2','A3') : ['2',  [34.2, 60.96, 5.165], 'Perfect'],
+                         ('A2','B')  : ['3',  [32.2, 29.79, 2.89],  'Lug'],
+                         ('B', 'C')  : ['4',  [13.2, 42.67, 4.74],  'Complex'],
+                         ('C', 'D')  : ['5',  [13.2, 40.17, 4.74],  'Complex'],
+                         ('B', 'E')  : ['6',  [23.2, 30.79, 3.57],  'Complex'],
+                         ('E', 'F')  : ['7',  [23.2, 28.29, 3.57],  'Complex'],
+                         ('A2','G')  : ['8',  [36.2, 29.79, 2.89],  'Lug'],
+                         ('G', 'H')  : ['9',  [45.2, 30.79, 3.57],  'Complex'],
+                         ('H', 'I')  : ['10', [45.2, 28.29, 3.57],  'Complex'],
+                         ('G', 'J')  : ['11', [55.2, 42.67, 4.74],  'Complex'],
+                         ('J', 'K')  : ['12', [55.2, 40.17, 4.74],  'Complex'],
+                         ('A3','L')  : ['13', [33.2, 68.58, 7.55],  'Lug'],
+                         ('A3','M')  : ['14', [35.2, 68.58, 7.55],  'Lug'],
+                         ('A3','N')  : ['15', [34.2, 64.58, 9.16],  'Lug'],
+                         ('A1','O')  : ['16', [34.2, 7.75,  1.75],  'Complex'],
+                         ('A2','P')  : ['17', [34.2, 29.67, 1.75],  'Complex'],
+                         ('O', '1')  : ['18', [34.2, 7.75,  0],     'Friction'],
+                         ('P', '1')  : ['19', [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
     aeroplane1.edgeList()
@@ -109,194 +99,95 @@ if __name__ == '__main__':
                            'L' : ['Mixed',      ['Complex', 'Assembly']], 
                            'M' : ['Mixed',      ['Complex', 'Assembly']],
                            '1' : ['Ground']}
-
-    aeroplane2.joints = {'1':  [['A', 'C'],   [0, 0, 0], 'Bolted'],
-                         '2':  [['B', 'C'],   [0, 0, 0], 'Bolted'],
-                         '3':  [['C', 'D1'],  [0, 0, 0], 'Lug'],
-                         '4':  [['D1', 'D2'], [0, 0, 0], 'Perfect'],
-                         '5':  [['D1', 'D3'], [0, 0, 0], 'Perfect'],
-                         '6':  [['E', 'D2'],  [0, 0, 0], 'Complex'],
-                         '7':  [['F', 'D2'],  [0, 0, 0], 'Complex'],
-                         '8':  [['D3', 'I'],  [0, 0, 0], 'Lug'],
-                         '9':  [['D3', 'J'],  [0, 0, 0], 'Complex'],
-                         '10': [['D3', 'K'],  [0, 0, 0], 'Complex'],
-                         '11': [['D1', 'L'],  [0, 0, 0], 'Complex'],
-                         '12': [['D1', 'M'],  [0, 0, 0], 'Complex'],
-                         '13': [['D1', 'G'],  [0, 0, 0], 'Pinned'],
-                         '14': [['D1', 'H'],  [0, 0, 0], 'Pinned'],
-                         '15': [['E', 'G'],   [0, 0, 0], 'Pinned'],
-                         '16': [['F', 'H'],   [0, 0, 0], 'Pinned'],
-                         '17': [['L', '1'],   [0, 0, 0], 'Friction'],
-                         '18': [['M', '1'],   [0, 0, 0], 'Friction']}
-    
+    aeroplane2.joints = {('A', 'C')  : ['1',  [0, 0, 0], 'Bolted'],
+                         ('B', 'C')  : ['2',  [0, 0, 0], 'Bolted'],
+                         ('C', 'D1') : ['3',  [0, 0, 0], 'Lug'],
+                         ('D1','D2') : ['4',  [0, 0, 0], 'Perfect'],
+                         ('D1','D3') : ['5',  [0, 0, 0], 'Perfect'],
+                         ('E', 'D2') : ['6',  [0, 0, 0], 'Complex'],
+                         ('F', 'D2') : ['7',  [0, 0, 0], 'Complex'],
+                         ('D3', 'I') : ['8',  [0, 0, 0], 'Lug'],
+                         ('D3', 'J') : ['9',  [0, 0, 0], 'Complex'],
+                         ('D3', 'K') : ['10', [0, 0, 0], 'Complex'],
+                         ('D1', 'L') : ['11', [0, 0, 0], 'Complex'],
+                         ('D1', 'M') : ['12', [0, 0, 0], 'Complex'],
+                         ('D1', 'G') : ['13', [0, 0, 0], 'Pinned'],
+                         ('D1', 'H') : ['14', [0, 0, 0], 'Pinned'],
+                         ('E', 'G')  : ['15', [0, 0, 0], 'Pinned'],
+                         ('F', 'H')  : ['16', [0, 0, 0], 'Pinned'],
+                         ('L', '1')  : ['17', [0, 0, 0], 'Boundary'],
+                         ('M', '1')  : ['18', [0, 0, 0], 'Boundary']}
     aeroplane2.addElements()
     aeroplane2.addJoints()
     aeroplane2.edgeList()
 
+    # Define the graph for Bridge 1
     bridge1 = Structure('Bridge1')
-    bridge1.graph = {'1' : ['A'],
-                     '2' : ['B'],
-                     '3' : ['A'], 
-                     'A': ['1', 'B', '3'], 
-                     'B': ['A', '2']}
+    bridge1.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam']}
+    bridge1.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
+                      ('3','A') : ['2', [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3', [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['4', [0, 0, 0], 'Joined']}
+    bridge1.addElements()
+    bridge1.addJoints()
+    bridge1.edgeList()
 
+    # Define the graph for Bridge 2
     bridge2 = Structure('Bridge2')
-    bridge2.graph = {'1': ['A'], 
-                     '2': ['B'], 
-                     '3': ['D'],
-                     '4': ['C'], 
-                     'A': ['1', 'C', 'B'], 
-                     'C': ['A', 'D', '4'],
-                     'B': ['A', '2'], 
-                     'D': ['C', '3']}
+    bridge2.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        '4' : ['Ground'],
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam'],
+                        'C' : ['Concrete', 'Beam'], 
+                        'D' : ['Concrete', 'Beam']}
+    bridge2.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
+                      ('4','C') : ['2', [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3', [0, 0, 0], 'Clamped'],
+                      ('3','D') : ['4', [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['5', [0, 0, 0], 'Joined'],
+                      ('A','C') : ['6', [0, 0, 0], 'Joined'],
+                      ('C','D') : ['7', [0, 0, 0], 'Joined']}
+    bridge2.addElements()
+    bridge2.addJoints()
+    bridge2.edgeList()
 
+    # Define the graph for Bridge 3
     bridge3 = Structure('Bridge3')
-    bridge3.graph = {'1': ['A'], 
-                     '2': ['B'], 
-                     '3': ['D'],
-                     '4': ['F'], 
-                     '5': ['E'], 
-                     'A': ['1', 'C', 'B'], 
-                     'C': ['A', 'D', 'E'],
-                     'B': ['A', '2'], 
-                     'D': ['C', '3'],
-                     'E': ['C','F', '5'],
-                     'F': ['E', '4']}
-    
-    bridge1.addToNetwork()
-    bridge2.addToNetwork()
-    bridge3.addToNetwork()
+    bridge3.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        '4' : ['Ground'],
+                        '5' : ['Ground'],
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam'],
+                        'C' : ['Concrete', 'Beam'], 
+                        'D' : ['Concrete', 'Beam'],
+                        'E' : ['Concrete', 'Beam'],
+                        'F' : ['Concrete', 'Beam']}
+    bridge3.joints = {('1','A') : ['1',  [0, 0, 0], 'Simply supported'],
+                      ('5','E') : ['2',  [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3',  [0, 0, 0], 'Clamped'],
+                      ('3','D') : ['4',  [0, 0, 0], 'Clamped'],
+                      ('4','F') : ['5',  [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['6',  [0, 0, 0], 'Joined'],
+                      ('A','C') : ['7',  [0, 0, 0], 'Joined'],
+                      ('C','D') : ['8',  [0, 0, 0], 'Joined'],
+                      ('C','E') : ['9',  [0, 0, 0], 'Joined'],
+                      ('E','F') : ['10', [0, 0, 0], 'Joined']}
+    bridge3.addElements()
+    bridge3.addJoints()
+    bridge3.edgeList()
 
-    graph1 = turbine1
-    graph2 = aeroplane2
-    
-    print("Turbine nodes:", graph1.nodes)
-    print("Aeroplane nodes:", graph2.nodes)
-    print(divide)
-    
-    # Generate the modular product graph
-    V, E = gc.modularProduct(graph1, graph2)
-    print("Modular product edges:", len(E))
-    print("Modular product vertices:", len(V))
+    graph_list = [turbine1, bridge1, bridge2, bridge3]
+    gc.createJaccardDistanceMatrix(graph_list, True)
 
-    # Draw the modular product graph
-    modularProduct = nx.Graph()
-    modularProduct.add_nodes_from(V)
-    modularProduct.add_edges_from(E)
-    nx.draw(modularProduct, with_labels=True)
-    plt.show()
-
-    # Find the largest cliques
-
-    V1 = graph1.nodeList()
-    V2 = graph2.nodeList()
-    E1 = graph1.edgeList()
-    E2 = graph2.edgeList()
-    
-    cEdges, dEdges = gc.findCedges(E, E1, E2)
-    print("Number of c-edges:", len(cEdges))
-    print("Number of d-edges:", len(dEdges))
-
-    N = gc.neighbourSet(V, E)
-    total = sum([len(N[v]) for v in N])
-    print("Size of neighbour set:", total)
-    print(divide)
-
-    # Draw the c-edge graph
-    # cEdgeGraph = nx.Graph()
-    # cEdgeGraph.add_edges_from(cEdges)
-    # cEdgeGraph.add_nodes_from(V)
-    # nx.draw(cEdgeGraph, with_labels=True)
-    # plt.show()
-
-    # c-clique algorithm 
-
-    start = time.time()
-    print("Finding cliques...")
-    cliques = list(gc.maximalCliquesCedges(V, E, cEdges, dEdges))
-    print("Removing duplicates...")
-    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    print("Checking cliques for adjacency...")
-    c_cliques = gc.check_adjacency(cliques, cEdges)
-    print("Finding largest cliques...")
-    max_cliques = gc.maxCliques(c_cliques)
-    end = time.time()
-    print(divide)
-
-    # BK cliques 
-
-    # start = time.time()
-    # print("Finding cliques...")
-    # cliques_BK = network.maximalCliquesBK(V, E)
-    # print("Checking cliques for adjacency...")
-    # c_cliques = check_adjacency(cliques_BK, cEdges)
-    # print("Finding largest cliques...")
-    # max_cliques = maxCliques(c_cliques)
-    # end = time.time()
-    # print(divide)
-
-    # Maximal cliques (downloaded)
-
-    # start = time.time()
-    # print("Create graph...")
-    # G = network.neighbourSet(V, E)
-    # print("Finding cliques...")
-    # cliques = mc.find_cliques(G)
-    # print("Checking cliques for adjacency...")
-    # c_cliques = check_adjacency(cliques, cEdges)
-    # print("Finding largest cliques...")
-    # max_cliques = maxCliques(c_cliques)
-    # end = time.time()
-    # print(divide)
-    
-    # Cliques found using c-cliques
-    for i, clique in enumerate(max_cliques):
-        print("Max clique", i+1, ":", clique)
-    print(divide)
-
-    print("Time to find:", round(end - start, 2), "seconds")
-    print("Number of c-cliques:", len(c_cliques))
-    try:
-        print("Number of cliques:", len(cliques_BK))
-    except:
-        print("Number of cliques:", len(cliques))
-
-    ssV = ss.mcsSimilarityScore(max_cliques[0], V1, V2)
-    print("Vertex similarity score:", round(ssV, 2) , "%")
-
-    mcs = max_cliques[0]
-    subgraph_edges = []
-    for v1 in mcs:
-        for v2 in mcs:
-            if (v1,v2) in cEdges:
-                subgraph_edges.append((v1,v2))
-    
-    ssE = ss.mcsSimilarityScore(subgraph_edges, E1, E2)
-    print('Edge similarity score:', round(ssE,2), '%')
-    print(divide)
-
-    # Initiliase nx.Graph object
-    graph1nx = nx.Graph()
-    # Add nodes and edges from graph1
-    graph1nx.add_nodes_from(graph1.nodeList())
-    graph1nx.add_edges_from(graph1.edgeList())
-
-    # Initiliase nx.Graph object
-    graph2nx = nx.Graph()
-    # Add nodes and edges from graph2   
-    graph2nx.add_nodes_from(graph2.nodeList())
-    graph2nx.add_edges_from(graph2.edgeList())
-
-    # Create subplots with bridge graphs
-    plt.subplot(121)
-    nx.draw(graph1nx, with_labels=True, pos=nx.spring_layout(graph1nx))
-    plt.subplot(122)
-    nx.draw(graph2nx, with_labels=True, pos=nx.spring_layout(graph2nx))
-    plt.show()
-
-    subgraph = nx.Graph()
-    subgraph.add_nodes_from(mcs)
-    subgraph.add_edges_from(subgraph_edges)
-
-    nx.draw(subgraph, with_labels=True)
-    plt.show()
+    # # Generate a similarity score based on the element and joint attributes
+    # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
+    # for clique in max_cliques_with_ss[:50]:
+    #     print(clique[0], "Element:", round(clique[1], 2), "Joint:", round(clique[2], 2))

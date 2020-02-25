@@ -1,5 +1,12 @@
 from collections import defaultdict
 import itertools
+import time
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+import similarity_score as ss
+
+divide = "\n###################################\n"
 
 def maxCliques(cliques):
     """Find the set of largest cliques"""
@@ -56,9 +63,6 @@ def modularProduct(struct1, struct2):
     V2 = struct2.nodes
     E1 = struct1.edges
     E2 = struct2.edges
-    # The modular product function misses edges if the larger graph is called first
-    if len(V1) > len(V2):
-        raise Exception("Smaller graph first please.")
     # Initialise empty sets for modular product edges and vetices
     modprodV = set()
     modprodE = set()
@@ -242,6 +246,103 @@ def inexactGraphComparison(graph1, graph2):
     # Create possible pairs
     pass
 
+def findSubgraphs(V, E, cEdges, dEdges):
+    """Given the modular product, c-edges and d-edges for two graphs, 
+    return the full list of: connected induced common subgraphs"""
+    # c-clique algorithm 
+    print("Finding cliques...")
+    cliques = list(maximalCliquesCedges(V, E, cEdges, dEdges))
+    print("Removing duplicates...")
+    cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
+    print("Checking cliques for adjacency...")
+    c_cliques = check_adjacency(cliques, cEdges)
+    print(divide)
+    return c_cliques
+
+def plotMCS(clique_set, cEdges):
+    sg_nodes = clique_set[0]
+    sg_edges = []
+    for v1 in sg_nodes:
+        for v2 in sg_nodes:
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
+    graphPlot(sg_nodes, sg_edges)
+
+def findGroundNodes(node_list):
+    ground_nodes = []
+    for node in node_list:
+        if node[0].isdigit():
+            ground_nodes.append(node)
+    normal_nodes = [x for x in node_list if x not in ground_nodes]
+    return ground_nodes, normal_nodes
+
+def graphPlot(nodes, edges):
+    G = nx.Graph()
+
+    G.add_edges_from(edges)
+    pos = nx.spring_layout(G)
+
+    grnd, nrml = findGroundNodes(nodes)
+
+    nx.draw_networkx_nodes(G, pos, grnd, node_color='b')
+    nx.draw_networkx_nodes(G, pos, nrml, node_color='r')
+    nx.draw_networkx_edges(G, pos)
+    plt.axis('off')
+    plt.show()
+
+def findJaccardDistance(graph1, graph2, BCmatch=False):
+    # Generate node list
+    V1 = graph1.nodeList()
+    V2 = graph2.nodeList()
+    # The modular product function misses edges if the larger graph is called first
+    if len(V1) > len(V2):
+        # Swap graphs so largest is graph1
+        graph3 = graph1
+        graph1 = graph2
+        graph2 = graph3
+        # Re-generate node list
+        V1 = graph1.nodeList()
+        V2 = graph2.nodeList()
+    # Generate edge list
+    E1 = graph1.edgeList()
+    E2 = graph2.edgeList()
+    # Generate the modular product graph
+    V, E = modularProduct(graph1, graph2)
+    # Create list of c-edges and d-edges within modular product graph
+    cEdges, dEdges = findCedges(E, E1, E2)
+    # Find the largest cliques
+    c_cliques = findSubgraphs(V, E, cEdges, dEdges)
+    # Plot the two graphs
+    # graphPlot(graph1.nodeList(), graph1.edgeList())
+    # graphPlot(graph2.nodeList(), graph2.edgeList())
+    if BCmatch:
+        # Match on boundary conditions alone
+        boundary_match = ss.boundaryConditionMatch(c_cliques, graph1, graph2)
+        boundary_match.sort(key=len, reverse=True)
+        vertex_match = 1 - ss.JaccardIndex(boundary_match[0], V1, V2)
+        # Produce largest subgraph with boundary matches
+        # plotMCS(boundary_match, cEdges)
+    else:
+        print("Finding largest cliques...")
+        max_cliques = maxCliques(c_cliques)
+        # General Jaccard distance
+        vertex_match = 1 - ss.JaccardIndex(max_cliques[0], V1, V2)
+        # Produce largest subgraph 
+        # plotMCS(max_cliques, cEdges)
+    return round(vertex_match, 2)
+
+def createJaccardDistanceMatrix(graph_list, BCmatch=False):
+    n = len(graph_list)
+    distanceMatrix = np.zeros((n,n))
+    for i, graph1 in enumerate(graph_list):
+        for j, graph2 in enumerate(graph_list):
+            if i < j:
+                distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
+            if i > j:
+                distanceMatrix[i][j] = distanceMatrix[j][i]
+    print(distanceMatrix)
+
+# Modified from progress bar code
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
     """
     Print iterations progress

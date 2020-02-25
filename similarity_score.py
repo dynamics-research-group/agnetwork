@@ -1,5 +1,13 @@
-def mcsSimilarityScore(mcs, g1, g2):
-    return (len(mcs) * 100) / (len(g1) + len(g2) - len(mcs))
+import itertools
+
+def JaccardIndex(mcs, g1, g2):
+    return len(mcs) / (len(g1) + len(g2) - len(mcs))
+
+def takeSecond(elem):
+    return elem[1]
+
+def takeAverageMatch(elem):
+    return (elem[1] + elem[2])/2
 
 def elementAttributeMatching(sg_nodes, elements1, elements2):
     """Check whether the nodes in G1 and G2, which are associated
@@ -55,3 +63,44 @@ def jointAttributeMatching(sg_edges, joints1, joints2):
             raise NameError(str(u1, u2) + "edge does not exist in joint list.")
         if type1 == type2: match += 1
     return match/len(sg_edges)
+
+def attributeSimilarityScore(max_cliques, cEdges, graph1, graph2):
+    max_cliques_with_ss = []
+    for sg in max_cliques:
+        sg_edges = []
+        for v1, v2 in itertools.product(sg, sg):
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
+        element_match = elementAttributeMatching(sg, graph1.elements, graph2.elements)
+        joint_match = jointAttributeMatching(sg_edges, graph1.joints, graph2.joints)
+        max_cliques_with_ss.append([sg, element_match, joint_match])
+    max_cliques_with_ss.sort(key=takeAverageMatch, reverse=True)
+    return max_cliques_with_ss
+
+def createSubgraphs(max_cliques, cEdges):
+    for sg in max_cliques:
+        sg_edges = []
+        for v1, v2 in itertools.product(sg, sg):
+            if (v1,v2) in cEdges:
+                sg_edges.append((v1,v2))
+    return sg, sg_edges
+
+def boundaryConditionMatch(max_cliques, graph1, graph2):
+    struct_equiv_graphs = []
+    elements1 = graph1.elements
+    elements2 = graph2.elements
+    for sg in max_cliques:
+        match = True
+        for node in sg:
+            # Extract the element IDs from the subgraph nodes
+            id1 = node[0]
+            id2 = node[1]
+            if (elements1[id1][0] != 'Ground') and (elements2[id2][0] != 'Ground'):
+                pass
+            elif (elements1[id1][0] == 'Ground') and (elements2[id2][0] == 'Ground'):
+                pass
+            else:
+                match = False
+        if match == True:
+            struct_equiv_graphs.append(sg)
+    return struct_equiv_graphs
