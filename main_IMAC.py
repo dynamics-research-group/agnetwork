@@ -7,6 +7,7 @@ from joint import Joint
 import graph_comparison as gc
 import numpy as np
 import pandas as pd
+import itertools
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -191,13 +192,47 @@ if __name__ == '__main__':
     # distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
     # print(distanceMatrix)
 
-    weights = dict()
+    graph_dict = dict()
     for graph in graph_list:
-        weights[graph] = np.random.rand(len(graph_list))
-
-    network_weights = pd.DataFrame(data=weights, index=graph_list)
-
+        graph_dict[str(graph)] = graph
     
+    print(graph_dict)
+
+    weights = dict()
+    for i, graph in enumerate(graph_dict.keys()):
+        # Initialise random weights
+        weights[graph] = np.random.rand(len(graph_list))
+        # Lower triangle is the same as the upper triangle
+        weights[graph][i:] = 0
+
+    network_weights = pd.DataFrame(data=weights, index=graph_dict.keys())
+
+    print("Initial weights:")
+    print(network_weights)
+
+    iterations = 5
+
+    for x in range(iterations):
+        list_of_comparisons = itertools.combinations(graph_list, 2)
+        for comparison in list_of_comparisons:
+            diff = comparison[0].numberOfNodes() - comparison[1].numberOfNodes()
+            adjust = diff * diff + 1
+            row_num = network_weights.index.get_loc(str(comparison[0]))
+            graph = str(comparison[1])
+            weights[graph][row_num] += network_weights.loc[str(comparison[0]), str(comparison[1])] + adjust
+        
+        max_weight = max(i for v in weights.values() for i in v) 
+        # for v in myDict.values():
+        #     for i in v:
+        #         m = i if i > m else m
+
+        for x, y in weights.items():
+            weights[x] = y/max_weight
+
+        network_weights = pd.DataFrame(data=weights, index=graph_dict.keys())
+
+    print("Final weights:")
+    print(network_weights)
 
     # # Generate a similarity score based on the element and joint attributes
     # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
