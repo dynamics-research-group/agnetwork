@@ -332,13 +332,17 @@ def findJaccardDistance(graph1, graph2, BCmatch=False):
     return round(vertex_match, 2)
 
 def createJaccardDistanceMatrix(graph_list, BCmatch=False):
+    # Create distance matrix with initital distance set to zero
     n = len(graph_list)
     distanceMatrix = np.zeros((n,n))
+    # Iterate through pairs of graphs in list
     for i, graph1 in enumerate(graph_list):
         for j, graph2 in enumerate(graph_list):
             if i < j:
+                # If graphs are not identical, calculate pairwise distances
                 distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
             if i > j:
+                # Use symmetry condition for distance matrix
                 distanceMatrix[i][j] = distanceMatrix[j][i]
     return distanceMatrix
 
