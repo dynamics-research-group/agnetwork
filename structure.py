@@ -29,6 +29,9 @@ class Structure(Network):
         self.elements[structureID] = {}
         self.joints[structureID] = {}
 
+    def __str__(self):
+        return str(self.structureID)
+
     def addNode(self, node):
         """Adds node to the graph"""
         if node not in self.graph:
@@ -57,6 +60,10 @@ class Structure(Network):
         self.nodes = nodes
         return nodes
 
+    def numberOfNodes(self):
+        """Retruns the size of the node set"""
+        return len(self.nodeList())
+
     def edgeList(self):
         """Returns list of edges in graph"""
         edges = []
@@ -67,6 +74,10 @@ class Structure(Network):
                         edges.append({node, nxtnode})
         self.edges = edges
         return edges
+
+    def numberOfEdges(self):
+        """Retruns the size of the edge set"""
+        return len(self.edgeList())
     
     def addElements(self):
         """Adds nodes from list of elements"""
