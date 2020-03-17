@@ -3,14 +3,17 @@ from structure import Network
 from element import Boundary
 from element import IrreducibleElement
 from joint import Joint
+
 import graph_comparison as gc
+import numpy as np
+import pandas as pd
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
     separate structures and performs a similarity
     comparison between them. This work will go into
     the IMAC paper.'''
-    network = Network()
+    # network = Network()
 
     # Define the graph for a turbine
     turbine1 = Structure('Turbine1')
@@ -185,7 +188,16 @@ if __name__ == '__main__':
     bridge3.edgeList()
 
     graph_list = [turbine1, bridge1, bridge2, bridge3]
-    gc.createJaccardDistanceMatrix(graph_list, True)
+    # distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
+    # print(distanceMatrix)
+
+    weights = dict()
+    for graph in graph_list:
+        weights[graph] = np.random.rand(len(graph_list))
+
+    network_weights = pd.DataFrame(data=weights, index=graph_list)
+
+    
 
     # # Generate a similarity score based on the element and joint attributes
     # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)

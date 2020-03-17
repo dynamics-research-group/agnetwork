@@ -340,7 +340,7 @@ def createJaccardDistanceMatrix(graph_list, BCmatch=False):
                 distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
             if i > j:
                 distanceMatrix[i][j] = distanceMatrix[j][i]
-    print(distanceMatrix)
+    return distanceMatrix
 
 # Modified from progress bar code
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
