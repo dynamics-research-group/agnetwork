@@ -341,9 +341,9 @@ def createJaccardDistanceMatrix(graph_list, BCmatch=False):
             if i < j:
                 # If graphs are not identical, calculate pairwise distances
                 distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
-            if i > j:
-                # Use symmetry condition for distance matrix
-                distanceMatrix[i][j] = distanceMatrix[j][i]
+            # if i > j:
+            #     # Use symmetry condition for distance matrix
+            #     distanceMatrix[i][j] = distanceMatrix[j][i]
     return distanceMatrix
 
 # Modified from progress bar code
