@@ -5,9 +5,8 @@ from element import IrreducibleElement
 from joint import Joint
 
 import graph_comparison as gc
-import numpy as np
+import network as nw
 import pandas as pd
-import itertools
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -161,6 +160,27 @@ if __name__ == '__main__':
     bridge2.addJoints()
     bridge2.edgeList()
 
+    # Define the graph for Bridge 2a
+    bridge2a = Structure('Bridge2a')
+    bridge2a.elements = {'1' : ['Ground'],
+                        '2' : ['Ground'],
+                        '3' : ['Ground'], 
+                        '4' : ['Ground'],
+                        'A' : ['Concrete', 'Beam'], 
+                        'B' : ['Concrete', 'Beam'],
+                        'C' : ['Concrete', 'Beam'], 
+                        'D' : ['Concrete', 'Beam']}
+    bridge2a.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
+                      ('4','C') : ['2', [0, 0, 0], 'Simply supported'],
+                      ('2','B') : ['3', [0, 0, 0], 'Clamped'],
+                      ('3','D') : ['4', [0, 0, 0], 'Clamped'],
+                      ('A','B') : ['5', [0, 0, 0], 'Joined'],
+                      ('A','C') : ['6', [0, 0, 0], 'Joined'],
+                      ('C','D') : ['7', [0, 0, 0], 'Joined']}
+    bridge2a.addElements()
+    bridge2a.addJoints()
+    bridge2a.edgeList()
+
     # Define the graph for Bridge 3
     bridge3 = Structure('Bridge3')
     bridge3.elements = {'1' : ['Ground'],
@@ -188,49 +208,24 @@ if __name__ == '__main__':
     bridge3.addJoints()
     bridge3.edgeList()
 
-    graph_list = [turbine1, bridge1, bridge2, bridge3]
+    graph_list = [turbine1, bridge1, bridge2, bridge2a, bridge3]
     # distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
     # print(distanceMatrix)
 
-    graph_dict = dict()
-    for graph in graph_list:
-        graph_dict[str(graph)] = graph
-    
-    print(graph_dict)
+    graph_strings = [str(graph) for graph in graph_list]
 
-    weights = dict()
-    for i, graph in enumerate(graph_dict.keys()):
-        # Initialise random weights
-        weights[graph] = np.random.rand(len(graph_list))
-        # Lower triangle is the same as the upper triangle
-        weights[graph][i:] = 0
-
-    network_weights = pd.DataFrame(data=weights, index=graph_dict.keys())
-
+    # Create initial weights matrix
+    weights = nw.initWeightsDict(graph_list)
+    # Create and print initial dataframe
+    network_weights = pd.DataFrame(data=weights, index=weights.keys())
     print("Initial weights:")
     print(network_weights)
 
-    iterations = 5
-
-    for x in range(iterations):
-        list_of_comparisons = itertools.combinations(graph_list, 2)
-        for comparison in list_of_comparisons:
-            diff = comparison[0].numberOfNodes() - comparison[1].numberOfNodes()
-            adjust = diff * diff + 1
-            row_num = network_weights.index.get_loc(str(comparison[0]))
-            graph = str(comparison[1])
-            weights[graph][row_num] += network_weights.loc[str(comparison[0]), str(comparison[1])] + adjust
+    # Update the weights based on size of the graphs
+    weights = nw.updateWeights(weights, graph_list)
         
-        max_weight = max(i for v in weights.values() for i in v) 
-        # for v in myDict.values():
-        #     for i in v:
-        #         m = i if i > m else m
-
-        for x, y in weights.items():
-            weights[x] = y/max_weight
-
-        network_weights = pd.DataFrame(data=weights, index=graph_dict.keys())
-
+    # Create and print a new dataframe using the updated weights
+    network_weights = pd.DataFrame(data=weights, index=weights.keys())
     print("Final weights:")
     print(network_weights)
 
