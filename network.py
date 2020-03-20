@@ -11,32 +11,36 @@ def initWeightsDict(graph_list):
     weights = dict()
     for i, graph in enumerate(graph_list):
         # Initialise random weights
-        weights[str(graph)] = np.random.rand(len(graph_list))
+        weights[graph] = np.random.rand(len(graph_list))
         # Lower triangle is the same as the upper triangle
-        weights[str(graph)][i:] = 0
+        weights[graph][i:] = 0
     return weights
 
-def updateWeights(weights, graph_list, iterations=10):
+def updateWeights(weights, iterations=10):
     for x in range(iterations):
-        # Create all possible pairwise combinations for the graphs ignoring order
-        list_of_comparisons = itertools.combinations(graph_list, 2)
-        for comparison in list_of_comparisons:
+        # Iterate through all possible pairwise combinations for the graphs ignoring order
+        for comparison in itertools.combinations(weights.keys(), 2):
             # Calculate the difference in number of nodes for a given pair of graphs
             diff = comparison[0].numberOfNodes() - comparison[1].numberOfNodes()
             # Square the difference to ensure symmetry
             adjust = diff * diff 
             # Get the row number for the first graph
-            row_num = list(weights.keys()).index(str(comparison[0]))
-            # row_num = network_weights.index.get_loc(str(comparison[0]))
-            graph = str(comparison[1])
+            row_num = list(weights.keys()).index(comparison[0])
             # Update the corresponding entry in the weights dictionary
-            weights[graph][row_num] += weights[graph][row_num] + adjust
+            weights[comparison[1]][row_num] += adjust
         # Find the maximum weight after all entries have been updated
         max_weight = max(i for v in weights.values() for i in v) 
         # for v in myDict.values():
         #     for i in v:
         #         m = i if i > m else m
-        # Normalise each weight w.r.t. the maximum
+        # Normalise each weight w.r.t. to the max
         for x, y in weights.items():
             weights[x] = y/max_weight
+    return weights
+
+def addNewGraph(graph, weights):
+    # graph_list = weights.keys()
+    weights[graph] = np.random.rand(len(weights.keys()))
+    for entry in weights:
+        weights[entry] = np.append(weights[entry], [0])
     return weights
