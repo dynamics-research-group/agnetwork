@@ -208,25 +208,36 @@ if __name__ == '__main__':
     bridge3.addJoints()
     bridge3.edgeList()
 
-    graph_list = [turbine1, bridge1, bridge2, bridge2a, bridge3]
+    graph_list = [turbine1, bridge1, bridge2, bridge2a]
     # distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
     # print(distanceMatrix)
-
-    graph_strings = [str(graph) for graph in graph_list]
 
     # Create initial weights matrix
     weights = nw.initWeightsDict(graph_list)
     # Create and print initial dataframe
+    graph_strings = [str(graph) for graph in graph_list]
     network_weights = pd.DataFrame(data=weights, index=weights.keys())
     print("Initial weights:")
     print(network_weights)
 
     # Update the weights based on size of the graphs
-    weights = nw.updateWeights(weights, graph_list)
+    weights = nw.updateWeights(weights)
         
     # Create and print a new dataframe using the updated weights
     network_weights = pd.DataFrame(data=weights, index=weights.keys())
     print("Final weights:")
+    print(network_weights)
+
+    # Add bridge3 to weights
+    weights = nw.addNewGraph(aeroplane1, weights)
+    weights = nw.addNewGraph(bridge3, weights)
+    weights = nw.addNewGraph(aeroplane2, weights)
+    # Update the weights again
+    weights = nw.updateWeights(weights)
+
+    network_weights = pd.DataFrame(data=weights, index=weights.keys())
+    
+    print("New weights:")
     print(network_weights)
 
     # # Generate a similarity score based on the element and joint attributes
