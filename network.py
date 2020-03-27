@@ -1,6 +1,9 @@
 import numpy as np
 import itertools
 
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
 def createGraphDict(graph_list):
     graph_dict = dict()
     for graph in graph_list:
@@ -23,11 +26,12 @@ def updateWeights(weights, iterations=10):
             # Calculate the difference in number of nodes for a given pair of graphs
             diff = comparison[0].numberOfNodes() - comparison[1].numberOfNodes()
             # Square the difference to ensure symmetry
-            adjust = diff * diff 
+            adjust = diff * diff
             # Get the row number for the first graph
             row_num = list(weights.keys()).index(comparison[0])
             # Update the corresponding entry in the weights dictionary
-            weights[comparison[1]][row_num] += adjust
+            # weights[comparison[1]][row_num] = np.log(adjust + 1 )
+            weights[comparison[1]][row_num] =+ adjust
         # Find the maximum weight after all entries have been updated
         max_weight = max(i for v in weights.values() for i in v) 
         # for v in myDict.values():

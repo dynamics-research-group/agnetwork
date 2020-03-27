@@ -320,14 +320,14 @@ def findJaccardDistance(graph1, graph2, BCmatch=False):
         boundary_match = ss.boundaryConditionMatch(c_cliques, graph1, graph2)
         boundary_match.sort(key=len, reverse=True)
         vertex_match = 1 - ss.JaccardIndex(boundary_match[0], V1, V2)
-        # Produce largest subgraph with boundary matches
+        # Plot largest subgraph with boundary matches
         # plotMCS(boundary_match, cEdges)
     else:
         print("Finding largest cliques...")
         max_cliques = maxCliques(c_cliques)
         # General Jaccard distance
         vertex_match = 1 - ss.JaccardIndex(max_cliques[0], V1, V2)
-        # Produce largest subgraph 
+        # Plot largest subgraph 
         # plotMCS(max_cliques, cEdges)
     return round(vertex_match, 2)
 

@@ -219,26 +219,29 @@ if __name__ == '__main__':
     network_weights = pd.DataFrame(data=weights, index=weights.keys())
     print("Initial weights:")
     print(network_weights)
+    print()
 
     # Update the weights based on size of the graphs
-    weights = nw.updateWeights(weights)
+    weights = nw.updateWeights(weights,1)
         
     # Create and print a new dataframe using the updated weights
     network_weights = pd.DataFrame(data=weights, index=weights.keys())
     print("Final weights:")
     print(network_weights)
+    print()
 
     # Add bridge3 to weights
     weights = nw.addNewGraph(aeroplane1, weights)
     weights = nw.addNewGraph(bridge3, weights)
     weights = nw.addNewGraph(aeroplane2, weights)
     # Update the weights again
-    weights = nw.updateWeights(weights)
+    weights = nw.updateWeights(weights,5)
 
     network_weights = pd.DataFrame(data=weights, index=weights.keys())
     
     print("New weights:")
     print(network_weights)
+    print()
 
     # # Generate a similarity score based on the element and joint attributes
     # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
