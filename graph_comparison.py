@@ -183,7 +183,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
     # Create the neighbour set
     N = neighbourSet(V, E)
     T = set()
-    printProgress(0, len(V), "Progress:", "of vertices checked")
+    printProgressBar(0, len(V), "Progress:", "of vertices checked")
     # Initialise c-clique finding algorithm for each vertex
     for i, u in enumerate(sorted(list(V))):
     # for u in degeneracy_ordering(N):
@@ -206,7 +206,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
         # Call c-clique finding algorithm
         [cliques.append(r) for r in enumerateCcliques(R, P, D, X, N, T, cEdges)]
         T.add(u)
-        printProgress(i, len(V), "Progress:", "of vertices checked")
+        printProgressBar(i, len(V), "Progress:", "of vertices checked")
     print()
     return cliques
 
@@ -290,7 +290,7 @@ def graphPlot(nodes, edges):
     plt.axis('off')
     plt.show()
 
-def findJaccardDistance(graph1, graph2, BCmatch=False):
+def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
     # Generate node list
     V1 = graph1.nodeList()
     V2 = graph2.nodeList()
@@ -313,22 +313,25 @@ def findJaccardDistance(graph1, graph2, BCmatch=False):
     # Find the largest cliques
     c_cliques = findSubgraphs(V, E, cEdges, dEdges)
     # Plot the two graphs
-    # graphPlot(graph1.nodeList(), graph1.edgeList())
-    # graphPlot(graph2.nodeList(), graph2.edgeList())
+    if plot == True:
+        graphPlot(graph1.nodeList(), graph1.edgeList())
+        graphPlot(graph2.nodeList(), graph2.edgeList())
     if BCmatch:
         # Match on boundary conditions alone
         boundary_match = ss.boundaryConditionMatch(c_cliques, graph1, graph2)
         boundary_match.sort(key=len, reverse=True)
         vertex_match = 1 - ss.JaccardIndex(boundary_match[0], V1, V2)
         # Plot largest subgraph with boundary matches
-        # plotMCS(boundary_match, cEdges)
+        if plot == True:
+            plotMCS(boundary_match, cEdges)
     else:
         print("Finding largest cliques...")
         max_cliques = maxCliques(c_cliques)
         # General Jaccard distance
         vertex_match = 1 - ss.JaccardIndex(max_cliques[0], V1, V2)
         # Plot largest subgraph 
-        # plotMCS(max_cliques, cEdges)
+        if plot == True:
+            plotMCS(max_cliques, cEdges)
     return round(vertex_match, 2)
 
 def createJaccardDistanceMatrix(graph_list, BCmatch=False):
