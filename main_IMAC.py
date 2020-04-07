@@ -209,8 +209,9 @@ if __name__ == '__main__':
     bridge3.edgeList()
 
     graph_list = [turbine1, bridge1, bridge2, bridge2a]
-    # distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
-    # print(distanceMatrix)
+    graph_list2 = [aeroplane1, aeroplane2]
+    distanceMatrix = gc.createJaccardDistanceMatrix(graph_list2, True)
+    print(distanceMatrix)
 
     # Create initial weights matrix
     weights = nw.initWeightsDict(graph_list)

@@ -188,6 +188,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
     for i, u in enumerate(sorted(list(V))):
     # for u in degeneracy_ordering(N):
     # for u in V:
+        print(u)
         # Set P, D, X and R as the empty set
         P = set()
         D = set()
@@ -206,7 +207,7 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
         # Call c-clique finding algorithm
         [cliques.append(r) for r in enumerateCcliques(R, P, D, X, N, T, cEdges)]
         T.add(u)
-        printProgressBar(i, len(V), "Progress:", "of vertices checked")
+        printProgressBar(i, len(V)-1, "Progress:", "of vertices checked")
     print()
     return cliques
 
@@ -308,6 +309,8 @@ def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
     E2 = graph2.edgeList()
     # Generate the modular product graph
     V, E = modularProduct(graph1, graph2)
+    print("Modular product vertices:", len(V))
+    print("Modular product edges:", len(E))
     # Create list of c-edges and d-edges within modular product graph
     cEdges, dEdges = findCedges(E, E1, E2)
     # Find the largest cliques
