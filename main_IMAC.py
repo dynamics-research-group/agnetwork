@@ -7,6 +7,7 @@ from joint import Joint
 import graph_comparison as gc
 import network as nw
 import pandas as pd
+import time
 
 if __name__ == '__main__':
     '''This code creates the attributed graph for two
@@ -210,7 +211,11 @@ if __name__ == '__main__':
 
     graph_list = [turbine1, bridge1, bridge2, bridge2a]
     graph_list2 = [aeroplane1, aeroplane2]
-    distanceMatrix = gc.createJaccardDistanceMatrix(graph_list2, True)
+    
+    begin_time = time.time()
+    distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
+    end_time = time.time()
+    print("Time taken:", round(end_time - begin_time, 2), "seconds")
     print(distanceMatrix)
 
     # Create initial weights matrix

@@ -7,6 +7,7 @@ from joint import Joint
 import graph_comparison as gc
 import network as nw
 import pandas as pd
+import time
 
 if __name__ == '__main__':
 
@@ -48,4 +49,7 @@ if __name__ == '__main__':
     castledawson.addJoints()
     castledawson.edgeList()
 
+    begin_time = time.time()
     distance = gc.findJaccardDistance(randlestown, castledawson, plot=True)
+    end_time = time.time()
+    print("Time taken:", round(end_time - begin_time, 2), "seconds")
