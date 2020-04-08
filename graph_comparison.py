@@ -5,6 +5,7 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import similarity_score as ss
+import pandas as pd
 
 divide = "\n###################################\n"
 
@@ -277,20 +278,52 @@ def findGroundNodes(node_list):
     normal_nodes = [x for x in node_list if x not in ground_nodes]
     return ground_nodes, normal_nodes
 
-def graphPlot(nodes, edges):
+def graphPlot(nodes, edges, labels=False):
     G = nx.Graph()
 
     G.add_edges_from(edges)
     G.add_nodes_from(nodes)
-    pos = nx.spring_layout(G)
-
+    if labels != False:
+        pos = nx.spring_layout(G, k=1)
+        nx.draw_networkx_labels(G, pos, labels, font_size=16)
+    else:
+        pos = nx.spring_layout(G)
+        nx.draw_networkx_labels(G, pos)
+    
     grnd, nrml = findGroundNodes(nodes)
 
     nx.draw_networkx_nodes(G, pos, grnd, node_color='b')
     nx.draw_networkx_nodes(G, pos, nrml, node_color='r')
     nx.draw_networkx_edges(G, pos)
+
     plt.axis('off')
     plt.show()
+
+def importIE(structure, file_path, plot=False):
+    # Import necessary information for the IE from the excel file
+    elements = pd.read_excel (file_path, sheet_name='Elements', usecols="A:I")
+    joints = pd.read_excel (file_path, sheet_name='Joints', usecols="A:H")
+    boundary_conditions = pd.read_excel (file_path, sheet_name='Boundary conditions', usecols="A:C")
+    # Create the element list for the IE
+    boundary_list = [str(bc) for bc in boundary_conditions['Element ID']]
+    element_list = list(elements['Element ID']) + boundary_list
+    structure.elements = dict.fromkeys(element_list)
+    # Create the joint list for the IE
+    joint_keys = [tuple(joint.split(', ')) for joint in joints['Joint set']]
+    joint_values = [[str(i),[],''] for i in range(1, len(joint_keys)+1)]
+    structure.joints = dict(zip(joint_keys, joint_values))
+    # Update the IE to add elements and joints
+    structure.addElements()
+    structure.addJoints()
+    # Add edges to the AG
+    structure.edgeList()
+    # Plot the graph for the imported structure
+    if plot == "elements":
+        labels_values = list(elements['Name']) + list(boundary_conditions['Name'])
+        labels = dict(zip(element_list, labels_values))
+        graphPlot(structure.nodeList(), structure.edgeList(), labels)
+    elif plot == "nodes":
+        graphPlot(structure.nodeList(), structure.edgeList())
 
 def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
     # Generate node list
@@ -409,7 +442,6 @@ def degeneracy_ordering(graph):
         degrees[v] = deg
         if deg > max_deg:
             max_deg = deg
-
     while True:
         i = 0
         while i <= max_deg:
@@ -428,6 +460,5 @@ def degeneracy_ordering(graph):
                 if deg > 0:
                     degrees[w] -= 1
                     degen[deg - 1].append(w)
-
     ordering.reverse()
     return ordering

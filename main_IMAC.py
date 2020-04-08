@@ -205,7 +205,6 @@ if __name__ == '__main__':
                       ('C','D') : ['8',  [0, 0, 0], 'Joined'],
                       ('C','E') : ['9',  [0, 0, 0], 'Joined'],
                       ('E','F') : ['10', [0, 0, 0], 'Joined']}
-    print(bridge3.joints)
     bridge3.addElements()
     bridge3.addJoints()
     bridge3.edgeList()
