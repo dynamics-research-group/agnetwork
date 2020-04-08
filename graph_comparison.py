@@ -281,6 +281,7 @@ def graphPlot(nodes, edges):
     G = nx.Graph()
 
     G.add_edges_from(edges)
+    G.add_nodes_from(nodes)
     pos = nx.spring_layout(G)
 
     grnd, nrml = findGroundNodes(nodes)
@@ -307,6 +308,10 @@ def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
     # Generate edge list
     E1 = graph1.edgeList()
     E2 = graph2.edgeList()
+    # Plot the two graphs
+    if plot == True:
+        graphPlot(graph1.nodeList(), graph1.edgeList())
+        graphPlot(graph2.nodeList(), graph2.edgeList())
     # Generate the modular product graph
     V, E = modularProduct(graph1, graph2)
     print("Modular product vertices:", len(V))
@@ -315,10 +320,6 @@ def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
     cEdges, dEdges = findCedges(E, E1, E2)
     # Find the largest cliques
     c_cliques = findSubgraphs(V, E, cEdges, dEdges)
-    # Plot the two graphs
-    if plot == True:
-        graphPlot(graph1.nodeList(), graph1.edgeList())
-        graphPlot(graph2.nodeList(), graph2.edgeList())
     if BCmatch:
         # Match on boundary conditions alone
         boundary_match = ss.boundaryConditionMatch(c_cliques, graph1, graph2)

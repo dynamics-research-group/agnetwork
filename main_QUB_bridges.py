@@ -22,9 +22,11 @@ if __name__ == '__main__':
     element_list = list(elements['Element ID']) + boundary_list
     randlestown.elements = dict.fromkeys(element_list)
 
-    joint_keys = [(joint[0], joint[-1]) for joint in joints['Joint set']]
-    joint_values = [[str(i),[],''] for i in range(1, len(joint_keys))]
+    joint_keys = [tuple(joint.split(', ')) for joint in joints['Joint set']]
+    joint_values = [[str(i),[],''] for i in range(1, len(joint_keys)+1)]
     randlestown.joints = dict(zip(joint_keys, joint_values))
+    for joint in randlestown.joints:
+        print(joint)
 
     randlestown.addElements()
     randlestown.addJoints()
@@ -40,10 +42,12 @@ if __name__ == '__main__':
     boundary_list = [str(bc) for bc in boundary_conditions['Element ID']]
     element_list = list(elements['Element ID']) + boundary_list
     castledawson.elements = dict.fromkeys(element_list)
-
-    joint_keys = [(joint[0], joint[-1]) for joint in joints['Joint set']]
-    joint_values = [[str(i),[],''] for i in range(1, len(joint_keys))]
+    
+    joint_keys = [tuple(joint.split(', ')) for joint in joints['Joint set']]
+    joint_values = [[str(i),[],''] for i in range(1, len(joint_keys)+1)]
     castledawson.joints = dict(zip(joint_keys, joint_values))
+    for joint in castledawson.joints:
+        print(joint)
 
     castledawson.addElements()
     castledawson.addJoints()
