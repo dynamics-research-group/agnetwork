@@ -212,12 +212,9 @@ if __name__ == '__main__':
     graph_list = [turbine1, bridge1, bridge2, bridge2a]
     graph_list2 = [aeroplane1, aeroplane2]
     
-    begin_time = time.time()
-    # distanceMatrix = gc.createJaccardDistanceMatrix(graph_list, True)
-    distance = gc.findJaccardDistance(turbine1, bridge1, plot=True)
-    end_time = time.time()
-    print("Time taken:", round(end_time - begin_time, 2), "seconds")
-    # print(distanceMatrix)
+    distance_matrix = gc.createDistanceMatrix(graph_list, "Jaccard")
+    # distance = gc.findJaccardDistance(turbine1, bridge1, plot=False)
+    print(distance_matrix)
 
     # Create initial weights matrix
     weights = nw.initWeightsDict(graph_list)

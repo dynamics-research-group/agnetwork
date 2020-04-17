@@ -141,7 +141,7 @@ def BronKerboschPivot(R, P, X, N):
                     yield r
                 X.add(u)
 
-def maximalCliquesBK(V, E):
+def maximalCliquesBK(V, E, ordering=False):
     """Initialises Bron-Kerbosch clique finding algorithms"""
     # Initialise other variables required for Bron-Kerbosch
     N = neighbourSet(V, E)
@@ -150,12 +150,16 @@ def maximalCliquesBK(V, E):
     X = set()
     # Set P to be the vertex set
     P = set(V)
-    # for v in degeneracy_ordering(N):
-    #     [cliques.append(r) for r in BronKerbosch(R.union({v}), P.intersection(N[v]), X.intersection(N[v]), N)]
-    #     P.remove(v)
-    #     X.add(v)
-    # return list(cliques)
-    return list(BronKerbosch(R, P, X, N))
+    if ordering == True:
+        # Order list of nodes according to degeneracy
+        for v in degeneracy_ordering(N):
+            cliques = []
+            [cliques.append(r) for r in BronKerbosch(R.union({v}), P.intersection(N[v]), X.intersection(N[v]), N)]
+            P.remove(v)
+            X.add(v)
+            return list(cliques)
+    else:
+        return list(BronKerbosch(R, P, X, N))
 
 def findCedges(E, E1, E2):
     """Find the c-edges in a product graph"""
@@ -179,17 +183,16 @@ def findCedges(E, E1, E2):
             dEdges.add(edge)  
     return cEdges, dEdges 
 
-def maximalCliquesCedges(V, E, cEdges, dEdges):
+def maximalCliquesCedges(V, E, cEdges, dEdges, progress=False):
     cliques = list()
     # Create the neighbour set
     N = neighbourSet(V, E)
     T = set()
-    printProgressBar(0, len(V), "Progress:", "of vertices checked")
+    # Print progress bar
+    if progress == True:
+        printProgressBar(0, len(V), "Progress:", "of vertices checked")
     # Initialise c-clique finding algorithm for each vertex
     for i, u in enumerate(sorted(list(V))):
-    # for u in degeneracy_ordering(N):
-    # for u in V:
-        print(u)
         # Set P, D, X and R as the empty set
         P = set()
         D = set()
@@ -208,7 +211,8 @@ def maximalCliquesCedges(V, E, cEdges, dEdges):
         # Call c-clique finding algorithm
         [cliques.append(r) for r in enumerateCcliques(R, P, D, X, N, T, cEdges)]
         T.add(u)
-        printProgressBar(i, len(V)-1, "Progress:", "of vertices checked")
+        if progress == True:
+            printProgressBar(i, len(V)-1, "Progress:", "of vertices checked")
     print()
     return cliques
 
@@ -279,23 +283,26 @@ def findGroundNodes(node_list):
     return ground_nodes, normal_nodes
 
 def graphPlot(nodes, edges, labels=False):
+    # Create new networkX graph object
     G = nx.Graph()
-
+    # Add nodes and edges to the graph object
     G.add_edges_from(edges)
     G.add_nodes_from(nodes)
+    # Use element names if provided
     if labels != False:
         pos = nx.spring_layout(G, k=1)
         nx.draw_networkx_labels(G, pos, labels, font_size=16)
+    # Otherwise label nodes with their element ID
     else:
         pos = nx.spring_layout(G)
         nx.draw_networkx_labels(G, pos)
-    
+    # Find the boundary condition nodes in the AG
     grnd, nrml = findGroundNodes(nodes)
-
+    # Colour BC nodes blue and regular nodes red
     nx.draw_networkx_nodes(G, pos, grnd, node_color='b')
     nx.draw_networkx_nodes(G, pos, nrml, node_color='r')
+    # Draw and show the graph with no axis
     nx.draw_networkx_edges(G, pos)
-
     plt.axis('off')
     plt.show()
 
@@ -312,16 +319,18 @@ def importIE(structure, file_path, plot=False):
     joint_keys = [tuple(joint.split(', ')) for joint in joints['Joint set']]
     joint_values = [[str(i),[],''] for i in range(1, len(joint_keys)+1)]
     structure.joints = dict(zip(joint_keys, joint_values))
-    # Update the IE to add elements and joints
+    # Update the AG, adding elements and joints from the IE
     structure.addElements()
     structure.addJoints()
     # Add edges to the AG
     structure.edgeList()
     # Plot the graph for the imported structure
+    # If the option "elements" is specified, the node labels will be the element name
     if plot == "elements":
         labels_values = list(elements['Name']) + list(boundary_conditions['Name'])
         labels = dict(zip(element_list, labels_values))
         graphPlot(structure.nodeList(), structure.edgeList(), labels)
+    # Otherwise the graph is plotted using the element IDs
     elif plot == "nodes":
         graphPlot(structure.nodeList(), structure.edgeList())
 
@@ -369,21 +378,27 @@ def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
         # Plot largest subgraph 
         if plot == True:
             plotMCS(max_cliques, cEdges)
-    return round(vertex_match, 2)
+    return vertex_match
 
-def createJaccardDistanceMatrix(graph_list, BCmatch=False):
+def createDistanceMatrix(graph_list, metric, BCmatch=False):
+    begin_time = time.time()
     # Create distance matrix with initital distance set to zero
     n = len(graph_list)
     distanceMatrix = np.zeros((n,n))
     # Iterate through pairs of graphs in list
     for i, graph1 in enumerate(graph_list):
         for j, graph2 in enumerate(graph_list):
+            # If graphs are not identical, calculate pairwise distances
             if i < j:
-                # If graphs are not identical, calculate pairwise distances
-                distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
-            # if i > j:
-            #     # Use symmetry condition for distance matrix
-            #     distanceMatrix[i][j] = distanceMatrix[j][i]
+                if metric == "Jaccard":
+                    distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
+                elif metric == "Spectral":
+                    pass
+            if i > j:
+                # Use symmetry condition for distance matrix
+                distanceMatrix[i][j] = distanceMatrix[j][i]
+    end_time = time.time()
+    print("Time taken:", round(end_time - begin_time, 2), "seconds")
     return distanceMatrix
 
 # Modified from progress bar code
