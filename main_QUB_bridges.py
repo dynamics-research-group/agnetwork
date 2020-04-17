@@ -14,15 +14,15 @@ if __name__ == '__main__':
 
     randlestown = Structure('randlestown bridge')
     file_path = "IE_models/Randlestown_West_Deck_Bridge.xlsx"
-    gc.importIE(randlestown, file_path)
+    gc.importIE(randlestown, file_path, plot="nodes")
 
     # Castledawson bridge
 
     castledawson = Structure('castledawson bridge')
     file_path = "IE_models/Castledawson_Bridge_IEM_revB.xlsx"
-    gc.importIE(castledawson, file_path)
+    gc.importIE(castledawson, file_path, plot="nodes")
 
-    begin_time = time.time()
-    distance = gc.findJaccardDistance(randlestown, castledawson)
-    end_time = time.time()
-    print("Time taken:", round(end_time - begin_time, 2), "seconds")
+    # begin_time = time.time()
+    # distance = gc.findJaccardDistance(randlestown, castledawson)
+    # end_time = time.time()
+    # print("Time taken:", round(end_time - begin_time, 2), "seconds")
