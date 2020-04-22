@@ -334,16 +334,16 @@ def importIE(structure, file_path, plot=False):
     elif plot == "nodes":
         graphPlot(structure.nodeList(), structure.edgeList())
 
-def findJaccardDistance(graph1, graph2, BCmatch=False, plot=False):
+def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
     # Generate node list
     V1 = graph1.nodeList()
     V2 = graph2.nodeList()
     # The modular product function misses edges if the larger graph is called first
     if len(V1) > len(V2):
         # Swap graphs so largest is graph1
-        graph3 = graph1
+        temp_graph = graph1
         graph1 = graph2
-        graph2 = graph3
+        graph2 = temp_graph
         # Re-generate node list
         V1 = graph1.nodeList()
         V2 = graph2.nodeList()
@@ -390,8 +390,8 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
         for j, graph2 in enumerate(graph_list):
             # If graphs are not identical, calculate pairwise distances
             if i < j:
-                if metric == "Jaccard":
-                    distanceMatrix[i][j] = findJaccardDistance(graph1, graph2, BCmatch)
+                if metric == "JaccardBK":
+                    distanceMatrix[i][j] = findJaccardDistanceBK(graph1, graph2, BCmatch)
                 elif metric == "Spectral":
                     pass
             if i > j:
@@ -419,6 +419,7 @@ def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
     # Print New Line on Complete
     if iteration == total: 
         print()
+
 
 # Not my code!!!
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
