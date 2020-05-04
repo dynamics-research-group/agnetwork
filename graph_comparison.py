@@ -26,7 +26,9 @@ def maxCliques(cliques):
     return max_cliques
 
 def check_adjacency(cliques, cEdges):
-    """Check that all vertices are adjacent in the cliques found"""
+    """Check that all vertices are adjacent in the cliques found.
+    This function cycles through the clique, initialising and calling
+    the is_connected function which actually performs the adjacency check"""
     c_cliques = []
     for clique in cliques:
         # Set the initial vertex for adjacency search
@@ -86,7 +88,8 @@ def modularProduct(struct1, struct2):
     return modprodV, modprodE
 
 def neighbourSet(V, E):
-    """Create the neighbour set for each vertex"""
+    """Create the neighbour set for each vertex (adjacency list) from
+    the vertex and edge set of a graph"""
     # Create an empty dictionary which will contain the neighbour sets
     neighbours = {}
     # Initialise entries in the dictionary for each vertex
@@ -162,7 +165,9 @@ def maximalCliquesBK(V, E, ordering=False):
         return list(BronKerbosch(R, P, X, N))
 
 def findCedges(E, E1, E2):
-    """Find the c-edges in a product graph"""
+    """Find the c-edges in a product graph. Takes the edge set from the
+    modular product and checks whether adjacent nodes in the modular 
+    product graph correspond to adjacent nodes in both parent graphs"""
     # Initialise the set of c-edges and d-edges
     cEdges = set()
     dEdges = set()
@@ -184,6 +189,9 @@ def findCedges(E, E1, E2):
     return cEdges, dEdges 
 
 def maximalCliquesCedges(V, E, cEdges, dEdges, progress=False):
+    """Initialises the c-clique version of the Bron-Kerbosch algorithm,
+    performing the necessary iteration over nodes in the modular product 
+    graph. This function also calls the progress bar."""
     cliques = list()
     # Create the neighbour set
     N = neighbourSet(V, E)
@@ -248,10 +256,6 @@ def enumerateCcliques(R, P, D, X, N, T, cEdges):
                                         N, T, cEdges): yield r
             X.add(u)
 
-def inexactGraphComparison(graph1, graph2):
-    # Create possible pairs
-    pass
-
 def findSubgraphs(V, E, cEdges, dEdges):
     """Given the modular product, c-edges and d-edges for two graphs, 
     return the full list of: connected induced common subgraphs"""
@@ -266,23 +270,38 @@ def findSubgraphs(V, E, cEdges, dEdges):
     return c_cliques
 
 def plotMCS(clique_set, cEdges):
+    """Take the first maximal clique and create an edge set from
+    the modular product graph"""
+    # Take the first clique in the set of maximal cliques 
+    # and generate a list of nodes for the MCS
     sg_nodes = clique_set[0]
     sg_edges = []
+    # Create an edge set using the modular product graph
     for v1 in sg_nodes:
         for v2 in sg_nodes:
+            # If an edge exists between two sets of nodes in a clique,
+            # add it to the MCS edge set
             if (v1,v2) in cEdges:
                 sg_edges.append((v1,v2))
     graphPlot(sg_nodes, sg_edges)
 
 def findGroundNodes(node_list):
+    """Check whether nodes represent regular IEs or boundary conditions"""
     ground_nodes = []
     for node in node_list:
+        # If the node is a digit rather than a letter, then it designates
+        # a boundary condition node
         if node[0].isdigit():
+            # Create list of boundary condition nodes
             ground_nodes.append(node)
+    # Any nodes that are not b.c. nodes are considered normal nodes
     normal_nodes = [x for x in node_list if x not in ground_nodes]
     return ground_nodes, normal_nodes
 
 def graphPlot(nodes, edges, labels=False):
+    """Plot the graph given by a set of nodes and edges, including any
+    name labels for elements. Colour the boundary condition nodes blue
+    and regular elements red"""
     # Create new networkX graph object
     G = nx.Graph()
     # Add nodes and edges to the graph object
@@ -307,16 +326,21 @@ def graphPlot(nodes, edges, labels=False):
     plt.show()
 
 def importIE(structure, file_path, plot=False):
+    """Read an excel file containing an IE model and add the AG 
+    to a structure object"""
     # Import necessary information for the IE from the excel file
     elements = pd.read_excel (file_path, sheet_name='Elements', usecols="A:I")
     joints = pd.read_excel (file_path, sheet_name='Joints', usecols="A:H")
     boundary_conditions = pd.read_excel (file_path, sheet_name='Boundary conditions', usecols="A:C")
-    # Create the element list for the IE
+    # Create full element list for the IE by combining b.c. and regular elements
     boundary_list = [str(bc) for bc in boundary_conditions['Element ID']]
     element_list = list(elements['Element ID']) + boundary_list
-    structure.elements = dict.fromkeys(element_list)
+    element_keys = element_list + boundary_list
+    # Initialise empty dictionary for storing element attributes
+    structure.elements = {element: [] for element in element_keys}
     # Create the joint list for the IE
     joint_keys = [tuple(joint.split(', ')) for joint in joints['Joint set']]
+    # Initialise placeholders for joint attributes
     joint_values = [[str(i),[],''] for i in range(1, len(joint_keys)+1)]
     structure.joints = dict(zip(joint_keys, joint_values))
     # Update the AG, adding elements and joints from the IE
@@ -335,6 +359,8 @@ def importIE(structure, file_path, plot=False):
         graphPlot(structure.nodeList(), structure.edgeList())
 
 def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
+    """Handles the process of calculating the Jaccard distance for two graphs
+    from the MCS found using the c-clique BK algorithm"""
     # Generate node list
     V1 = graph1.nodeList()
     V2 = graph2.nodeList()
@@ -381,6 +407,8 @@ def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
     return vertex_match
 
 def createDistanceMatrix(graph_list, metric, BCmatch=False):
+    """Handles the process of creating a distance matrix using whichever
+    alogrithm is specified"""
     begin_time = time.time()
     # Create distance matrix with initital distance set to zero
     n = len(graph_list)
