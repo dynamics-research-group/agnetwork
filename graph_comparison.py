@@ -352,8 +352,8 @@ def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
     E2 = graph2.edgeList()
     # Plot the two graphs
     if plot == True:
-        graphPlot(graph1.nodeList(), graph1.edgeList())
-        graphPlot(graph2.nodeList(), graph2.edgeList())
+        graphPlot(V1, E1)
+        graphPlot(V2, E2)
     # Generate the modular product graph
     V, E = modularProduct(graph1, graph2)
     print("Modular product vertices:", len(V))
@@ -419,7 +419,6 @@ def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
     # Print New Line on Complete
     if iteration == total: 
         print()
-
 
 # Not my code!!!
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
