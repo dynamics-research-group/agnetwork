@@ -398,8 +398,9 @@ def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
             plotMCS(boundary_match, cEdges)
     else:
         print("Finding largest cliques...")
+        # Find the largest MCSs
         max_cliques = maxCliques(c_cliques)
-        # General Jaccard distance
+        # Calculate the Jaccard distance using one of the possible MCSs
         vertex_match = 1 - ss.JaccardIndex(max_cliques[0], V1, V2)
         # Plot largest subgraph 
         if plot == True:
@@ -428,6 +429,16 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
     end_time = time.time()
     print("Time taken:", round(end_time - begin_time, 2), "seconds")
     return distanceMatrix
+
+def order(graph):
+      """Order the nodes in a graph by their degree"""
+      if graph == {}:
+            return None
+      else:
+            # Find vertex with largest neighbourhood in the graph
+            return max(graph, key=lambda v : len(graph[v]))
+
+
 
 # Modified from progress bar code
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
