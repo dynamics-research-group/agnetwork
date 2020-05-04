@@ -212,10 +212,17 @@ if __name__ == '__main__':
     graph_list = [turbine1, bridge1, bridge2, bridge2a]
     graph_list2 = [aeroplane1, aeroplane2]
     
-    distance_matrix = gc.createDistanceMatrix(graph_list, "Jaccard")
-    # distance = gc.findJaccardDistance(turbine1, bridge1, plot=False)
+    # m = []
+    # matches = list(gc.backtracking(bridge2.graph, turbine1.graph, m))
+    # print(matches[0])
+
+    distance_matrix = gc.createDistanceMatrix(graph_list, "JaccardBackTrack")
+   
     print(distance_matrix)
 
+     # distance = gc.findJaccardDistanceBackTrack(turbine1, bridge1)
+
+    """
     # Create initial weights matrix
     weights = nw.initWeightsDict(graph_list)
     # Create and print initial dataframe
@@ -251,3 +258,4 @@ if __name__ == '__main__':
     # max_cliques_with_ss = ss.attributeSimilarityScore(max_cliques, cEdges, graph1, graph2)
     # for clique in max_cliques_with_ss[:50]:
     #     print(clique[0], "Element:", round(clique[1], 2), "Joint:", round(clique[2], 2))
+    """

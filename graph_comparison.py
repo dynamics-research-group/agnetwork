@@ -358,9 +358,7 @@ def importIE(structure, file_path, plot=False):
     elif plot == "nodes":
         graphPlot(structure.nodeList(), structure.edgeList())
 
-def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
-    """Handles the process of calculating the Jaccard distance for two graphs
-    from the MCS found using the c-clique BK algorithm"""
+def smallestGraphFirst(graph1, graph2):
     # Generate node list
     V1 = graph1.nodeList()
     V2 = graph2.nodeList()
@@ -370,9 +368,15 @@ def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
         temp_graph = graph1
         graph1 = graph2
         graph2 = temp_graph
-        # Re-generate node list
-        V1 = graph1.nodeList()
-        V2 = graph2.nodeList()
+    return graph1, graph2
+
+def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
+    """Handles the process of calculating the Jaccard distance for two graphs
+    from the MCS found using the c-clique BK algorithm"""
+    graph1, graph2 = smallestGraphFirst(graph1, graph2)
+    # Re-generate node list
+    V1 = graph1.nodeList()
+    V2 = graph2.nodeList()
     # Generate edge list
     E1 = graph1.edgeList()
     E2 = graph2.edgeList()
@@ -407,6 +411,17 @@ def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
             plotMCS(max_cliques, cEdges)
     return vertex_match
 
+def findJaccardDistanceBackTrack(graph1, graph2):
+    """Handles the process of calculating the Jaccard distance for two graphs
+    from the MCS found using the backtracking algorithm by Cao, Jiang and Girke"""
+    graph1, graph2 = smallestGraphFirst(graph1, graph2)
+    m = []
+    matches = list(backtracking(graph1.graph, graph2.graph, m))
+    print(matches[0])
+    # Calculate the Jaccard distance using one of the possible MCSs
+    vertex_match = 1 - ss.JaccardIndex(matches[0], graph1.nodeList(), graph2.nodeList())
+    return vertex_match
+
 def createDistanceMatrix(graph_list, metric, BCmatch=False):
     """Handles the process of creating a distance matrix using whichever
     alogrithm is specified"""
@@ -421,6 +436,8 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
             if i < j:
                 if metric == "JaccardBK":
                     distanceMatrix[i][j] = findJaccardDistanceBK(graph1, graph2, BCmatch)
+                if metric == "JaccardBackTrack":
+                    distanceMatrix[i][j] = findJaccardDistanceBackTrack(graph1, graph2)
                 elif metric == "Spectral":
                     pass
             if i > j:
@@ -440,6 +457,9 @@ def backtracking(G1, G2, m):
     for pair in m:
         del G1_dash[pair[0]]
         del G2_dash[pair[1]]
+    # Perform check to see whether the solution can be improved
+    if upperBound(G1_dash, G2_dash, G1, G2, m):
+        yield m
     # Perform ordering on remaining nodes to search node with highest degree first
     v = order(G1_dash)
     # If the end of the search tree has been reached, return the associated nodes
@@ -451,6 +471,17 @@ def backtracking(G1, G2, m):
         for u in list(G2_dash.keys()):
                 if compatible(G1[v], G2[u], m):
                     for M in backtracking(G1, G2, m + [(v, u)]): yield M
+
+def upperBound(G1_dash, G2_dash, G1, G2, m):
+    count = 0
+    for u in G1_dash:
+        for v in G2_dash:
+                if compatible(G1[u], G2[v], m):
+                    count += 1
+    if count < len(m):
+        return True
+    else:
+        return False
 
 def compatible(Nv, Nu, m):
     """Performs compatibility check for the backtracking algorithm"""
@@ -471,8 +502,6 @@ def order(graph):
     else:
         # Find vertex with largest neighbourhood in the graph
         return max(graph, key=lambda v : len(graph[v]))
-
-
 
 # Modified from progress bar code
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
