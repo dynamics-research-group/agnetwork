@@ -431,34 +431,46 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
     return distanceMatrix
 
 def backtracking(G1, G2, m):
-      """Perform a backtracking algorithm to find all the full isomorphism group
-      corresponding to the MCS"""
-      # Create temporary versions of both graphs where associated nodes are removed
-      G1_dash = G1.copy()
-      G2_dash = G2.copy()
-      # Remove associated nodes from G
-      for pair in m:
-            del G1_dash[pair[0]]
-            del G2_dash[pair[1]]
-      # Perform ordering on remaining nodes to search node with highest degree first
-      v = order(G1_dash)
-      # If the end of the search tree has been reached, return the associated nodes
-      if v == None:
-            yield m
-      else: 
-            # Otherwise iterate through the possible remaining associations and search
-            # for a solution
-            for u in list(G2_dash.keys()):
-                  if compatible(G1[v], G2[u], m):
-                        for M in match(G1, G2, m + [(v, u)]): yield M
+    """Perform a backtracking algorithm to find all the full isomorphism group
+    corresponding to the MCS"""
+    # Create temporary versions of both graphs where associated nodes are removed
+    G1_dash = G1.copy()
+    G2_dash = G2.copy()
+    # Remove associated nodes from G
+    for pair in m:
+        del G1_dash[pair[0]]
+        del G2_dash[pair[1]]
+    # Perform ordering on remaining nodes to search node with highest degree first
+    v = order(G1_dash)
+    # If the end of the search tree has been reached, return the associated nodes
+    if v == None:
+        yield m
+    else: 
+        # Otherwise iterate through the possible remaining associations and search
+        # for a solution
+        for u in list(G2_dash.keys()):
+                if compatible(G1[v], G2[u], m):
+                    for M in backtracking(G1, G2, m + [(v, u)]): yield M
+
+def compatible(Nv, Nu, m):
+    """Performs compatibility check for the backtracking algorithm"""
+    # If no associations exist, any node is compatible
+    if m == []:
+        return True
+    # This ensures that the newly considered associated nodes are adjacent to nodes
+    # that have already been associated
+    for pair in m:
+        if pair[0] in Nv and pair[1] in Nu:
+                return True
+    return False
 
 def order(graph):
-      """Order the nodes in a graph by their degree"""
-      if graph == {}:
-            return None
-      else:
-            # Find vertex with largest neighbourhood in the graph
-            return max(graph, key=lambda v : len(graph[v]))
+    """Order the nodes in a graph by their degree"""
+    if graph == {}:
+        return None
+    else:
+        # Find vertex with largest neighbourhood in the graph
+        return max(graph, key=lambda v : len(graph[v]))
 
 
 
