@@ -430,6 +430,28 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
     print("Time taken:", round(end_time - begin_time, 2), "seconds")
     return distanceMatrix
 
+def backtracking(G1, G2, m):
+      """Perform a backtracking algorithm to find all the full isomorphism group
+      corresponding to the MCS"""
+      # Create temporary versions of both graphs where associated nodes are removed
+      G1_dash = G1.copy()
+      G2_dash = G2.copy()
+      # Remove associated nodes from G
+      for pair in m:
+            del G1_dash[pair[0]]
+            del G2_dash[pair[1]]
+      # Perform ordering on remaining nodes to search node with highest degree first
+      v = order(G1_dash)
+      # If the end of the search tree has been reached, return the associated nodes
+      if v == None:
+            yield m
+      else: 
+            # Otherwise iterate through the possible remaining associations and search
+            # for a solution
+            for u in list(G2_dash.keys()):
+                  if compatible(G1[v], G2[u], m):
+                        for M in match(G1, G2, m + [(v, u)]): yield M
+
 def order(graph):
       """Order the nodes in a graph by their degree"""
       if graph == {}:
