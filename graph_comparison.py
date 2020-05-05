@@ -417,9 +417,9 @@ def findJaccardDistanceBackTrack(graph1, graph2):
     graph1, graph2 = smallestGraphFirst(graph1, graph2)
     m = []
     matches = list(backtracking(graph1.graph, graph2.graph, m))
-    print(matches[0])
+    max_matches = maxCliques(matches)
     # Calculate the Jaccard distance using one of the possible MCSs
-    vertex_match = 1 - ss.JaccardIndex(matches[0], graph1.nodeList(), graph2.nodeList())
+    vertex_match = 1 - ss.JaccardIndex(max_matches[0], graph1.nodeList(), graph2.nodeList())
     return vertex_match
 
 def createDistanceMatrix(graph_list, metric, BCmatch=False):
@@ -458,7 +458,7 @@ def backtracking(G1, G2, m):
         del G1_dash[pair[0]]
         del G2_dash[pair[1]]
     # Perform check to see whether the solution can be improved
-    if upperBound(G1_dash, G2_dash, G1, G2, m):
+    if bound(G1_dash, G2_dash, G1, G2, m):
         yield m
     # Perform ordering on remaining nodes to search node with highest degree first
     v = order(G1_dash)
@@ -472,7 +472,7 @@ def backtracking(G1, G2, m):
                 if compatible(G1[v], G2[u], m):
                     for M in backtracking(G1, G2, m + [(v, u)]): yield M
 
-def upperBound(G1_dash, G2_dash, G1, G2, m):
+def bound(G1_dash, G2_dash, G1, G2, m):
     count = 0
     for u in G1_dash:
         for v in G2_dash:
