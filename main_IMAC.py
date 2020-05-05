@@ -212,15 +212,24 @@ if __name__ == '__main__':
     graph_list = [turbine1, bridge1, bridge2, bridge2a]
     graph_list2 = [aeroplane1, aeroplane2]
     
-    # m = []
-    # matches = list(gc.backtracking(bridge2.graph, turbine1.graph, m))
-    # print(matches[0])
+    m = []
+    matches = list(gc.backtracking(bridge2.graph, turbine1.graph, m))
+    for match in matches:
+        print(match)
 
-    distance_matrix = gc.createDistanceMatrix(graph_list, "JaccardBackTrack")
+    distance = gc.findJaccardDistanceBK(turbine1, bridge2, BCmatch=False, plot=True)
+    
+    # distance_matrix_BK = gc.createDistanceMatrix(graph_list, "JaccardBK")
+
+    # print(distance_matrix_BK)
+
+    # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list, "JaccardBackTrack")
    
-    print(distance_matrix)
+    # print(distance_matrix_backtrack)
 
-     # distance = gc.findJaccardDistanceBackTrack(turbine1, bridge1)
+    # print(distance_matrix_BK)
+
+     
 
     """
     # Create initial weights matrix
