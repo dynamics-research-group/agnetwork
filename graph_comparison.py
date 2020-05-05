@@ -370,10 +370,10 @@ def smallestGraphFirst(graph1, graph2):
         graph2 = temp_graph
     return graph1, graph2
 
-def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
+def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
     """Handles the process of calculating the Jaccard distance for two graphs
     from the MCS found using the c-clique BK algorithm"""
-    graph1, graph2 = smallestGraphFirst(graph1, graph2)
+    graph1, graph2 = smallestGraphFirst(g1, g2)
     # Re-generate node list
     V1 = graph1.nodeList()
     V2 = graph2.nodeList()
@@ -414,10 +414,10 @@ def findJaccardDistanceBK(graph1, graph2, BCmatch=False, plot=False):
 def findJaccardDistanceBackTrack(graph1, graph2):
     """Handles the process of calculating the Jaccard distance for two graphs
     from the MCS found using the backtracking algorithm by Cao, Jiang and Girke"""
-    graph1, graph2 = smallestGraphFirst(graph1, graph2)
     m = []
-    matches = list(backtracking(graph1.graph, graph2.graph, m))
-    max_matches = maxCliques(matches)
+    matches1 = list(backtracking(graph1.graph, graph2.graph, m))
+    matches2 = list(backtracking(graph2.graph, graph1.graph, m))
+    max_matches = maxCliques(matches1 + matches2)
     # Calculate the Jaccard distance using one of the possible MCSs
     vertex_match = 1 - ss.JaccardIndex(max_matches[0], graph1.nodeList(), graph2.nodeList())
     return vertex_match
@@ -473,15 +473,15 @@ def backtracking(G1, G2, m):
                     for M in backtracking(G1, G2, m + [(v, u)]): yield M
 
 def bound(G1_dash, G2_dash, G1, G2, m):
-    count = 0
-    for u in G1_dash:
-        for v in G2_dash:
-                if compatible(G1[u], G2[v], m):
-                    count += 1
-    if count < len(m):
-        return True
-    else:
-        return False
+      candidates = set()
+      for u in G1_dash:
+            for v in G2_dash:
+                  if compatible(G1[u], G2[v], m):
+                        candidates.add(v)
+      if candidates.__len__() < len(m):
+            return True
+      else:
+            return False
 
 def compatible(Nv, Nu, m):
     """Performs compatibility check for the backtracking algorithm"""
