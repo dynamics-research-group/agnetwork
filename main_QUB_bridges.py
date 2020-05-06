@@ -25,8 +25,8 @@ if __name__ == '__main__':
     # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
 
     m = []
-    matches1 = gc.backtracking(castledawson.graph, randlestown.graph, m)
-    matches2 = gc.backtracking(randlestown.graph, castledawson.graph, m)
+    matches1 = list(gc.backtracking(castledawson.graph, randlestown.graph, m))
+    matches2 = list(gc.backtracking(randlestown.graph, castledawson.graph, m))
     
     max_match =  gc.maxCliques(matches1 + matches2)
     
