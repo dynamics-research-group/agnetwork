@@ -235,9 +235,9 @@ if __name__ == '__main__':
     # [0.61904762 0.73684211 0.57894737 0.57894737 0.         0.40909091]
     # [0.63157895 0.6875     0.58823529 0.58823529 0.40909091 0.        ]]
 
-    distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
+    # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
    
-    print(distance_matrix_backtrack)
+    # print(distance_matrix_backtrack)
 
 
     """

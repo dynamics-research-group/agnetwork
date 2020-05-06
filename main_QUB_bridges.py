@@ -14,15 +14,21 @@ if __name__ == '__main__':
 
     randlestown = Structure('randlestown bridge')
     file_path = "IE_models/Randlestown_West_Deck_Bridge.xlsx"
-    gc.importIE(randlestown, file_path, plot="nodes")
+    gc.importIE(randlestown, file_path)
 
     # Castledawson bridge
 
     castledawson = Structure('castledawson bridge')
     file_path = "IE_models/Castledawson_Bridge_IEM_revB.xlsx"
-    gc.importIE(castledawson, file_path, plot="nodes")
+    gc.importIE(castledawson, file_path)
 
-    # begin_time = time.time()
-    # distance = gc.findJaccardDistance(randlestown, castledawson)
-    # end_time = time.time()
-    # print("Time taken:", round(end_time - begin_time, 2), "seconds")
+    # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
+
+    m = []
+    matches1 = gc.backtracking(castledawson.graph, randlestown.graph, m)
+    matches2 = gc.backtracking(randlestown.graph, castledawson.graph, m)
+    
+    max_match =  gc.maxCliques(matches1 + matches2)
+    
+    print(max_match[0])
+
