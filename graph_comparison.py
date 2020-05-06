@@ -492,7 +492,7 @@ def compatible(Nv, Nu, m):
     # that have already been associated
     for pair in m:
         if pair[0] in Nv and pair[1] in Nu:
-                return True
+            return True
     return False
 
 def order(graph):

@@ -212,14 +212,13 @@ if __name__ == '__main__':
     graph_list = [turbine1, bridge1, bridge2, bridge2a]
     graph_list2 = [aeroplane1, aeroplane2]
     
-    # m = []
-    # matches = list(gc.backtracking(bridge1.graph, bridge2.graph, m))
+    m = []
+    matches = list(gc.backtracking(turbine1.graph, aeroplane2.graph, m))
 
-    # max_match =  gc.maxCliques(matches)
+    max_match =  gc.maxCliques(matches)
 
-
-    # for match in matches:
-    #     print(match)
+    for match in matches:
+        print(match)
     
     # # print(len(max_match[0]))
 
@@ -228,6 +227,13 @@ if __name__ == '__main__':
     # distance_matrix_BK = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBK")
 
     # print(distance_matrix_BK)
+
+    # [[0.         0.5        0.5        0.5        0.61904762 0.63157895]
+    # [0.5        0.         0.375      0.375      0.73684211 0.6875    ]
+    # [0.5        0.375      0.         0.         0.57894737 0.58823529]
+    # [0.5        0.375      0.         0.         0.57894737 0.58823529]
+    # [0.61904762 0.73684211 0.57894737 0.57894737 0.         0.40909091]
+    # [0.63157895 0.6875     0.58823529 0.58823529 0.40909091 0.        ]]
 
     distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
    
