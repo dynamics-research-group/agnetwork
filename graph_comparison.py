@@ -411,17 +411,6 @@ def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
             plotMCS(max_cliques, cEdges)
     return vertex_match
 
-def findJaccardDistanceBackTrack(graph1, graph2):
-    """Handles the process of calculating the Jaccard distance for two graphs
-    from the MCS found using the backtracking algorithm by Cao, Jiang and Girke"""
-    m = []
-    matches1 = list(backtracking(graph1.graph, graph2.graph, m))
-    matches2 = list(backtracking(graph2.graph, graph1.graph, m))
-    max_matches = maxCliques(matches1 + matches2)
-    # Calculate the Jaccard distance using one of the possible MCSs
-    vertex_match = 1 - ss.JaccardIndex(max_matches[0], graph1.nodeList(), graph2.nodeList())
-    return vertex_match
-
 def createDistanceMatrix(graph_list, metric, BCmatch=False):
     """Handles the process of creating a distance matrix using whichever
     alogrithm is specified"""
@@ -437,7 +426,7 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
                 if metric == "JaccardBK":
                     distanceMatrix[i][j] = findJaccardDistanceBK(graph1, graph2, BCmatch)
                 if metric == "JaccardBackTrack":
-                    distanceMatrix[i][j] = findJaccardDistanceBackTrack(graph1, graph2)
+                    pass
                 elif metric == "Spectral":
                     pass
             if i > j:
@@ -446,62 +435,6 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
     end_time = time.time()
     print("Time taken:", round(end_time - begin_time, 2), "seconds")
     return distanceMatrix
-
-def backtracking(G1, G2, m):
-    """Perform a backtracking algorithm to find all the full isomorphism group
-    corresponding to the MCS"""
-    # Create temporary versions of both graphs where associated nodes are removed
-    G1_dash = G1.copy()
-    G2_dash = G2.copy()
-    # Remove associated nodes from G
-    for pair in m:
-        del G1_dash[pair[0]]
-        del G2_dash[pair[1]]
-    # Perform check to see whether the solution can be improved
-    if bound(G1_dash, G2_dash, G1, G2, m):
-        yield m
-    # Perform ordering on remaining nodes to search node with highest degree first
-    v = order(G1_dash)
-    # If the end of the search tree has been reached, return the associated nodes
-    if v == None:
-        yield m
-    else: 
-        # Otherwise iterate through the possible remaining associations and search
-        # for a solution
-        for u in list(G2_dash.keys()):
-                if compatible(G1[v], G2[u], m):
-                    for M in backtracking(G1, G2, m + [(v, u)]): yield M
-
-def bound(G1_dash, G2_dash, G1, G2, m):
-      candidates = set()
-      for u in G1_dash:
-            for v in G2_dash:
-                  if compatible(G1[u], G2[v], m):
-                        candidates.add(v)
-      if candidates.__len__() < len(m):
-            return True
-      else:
-            return False
-
-def compatible(Nv, Nu, m):
-    """Performs compatibility check for the backtracking algorithm"""
-    # If no associations exist, any node is compatible
-    if m == []:
-        return True
-    # This ensures that the newly considered associated nodes are adjacent to nodes
-    # that have already been associated
-    for pair in m:
-        if pair[0] in Nv and pair[1] in Nu:
-            return True
-    return False
-
-def order(graph):
-    """Order the nodes in a graph by their degree"""
-    if graph == {}:
-        return None
-    else:
-        # Find vertex with largest neighbourhood in the graph
-        return max(graph, key=lambda v : len(graph[v]))
 
 # Modified from progress bar code
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):
