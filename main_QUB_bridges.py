@@ -22,6 +22,5 @@ if __name__ == '__main__':
     file_path = "IE_models/Castledawson_Bridge_IEM_revB.xlsx"
     gc.importIE(castledawson, file_path)
 
-    # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBK")
-
-
+    distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
+    print(distance)

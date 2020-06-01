@@ -260,13 +260,13 @@ def findSubgraphs(V, E, cEdges, dEdges):
     """Given the modular product, c-edges and d-edges for two graphs, 
     return the full list of: connected induced common subgraphs"""
     # c-clique algorithm 
-    print("Finding cliques...")
+    # print("Finding cliques...")
     cliques = list(maximalCliquesCedges(V, E, cEdges, dEdges))
-    print("Removing duplicates...")
+    # print("Removing duplicates...")
     cliques = [set(item) for item in set(frozenset(item) for item in cliques)]
-    print("Checking cliques for adjacency...")
+    # print("Checking cliques for adjacency...")
     c_cliques = check_adjacency(cliques, cEdges)
-    print(divide)
+    # print(divide)
     return c_cliques
 
 def plotMCS(clique_set, cEdges):
@@ -370,6 +370,18 @@ def smallestGraphFirst(graph1, graph2):
         graph2 = temp_graph
     return graph1, graph2
 
+def largestGraphFirst(graph1, graph2):
+    # Generate node list
+    V1 = graph1.nodeList()
+    V2 = graph2.nodeList()
+    # The modular product function misses edges if the larger graph is called first
+    if len(V1) < len(V2):
+        # Swap graphs so largest is graph1
+        temp_graph = graph1
+        graph1 = graph2
+        graph2 = temp_graph
+    return graph1, graph2
+
 def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
     """Handles the process of calculating the Jaccard distance for two graphs
     from the MCS found using the c-clique BK algorithm"""
@@ -386,8 +398,8 @@ def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
         graphPlot(V2, E2)
     # Generate the modular product graph
     V, E = modularProduct(graph1, graph2)
-    print("Modular product vertices:", len(V))
-    print("Modular product edges:", len(E))
+    # print("Modular product vertices:", len(V))
+    # print("Modular product edges:", len(E))
     # Create list of c-edges and d-edges within modular product graph
     cEdges, dEdges = findCedges(E, E1, E2)
     # Find the largest cliques
@@ -401,7 +413,7 @@ def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
         if plot == True:
             plotMCS(boundary_match, cEdges)
     else:
-        print("Finding largest cliques...")
+        # print("Finding largest cliques...")
         # Find the largest MCSs
         max_cliques = maxCliques(c_cliques)
         # Calculate the Jaccard distance using one of the possible MCSs
@@ -409,6 +421,23 @@ def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
         # Plot largest subgraph 
         if plot == True:
             plotMCS(max_cliques, cEdges)
+    return vertex_match
+
+def findJaccardDistanceBackTrack(g1, g2, plot=False):
+    graph1, graph2 = largestGraphFirst(g1, g2)
+    # Re-generate node list
+    V1 = graph1.nodeList()
+    V2 = graph2.nodeList()
+    # Generate edge list
+    E1 = graph1.edgeList()
+    E2 = graph2.edgeList()
+    # Plot the two graphs
+    if plot == True:
+        graphPlot(V1, E1)
+        graphPlot(V2, E2)
+    matches = backtrack(graph1.graph, graph2.graph)
+    max_cliques = maxCliques(matches)
+    vertex_match = 1 - ss.JaccardIndex(max_cliques[0], V1, V2)
     return vertex_match
 
 def createDistanceMatrix(graph_list, metric, BCmatch=False):
@@ -426,7 +455,7 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
                 if metric == "JaccardBK":
                     distanceMatrix[i][j] = findJaccardDistanceBK(graph1, graph2, BCmatch)
                 if metric == "JaccardBackTrack":
-                    pass
+                    distanceMatrix[i][j] = findJaccardDistanceBackTrack(graph1, graph2)
                 elif metric == "Spectral":
                     pass
             if i > j:
@@ -435,6 +464,86 @@ def createDistanceMatrix(graph_list, metric, BCmatch=False):
     end_time = time.time()
     print("Time taken:", round(end_time - begin_time, 2), "seconds")
     return distanceMatrix
+
+# Backtracking algorithm
+def bound(G1_dash, G2_dash, G1, G2, m, best):
+    len_m = len(m)
+    if len(G1_dash) + len_m <= best:
+        return True
+    elif len(G2_dash) + len_m <= best:
+        return True
+    # else:
+    #     candidates = []
+    #     for u in G1_dash:
+    #         for v in G2_dash:
+    #                 if compatible(G1[u], G2[v], m):
+    #                     candidates.append(v)
+    #     if len(candidates) + len_m > best:
+    #         return False
+    #     else:
+    #         return True
+
+def backtrack(G1, G2):
+    m_initial = []
+    G1_dash = G1.copy()
+    G2_dash = G2.keys()
+    best = 0
+    # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
+    return [m[0] for m in list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))]
+
+def backtrack_algorithm(G1_dash, G2_dash, G1, G2, m, best):
+    # Create a list of nodes from G1 and G2 that have already been used to form the solution
+    v1_list_int = [pair[0] for pair in m]
+    v2_list_int = [pair[1] for pair in m]
+    while True:
+            if bound(G1_dash, G2_dash, G1, G2, m, best):
+                # This new solution cannot have exceed the current best estimate
+                break
+            v1 = order(G1_dash)
+            if v1 == None:
+                # This new solution must exceed the current best estimate, update the best estimate
+                best = len(m)
+                print(best)
+                yield m, best
+                break
+            else:
+                # Add the current v1 to the list of nodes that have been tried
+                v1_list = v1_list_int + [v1] 
+                for v2 in G2_dash:
+                        # Check whether the new pair of nodes (v1, v2) can be added to the solution
+                        if compatible(set(G1[v1]), set(G2[v2]), m):
+                            # Add the current v2 to the list of nodes that have been tried
+                            v2_list = v2_list_int + [v2]
+                            # Carry on down the tree
+                            for M in backtrack_algorithm({v : G1_dash[v] for v in G1_dash if v not in v1_list}, 
+                                                        [u for u in G2_dash if u not in v2_list],
+                                                            G1, G2,
+                                                            list(m) + [(v1, v2)],
+                                                            best): 
+                                    # Find the length of the current best estimate
+                                    if len(M[0]) > best: 
+                                        best = M[1]
+                                    yield M
+                # Remove the node v1 that has already been tried from the remaining graph G1_dash
+                del G1_dash[v1]
+
+def order(graph):
+    """Order the nodes in a graph by their degree"""
+    if graph == {}:
+        return None
+    else:
+        # Find vertex with largest neighbourhood in the graph
+        return max(graph, key=lambda v : len(graph[v]))
+
+def compatible(Nv, Nu, m):
+    # If no associations exist, any node is compatible
+    if m == []:
+        return True
+    else:
+        for pair in m:
+                if pair[0] in Nv and pair[1] in Nu:
+                    return True
+        return False
 
 # Modified from progress bar code
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1):

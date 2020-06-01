@@ -3,6 +3,8 @@ from structure import Network
 from element import Boundary
 from element import IrreducibleElement
 from joint import Joint
+import cProfile
+import pstats
 
 import graph_comparison as gc
 import network as nw
@@ -225,6 +227,23 @@ if __name__ == '__main__':
     # [0.61904762 0.73684211 0.57894737 0.57894737 0.         0.40909091]
     # [0.63157895 0.6875     0.58823529 0.58823529 0.40909091 0.        ]]
 
+    # distance = gc.findJaccardDistanceBackTrack(turbine1, aeroplane2)
+    # print(distance)
+
+    distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
+    print(distance_matrix_backtrack)
+
+    # [[0.         0.5        0.5        0.5        0.61904762 0.55555556]
+    # [0.5        0.         0.375      0.375      0.73684211 0.6875    ]
+    # [0.5        0.375      0.         0.         0.57894737 0.5       ]
+    # [0.5        0.375      0.         0.         0.57894737 0.5       ]
+    # [0.61904762 0.73684211 0.57894737 0.57894737 0.         0.15789474]
+    # [0.55555556 0.6875     0.5        0.5        0.15789474 0.        ]]
+
+    profile = cProfile.Profile()
+    profile.runcall(gc.createDistanceMatrix, graph_list + graph_list2, "JaccardBackTrack")
+    ps = pstats.Stats(profile)
+    ps.print_stats()
 
     """
     # Create initial weights matrix
