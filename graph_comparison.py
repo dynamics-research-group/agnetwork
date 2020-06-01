@@ -489,51 +489,49 @@ def backtrack(G1, G2):
     G2_dash = G2.keys()
     best = 0
     # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
-    return [m[0] for m in list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))]
+    return [m[0] for m in list(backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m_initial, best))]
 
-def backtrack_algorithm(G1_dash, G2_dash, G1, G2, m, best):
+def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best):
     # Create a list of nodes from G1 and G2 that have already been used to form the solution
     v1_list_int = [pair[0] for pair in m]
     v2_list_int = [pair[1] for pair in m]
+    ordered_nodes = sort(G1_dash)
     while True:
             if bound(G1_dash, G2_dash, G1, G2, m, best):
                 # This new solution cannot have exceed the current best estimate
                 break
-            v1 = order(G1_dash)
-            if v1 == None:
+            try:
+                v1 = next(ordered_nodes)
+            except:
                 # This new solution must exceed the current best estimate, update the best estimate
                 best = len(m)
                 print(best)
                 yield m, best
                 break
-            else:
-                # Add the current v1 to the list of nodes that have been tried
-                v1_list = v1_list_int + [v1] 
-                for v2 in G2_dash:
-                        # Check whether the new pair of nodes (v1, v2) can be added to the solution
-                        if compatible(set(G1[v1]), set(G2[v2]), m):
-                            # Add the current v2 to the list of nodes that have been tried
-                            v2_list = v2_list_int + [v2]
-                            # Carry on down the tree
-                            for M in backtrack_algorithm({v : G1_dash[v] for v in G1_dash if v not in v1_list}, 
-                                                        [u for u in G2_dash if u not in v2_list],
-                                                            G1, G2,
-                                                            list(m) + [(v1, v2)],
-                                                            best): 
-                                    # Find the length of the current best estimate
-                                    if len(M[0]) > best: 
-                                        best = M[1]
-                                    yield M
-                # Remove the node v1 that has already been tried from the remaining graph G1_dash
-                del G1_dash[v1]
-
-def order(graph):
-    """Order the nodes in a graph by their degree"""
-    if graph == {}:
-        return None
-    else:
-        # Find vertex with largest neighbourhood in the graph
-        return max(graph, key=lambda v : len(graph[v]))
+            # Add the current v1 to the list of nodes that have been tried
+            v1_list = v1_list_int + [v1] 
+            for v2 in G2_dash:
+                    # Check whether the new pair of nodes (v1, v2) can be added to the solution
+                    if compatible(set(G1[v1]), set(G2[v2]), m):
+                        # Add the current v2 to the list of nodes that have been tried
+                        v2_list = v2_list_int + [v2]
+                        # Carry on down the tree
+                        for M in backtrack_algorithm_iter({v : G1_dash[v] for v in G1_dash if v not in v1_list}, 
+                                                    [u for u in G2_dash if u not in v2_list],
+                                                        G1, G2,
+                                                        list(m) + [(v1, v2)],
+                                                        best): 
+                                # Find the length of the current best estimate
+                                if len(M[0]) > best: 
+                                    best = M[1]
+                                yield M
+            # Remove the node v1 that has already been tried from the remaining graph G1_dash
+            del G1_dash[v1]
+    
+def sort(graph):
+    sorted_graph = sorted(graph.items(), key = lambda item : len(item[1]), reverse=True)
+    sorted_nodes = (node[0] for node in sorted_graph)
+    return sorted_nodes
 
 def compatible(Nv, Nu, m):
     # If no associations exist, any node is compatible

@@ -245,6 +245,9 @@ if __name__ == '__main__':
     ps = pstats.Stats(profile)
     ps.print_stats()
 
+    filename = 'main_IMAC.prof'  # You can change this if needed
+    profile.dump_stats(filename)
+
     """
     # Create initial weights matrix
     weights = nw.initWeightsDict(graph_list)
