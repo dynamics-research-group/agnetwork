@@ -22,5 +22,12 @@ if __name__ == '__main__':
     file_path = "IE_models/Castledawson_Bridge_IEM_revB.xlsx"
     gc.importIE(castledawson, file_path)
 
-    distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
-    print(distance)
+    graph1, graph2 = gc.largestGraphFirst(castledawson, randlestown)
+    matches = gc.backtrack(graph1.graph, graph2.graph)
+    f=open('matches.txt','w')
+    for match in matches:
+        f.write(str(match)+'\n')
+    f.close()
+
+    # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
+    # print(distance)
