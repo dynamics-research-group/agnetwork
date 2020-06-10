@@ -230,8 +230,9 @@ if __name__ == '__main__':
     # distance = gc.findJaccardDistanceBackTrack(turbine1, aeroplane2)
     # print(distance)
 
-    distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
-    print(distance_matrix_backtrack)
+    # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
+    # print(distance_matrix_backtrack)
+    matches = gc.backtrack(graph_list2[0].graph, graph_list2[1].graph, 'IMAC.txt')
 
     # [[0.         0.5        0.5        0.5        0.61904762 0.55555556]
     # [0.5        0.         0.375      0.375      0.73684211 0.6875    ]
@@ -240,13 +241,14 @@ if __name__ == '__main__':
     # [0.61904762 0.73684211 0.57894737 0.57894737 0.         0.15789474]
     # [0.55555556 0.6875     0.5        0.5        0.15789474 0.        ]]
 
-    profile = cProfile.Profile()
-    profile.runcall(gc.createDistanceMatrix, graph_list + graph_list2, "JaccardBackTrack")
-    ps = pstats.Stats(profile)
-    ps.print_stats()
+    # profile = cProfile.Profile()
+    # # profile.runcall(gc.createDistanceMatrix, graph_list + graph_list2, "JaccardBackTrack")
+    # # profile.runcall(gc.backtrack, graph_list2[0].graph, graph_list2[1].graph)
+    # ps = pstats.Stats(profile)
+    # ps.print_stats()
 
-    filename = 'main_IMAC.prof'  # You can change this if needed
-    profile.dump_stats(filename)
+    # filename = 'main_IMAC.prof'  # You can change this if needed
+    # profile.dump_stats(filename)
 
     """
     # Create initial weights matrix

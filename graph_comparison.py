@@ -424,7 +424,7 @@ def findJaccardDistanceBK(g1, g2, BCmatch=False, plot=False):
     return vertex_match
 
 def findJaccardDistanceBackTrack(g1, g2, plot=False):
-    graph1, graph2 = largestGraphFirst(g1, g2)
+    graph1, graph2 = smallestGraphFirst(g1, g2)
     # Re-generate node list
     V1 = graph1.nodeList()
     V2 = graph2.nodeList()
@@ -483,15 +483,18 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
     #     else:
     #         return True
 
-def backtrack(G1, G2):
+def backtrack(G1, G2, filename='best.txt.'):
     m_initial = []
     G1_dash = G1.copy()
     G2_dash = G2.keys()
     best = 0
     # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
-    return [m[0] for m in list(backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m_initial, best))]
+    f=open(filename,'w')
+    f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
+    f.close()
+    return [m[0] for m in list(backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m_initial, best, filename))]
 
-def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best):
+def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best, filename):
     # Create a list of nodes from G1 and G2 that have already been used to form the solution
     v1_list_int = [pair[0] for pair in m]
     v2_list_int = [pair[1] for pair in m]
@@ -506,6 +509,9 @@ def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best):
                 # This new solution must exceed the current best estimate, update the best estimate
                 best = len(m)
                 print(best)
+                f=open(filename,'a')
+                f.write('Length {0} \n{1}\n \n'.format(best, m))
+                f.close()
                 yield m, best
                 break
             # Add the current v1 to the list of nodes that have been tried
@@ -520,7 +526,7 @@ def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best):
                                                     [u for u in G2_dash if u not in v2_list],
                                                         G1, G2,
                                                         list(m) + [(v1, v2)],
-                                                        best): 
+                                                        best, filename): 
                                 # Find the length of the current best estimate
                                 if len(M[0]) > best: 
                                     best = M[1]
