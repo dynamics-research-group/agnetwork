@@ -7,6 +7,7 @@ import cProfile
 import pstats
 
 import graph_comparison as gc
+import backtracking as bt
 import network as nw
 import pandas as pd
 import time
@@ -230,10 +231,16 @@ if __name__ == '__main__':
     # distance = gc.findJaccardDistanceBackTrack(turbine1, aeroplane2)
     # print(distance)
 
-    # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
-    # print(distance_matrix_backtrack)
-    matches = gc.backtrack(graph_list2[0].graph, graph_list2[1].graph, 'IMAC.txt')
+    distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
+    print(distance_matrix_backtrack)
 
+    # graph1, graph2 = gc.smallestGraphFirst(graph_list[0], graph_list[2])
+    # matches = bt.backtrack(graph1.graph, graph2.graph, 'IMAC.txt')
+    # MCS_nodes = matches[-1]
+
+    # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
+
+    # Largest graph first
     # [[0.         0.5        0.5        0.5        0.61904762 0.55555556]
     # [0.5        0.         0.375      0.375      0.73684211 0.6875    ]
     # [0.5        0.375      0.         0.         0.57894737 0.5       ]
@@ -241,13 +248,20 @@ if __name__ == '__main__':
     # [0.61904762 0.73684211 0.57894737 0.57894737 0.         0.15789474]
     # [0.55555556 0.6875     0.5        0.5        0.15789474 0.        ]]
 
+    # Smallest graph first
+    # [[0.         0.5        0.5        0.5        0.55       0.375     ]
+    # [0.5        0.         0.375      0.375      0.73684211 0.6875    ]
+    # [0.5        0.375      0.         0.         0.57894737 0.5       ]
+    # [0.5        0.375      0.         0.         0.57894737 0.5       ]
+    # [0.55       0.73684211 0.57894737 0.57894737 0.         0.15789474]
+    # [0.375      0.6875     0.5        0.5        0.15789474 0.        ]]
+
     # profile = cProfile.Profile()
     # # profile.runcall(gc.createDistanceMatrix, graph_list + graph_list2, "JaccardBackTrack")
-    # # profile.runcall(gc.backtrack, graph_list2[0].graph, graph_list2[1].graph)
+    # profile.runcall(bt.backtrack, graph_list2[1].graph, graph_list2[0].graph, 'IMAC.txt')
     # ps = pstats.Stats(profile)
     # ps.print_stats()
-
-    # filename = 'main_IMAC.prof'  # You can change this if needed
+    # filename = 'profiles/main_IMAC.prof'  # You can change this if needed
     # profile.dump_stats(filename)
 
     """
