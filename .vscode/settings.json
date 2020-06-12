@@ -1,6 +1,5 @@
 {
     "window.zoomLevel": 0,
-    "python.pythonPath": "/Users/Julian/opt/anaconda3/bin/python",
     "python.testing.unittestArgs": [
         "-v",
         "-s",
