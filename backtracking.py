@@ -5,18 +5,16 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
         return True
     elif len(G2_dash) + len_m <= best:
         return True
-    else:
-        candidates = set()
-        for v1 in G1_dash:
-            for v2 in G2_dash:
-                    if compatible_connected(G1[v1], G2[v2], m):
-                        candidates.add(v2)
-                    elif G1[v1] <= G2[v2]:
-                        candidates.add(v2)
-        if len(candidates) + len_m > best:
-            return False
-        else:
-            return True
+    # else:
+    #     candidates = set()
+    #     for v1 in G1_dash:
+    #         for v2 in G2_dash:
+    #                 if compatible_heuristic(G1[v1], G2[v2], m):
+    #                     candidates.add(v2)
+    #     if len(candidates) + len_m > best:
+    #         return False
+    #     else:
+    #         return True
 
 def backtrack(G1, G2, filename='best.txt'):
     m_initial = []
@@ -53,7 +51,7 @@ def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best, filename):
             v1_list = v1_list_int + [v1] 
             for v2 in G2_dash:
                     # Check whether the new pair of nodes (v1, v2) can be added to the solution
-                    if compatible_connected(set(G1[v1]), set(G2[v2]), m):
+                    if compatible_heuristic(set(G1[v1]), set(G2[v2]), m):
                         # Add the current v2 to the list of nodes that have been tried
                         v2_list = v2_list_int + [v2]
                         # Carry on down the tree
@@ -96,4 +94,18 @@ def compatible_general(Nv1, Nv2, m):
                 if pair[0] not in Nv1 and pair[1] not in Nv2:
                     return True
         return False
-       
+
+def compatible_heuristic(Nv1, Nv2, m):
+    # My best guess as to the heuristic in the paper by Cao
+    # Enforces induced subgraphs
+    S1 = set()
+    S2 = set()
+    for pair in m:
+        if pair[0] in Nv1:
+            S1.add(pair)
+        if pair[1] in Nv2:
+            S2.add(pair)
+    if len(S1) == len(S2):
+        if S1 == S2:
+            return True
+    return False
