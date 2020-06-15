@@ -69,6 +69,8 @@ if __name__ == '__main__':
     #              ('V', 'Y'), ('D', 'Z'), ('F', 'N'), ('G', 'O'), ('H', 'P'), ('I', 'Q'), ('Z', 'EE'), 
     #              ('Y', 'FF')]
 
+    # MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('E', 'M'), ('J', 'R'), ('L', 'S'), ('M', 'T'), ('N', 'U'), ('O', 'V'), ('R', 'W'), ('S', 'X'), ('T', 'Y'), ('U', 'Z'), ('A', 'B'), ('B', 'F'), ('C', 'H'), ('D', 'L'), ('F', 'N'), ('G', 'O'), ('H', 'P'), ('I', 'Q'), ('Z', 'EE'), ('Y', 'FF')]
+
     # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
 
     # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
