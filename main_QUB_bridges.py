@@ -64,7 +64,10 @@ if __name__ == '__main__':
     f.write("Time taken: {0} seconds".format(round(time_taken, 2)))
     f.close()
 
-    # MCS_nodes = [('X', 'DD'), ('Q', 'AA'), ('K', 'S'), ('W', 'T'), ('J', 'F'), ('L', 'U'), ('M', 'V'), ('N', 'BB'), ('O', 'W'), ('P', 'X'), ('R', 'Y'), ('S', 'Z'), ('T', 'CC'), ('U', 'EE'), ('V', 'FF'), ('F', 'B'), ('G', 'C'), ('H', 'D'), ('I', 'E'), ('Z', '1')]
+    # MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('J', 'R'), ('L', 'F'), ('M', '1'), 
+    #              ('N', 'S'), ('O', 'T'), ('P', 'U'), ('R', 'L'), ('S', 'V'), ('T', 'W'), ('U', 'X'), 
+    #              ('V', 'Y'), ('D', 'Z'), ('F', 'N'), ('G', 'O'), ('H', 'P'), ('I', 'Q'), ('Z', 'EE'), 
+    #              ('Y', 'FF')]
 
     # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
 
