@@ -22,9 +22,8 @@ def backtrack(G1, G2, filename='best.txt'):
     G1_dash = G1.copy()
     best = 0
     # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
-    f=open('subgraphs/' + filename,'w')
-    f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
-    f.close()
+    with open('subgraphs/' + filename,'w') as f:
+        f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
     return [m[0] for m in list(backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m_initial, best, filename))]
 
 def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best, filename):
@@ -42,9 +41,8 @@ def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best, filename):
                 # This new solution must exceed the current best estimate, update the best estimate
                 best = len(m)
                 print(best)
-                f=open('subgraphs/' + filename,'a')
-                f.write('Length {0} \n{1}\n \n'.format(best, m))
-                f.close()
+                with open('subgraphs/' + filename,'a') as f:
+                    f.write('Length {0} \n{1}\n \n'.format(best, m))
                 yield m, best
                 break
             # Add the current v1 to the list of nodes that have been tried

@@ -57,12 +57,11 @@ if __name__ == '__main__':
     print("Time taken: {0} seconds".format(round(time_taken, 2)))
     print("Number of matches", len(matches))
 
-    f=open('matches.txt','w')
-    for match in matches:
-        print(match)
-        f.write('subgraphs/' + str(match) +'\n')
-    f.write("Time taken: {0} seconds".format(round(time_taken, 2)))
-    f.close()
+    with open('matches.txt','w') as f:
+        for match in matches:
+            print(match)
+            f.write('subgraphs/' + str(match) +'\n')
+        f.write("Time taken: {0} seconds".format(round(time_taken, 2)))
 
     # MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('J', 'R'), ('L', 'F'), ('M', '1'), 
     #              ('N', 'S'), ('O', 'T'), ('P', 'U'), ('R', 'L'), ('S', 'V'), ('T', 'W'), ('U', 'X'), 
