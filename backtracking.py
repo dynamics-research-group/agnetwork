@@ -9,7 +9,7 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
     #     candidates = set()
     #     for v1 in G1_dash:
     #         for v2 in G2_dash:
-    #                 if compatible_heuristic(G1[v1], G2[v2], m):
+    #                 if compatibleHeuristic(G1[v1], G2[v2], m):
     #                     candidates.add(v2)
     #     if len(candidates) + len_m > best:
     #         return False
@@ -24,9 +24,9 @@ def backtrack(G1, G2, filename='best.txt'):
     # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
     with open('subgraphs/' + filename,'w') as f:
         f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
-    return [m[0] for m in list(backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m_initial, best, filename))]
+    return [m[0] for m in list(backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m_initial, best, filename))]
 
-def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best, filename):
+def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
     # Create a list of nodes from G1 and G2 that have already been used to form the solution
     v1_list_int = [pair[0] for pair in m]
     v2_list_int = [pair[1] for pair in m]
@@ -49,11 +49,11 @@ def backtrack_algorithm_iter(G1_dash, G2_dash, G1, G2, m, best, filename):
             v1_list = v1_list_int + [v1] 
             for v2 in G2_dash:
                     # Check whether the new pair of nodes (v1, v2) can be added to the solution
-                    if compatible_heuristic(set(G1[v1]), set(G2[v2]), m):
+                    if compatibleHeuristic(set(G1[v1]), set(G2[v2]), m):
                         # Add the current v2 to the list of nodes that have been tried
                         v2_list = v2_list_int + [v2]
                         # Carry on down the tree
-                        for M in backtrack_algorithm_iter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in v1_list}, 
+                        for M in backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in v1_list}, 
                                                     [v2 for v2 in G2_dash if v2 not in v2_list],
                                                         G1, G2,
                                                         list(m) + [(v1, v2)],
@@ -70,7 +70,7 @@ def sort(graph):
     sorted_nodes = (node[0] for node in sorted_graph)
     return sorted_nodes
 
-def compatible_connected(Nv1, Nv2, m):
+def compatibleConnected(Nv1, Nv2, m):
     # If no associations exist, any node is compatible
     if m == []:
         return True
@@ -80,7 +80,7 @@ def compatible_connected(Nv1, Nv2, m):
                     return True
         return False
     
-def compatible_general(Nv1, Nv2, m):
+def compatibleGeneral(Nv1, Nv2, m):
     # If no associations exist, any node is compatible
     # Ensures graph is induced, but not necessarily connected
     if m == []:
@@ -93,7 +93,7 @@ def compatible_general(Nv1, Nv2, m):
                     return True
         return False
 
-def compatible_heuristic(Nv1, Nv2, m):
+def compatibleHeuristic(Nv1, Nv2, m):
     # My best guess as to the heuristic in the paper by Cao
     # Enforces induced subgraphs
     S1 = set()
