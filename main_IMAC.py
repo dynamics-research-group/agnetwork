@@ -256,6 +256,14 @@ if __name__ == '__main__':
     # [0.55       0.73684211 0.57894737 0.57894737 0.         0.15789474]
     # [0.375      0.6875     0.5        0.5        0.15789474 0.        ]]
 
+    # Induced graph heuristic
+    # [[0.         0.5        0.5        0.5        0.55       0.47058824]
+    # [0.5        0.         0.375      0.375      0.73684211 0.6875    ]
+    # [0.5        0.375      0.         0.         0.57894737 0.58823529]
+    # [0.5        0.375      0.         0.         0.57894737 0.58823529]
+    # [0.55       0.73684211 0.57894737 0.57894737 0.         0.25      ]
+    # [0.47058824 0.6875     0.58823529 0.58823529 0.25       0.        ]]
+
     # profile = cProfile.Profile()
     # # profile.runcall(gc.createDistanceMatrix, graph_list + graph_list2, "JaccardBackTrack")
     # profile.runcall(bt.backtrack, graph_list2[1].graph, graph_list2[0].graph, 'IMAC.txt')
