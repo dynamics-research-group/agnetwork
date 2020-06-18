@@ -3,8 +3,8 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
     len_m = len(m)
     if len(G1_dash) + len_m <= best:
         return True
-    # elif len(G2_dash) + len_m <= best:
-    #     return True
+    elif len(G2_dash) + len_m <= best:
+        return True
     # else:
     #     candidates = set()
     #     for v1 in G1_dash:
@@ -59,7 +59,7 @@ def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
                                                         list(m) + [(v1, v2)],
                                                         best, filename): 
                                 # Find the length of the current best estimate
-                                if len(M[0]) > best: 
+                                if M[1] > best: 
                                     best = M[1]
                                 yield M
             # Remove the node v1 that has already been tried from the remaining graph G1_dash
