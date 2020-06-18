@@ -3,8 +3,8 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
     len_m = len(m)
     if len(G1_dash) + len_m <= best:
         return True
-    elif len(G2_dash) + len_m <= best:
-        return True
+    # elif len(G2_dash) + len_m <= best:
+    #     return True
     # else:
     #     candidates = set()
     #     for v1 in G1_dash:
