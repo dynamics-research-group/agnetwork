@@ -1,3 +1,5 @@
+import itertools
+
 # Backtracking algorithm
 def bound(G1_dash, G2_dash, G1, G2, m, best):
     len_m = len(m)
@@ -9,15 +11,16 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
     #     candidates = set()
     #     for v1 in G1_dash:
     #         for v2 in G2_dash:
-    #                 if compatibleHeuristic(G1[v1], G2[v2], m):
-    #                     candidates.add(v2)
-    #     if len(candidates) + len_m > best:
+    #                 if not compatibleHeuristic(G1[v1], G2[v2], m):
+    #                     candidates.add(v1)
+    #     if len(G1_dash) - len(candidates) + len_m > best:
     #         return False
     #     else:
     #         return True
 
 def backtrack(G1, G2, filename='best.txt'):
     m_initial = []
+    # G2_dash = G2.keys()
     G2_dash = list(sort(G2))
     G1_dash = G1.copy()
     best = 0
@@ -30,6 +33,7 @@ def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
     # Create a list of nodes from G1 and G2 that have already been used to form the solution
     v1_list_int = [pair[0] for pair in m]
     v2_list_int = [pair[1] for pair in m]
+    # ordered_nodes = (key for key in G1_dash.keys())
     ordered_nodes = sort(G1_dash)
     while True:
             if bound(G1_dash, G2_dash, G1, G2, m, best):
@@ -50,7 +54,7 @@ def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
             for v2 in G2_dash:
                     # Check whether the new pair of nodes (v1, v2) can be added to the solution
                     if compatibleHeuristic(set(G1[v1]), set(G2[v2]), m):
-                        # Add the current v2 to the list of nodes that have been tried
+                        # Add the current v2 to the list of nodes that have been tried in this branch
                         v2_list = v2_list_int + [v2]
                         # Carry on down the tree
                         for M in backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in v1_list}, 
@@ -64,43 +68,6 @@ def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
                                 yield M
             # Remove the node v1 that has already been tried from the remaining graph G1_dash
             del G1_dash[v1]
-
-   
-def backtrackAlgorithmFor(G1_dash, G2_dash, G1, G2, m, best, filename):
-    # Create a list of nodes from G1 and G2 that have already been used to form the solution
-    v1_list_int = [pair[0] for pair in m]
-    v2_list_int = [pair[1] for pair in m]
-    ordered_nodes = sort(G1_dash)
-    for v1 in ordered_nodes:
-        if bound(G1_dash, G2_dash, G1, G2, m, best):
-                # This new solution cannot have exceed the current best estimate
-                break
-        # Add the current v1 to the list of nodes that have been tried
-        v1_list = v1_list_int + [v1] 
-        for v2 in G2_dash:
-                # Check whether the new pair of nodes (v1, v2) can be added to the solution
-                if compatibleHeuristic(set(G1[v1]), set(G2[v2]), m):
-                    # Add the current v2 to the list of nodes that have been tried
-                    v2_list = v2_list_int + [v2]
-                    # Carry on down the tree
-                    for M in backtrackAlgorithmFor({v : G1_dash[v] for v in G1_dash if v not in v1_list}, 
-                                            [u for u in G2_dash if u not in v2_list],
-                                                    G1, G2,
-                                                    list(m) + [(v1, v2)],
-                                                    best, filename): 
-                            # Find the length of the current best estimate
-                            if len(M[0]) > best: 
-                                best = M[1]
-                            yield M
-        # Remove the node v1 that has already been tried from the remaining graph G1_dash
-        del G1_dash[v1]
-    if len(m) > best:
-        best = len(m)
-        print(best)
-    with open('subgraphs/' + filename,'a') as f:
-        f.write('Length {0} \n{1}\n \n'.format(best, m))
-    yield m, best
-
 
 def sort(graph):
     sorted_graph = sorted(graph.items(), key = lambda item : len(item[1]), reverse=True)
