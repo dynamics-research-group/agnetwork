@@ -235,12 +235,26 @@ if __name__ == '__main__':
     # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
     # print(distance_matrix_backtrack)
 
-    # graph1, graph2 = gc.smallestGraphFirst(graph_list[0], graph_list[2])
-    # matches = bt.backtrack(graph1.graph, graph2.graph, 'IMAC.txt')
+    graph1, graph2 = gc.smallestGraphFirst(graph_list2[0], graph_list2[1])
+    start_time = time.time()
+    matches = bt.backtrack(graph1.graph, graph2.graph, 'IMAC.txt')
+    end_time = time.time()
+    time_taken = end_time - start_time
+    print("Time taken: {0} seconds".format(round(time_taken, 2)))
+    print("Number of matches", len(matches))
+
     # MCS_nodes = matches[-1]
 
-    graph1, graph2 = gc.smallestGraphFirst(graph_list[0], graph_list[2])
+
+    graph1, graph2 = gc.smallestGraphFirst(graph_list2[0], graph_list2[1])
+    start_time = time.time()
     matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'IMAC.txt')
+    end_time = time.time()
+    time_taken = end_time - start_time
+    
+    print("Time taken: {0} seconds".format(round(time_taken, 2)))
+    print("Number of matches", len(matches))
+
     MCS_nodes = matches[-1]
 
     # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)

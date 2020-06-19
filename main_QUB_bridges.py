@@ -6,6 +6,7 @@ from joint import Joint
 
 import graph_comparison as gc
 import backtracking as bt
+import backtracking_parallel as btp
 import network as nw
 import time
 
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     # gc.graphPlot(V2, E2)
 
     start_time = time.time()
-    matches = bt.backtrack(graph1.graph, graph2.graph, 'bridges.txt')
+    matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'bridges.txt')
     end_time = time.time()
     time_taken = end_time - start_time
     

@@ -1,7 +1,7 @@
 import concurrent.futures
 import itertools
 
-def batch(iterable, n=1):
+def batchFunction(iterable, n=1):
     # Thank you stack overflow
     l = len(iterable)
     for ndx in range(0, l, n):
@@ -28,29 +28,43 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
 def backtrackParallel(G1, G2, filename='best.txt'):
     with open('subgraphs/' + filename,'w') as f:
         f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
-    first_layer = itertools.product(sort(G1), sort(G2))
-    m_initial = []
-    G2_dash = list(sort(G2))
-    G1_dash = G1.copy()
+    first_layer = list(itertools.product(sort(G1), sort(G2)))
     global_solutions = []
     best = 0
     # Number of branches to run in parallel
     batch_size = 4
-    batches = batch(first_layer, batch_size)
-    for u1, u2 in first_layer:
-        m_initial = [(u1, u2)]
-        for result in list(backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in u1}, 
-                                                [v2 for v2 in G2_dash if v2 not in u2], 
-                                                G1, G2, m_initial, best, filename)):
-            local_solutions = result[0]
-            new_best = result[1]
-        global_solutions.append(local_solutions)
-        if new_best > best:
-            best = new_best
+    batches = list(batchFunction(first_layer, batch_size))
+    for batch in batches:
+        # for u1, u2 in first_layer:
+        #     for result in list(backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in u1}, 
+        #                                             [v2 for v2 in G2_dash if v2 not in u2], 
+        #                                             G1, G2, [(u1, u2)], best, filename)):
+        #         local_solutions = result[0]
+        #         new_best = result[1]
+        #         global_solutions.append(local_solutions)
+        #     if new_best > best:
+        #         best = new_best
+
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            results = [executor.submit(backtrackParallelHandler, G1, G2, 
+                                      b, best, filename) for b in batch]
+            for result in concurrent.futures.as_completed(results):
+                solutions = result.result()
+                for solution in solutions:
+                    local_solutions, new_best = solution
+                    if new_best > best:
+                        best = new_best
+                    global_solutions.append(local_solutions)
     return global_solutions
     # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
     
-    
+def backtrackParallelHandler(G1, G2, b, best, filename='best.txt'):
+    G2_dash = list(sort(G2))
+    G1_dash = G1.copy()
+    u1, u2 = b
+    return list(backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in u1}, 
+                                            [v2 for v2 in G2_dash if v2 not in u2], 
+                                            G1, G2, [(u1, u2)], best, filename))
 
 def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
     # Create a list of nodes from G1 and G2 that have already been used to form the solution
