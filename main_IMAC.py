@@ -8,6 +8,7 @@ import pstats
 
 import graph_comparison as gc
 import backtracking as bt
+import backtracking_parallel as btp
 import network as nw
 import pandas as pd
 import time
@@ -231,12 +232,16 @@ if __name__ == '__main__':
     # distance = gc.findJaccardDistanceBackTrack(turbine1, aeroplane2)
     # print(distance)
 
-    distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
-    print(distance_matrix_backtrack)
+    # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
+    # print(distance_matrix_backtrack)
 
     # graph1, graph2 = gc.smallestGraphFirst(graph_list[0], graph_list[2])
     # matches = bt.backtrack(graph1.graph, graph2.graph, 'IMAC.txt')
     # MCS_nodes = matches[-1]
+
+    graph1, graph2 = gc.smallestGraphFirst(graph_list[0], graph_list[2])
+    matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'IMAC.txt')
+    MCS_nodes = matches[-1]
 
     # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
 
