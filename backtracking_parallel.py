@@ -1,3 +1,12 @@
+import concurrent.futures
+import itertools
+
+def batch(iterable, n=1):
+    # Thank you stack overflow
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]
+
 # Backtracking algorithm
 def bound(G1_dash, G2_dash, G1, G2, m, best):
     len_m = len(m)
@@ -16,15 +25,32 @@ def bound(G1_dash, G2_dash, G1, G2, m, best):
     #     else:
     #         return True
 
-def backtrack(G1, G2, filename='best.txt'):
+def backtrackParallel(G1, G2, filename='best.txt'):
+    with open('subgraphs/' + filename,'w') as f:
+        f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
+    first_layer = itertools.product(sort(G1), sort(G2))
     m_initial = []
     G2_dash = list(sort(G2))
     G1_dash = G1.copy()
+    global_solutions = []
     best = 0
+    # Number of branches to run in parallel
+    batch_size = 4
+    batches = batch(first_layer, batch_size)
+    for u1, u2 in first_layer:
+        m_initial = [(u1, u2)]
+        for result in list(backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in u1}, 
+                                                [v2 for v2 in G2_dash if v2 not in u2], 
+                                                G1, G2, m_initial, best, filename)):
+            local_solutions = result[0]
+            new_best = result[1]
+        global_solutions.append(local_solutions)
+        if new_best > best:
+            best = new_best
+    return global_solutions
     # return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
-    with open('subgraphs/' + filename,'w') as f:
-        f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(G1.keys()), list(G2.keys())))
-    return [m[0] for m in list(backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m_initial, best, filename))]
+    
+    
 
 def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
     # Create a list of nodes from G1 and G2 that have already been used to form the solution
@@ -64,43 +90,6 @@ def backtrackAlgorithmIter(G1_dash, G2_dash, G1, G2, m, best, filename):
                                 yield M
             # Remove the node v1 that has already been tried from the remaining graph G1_dash
             del G1_dash[v1]
-
-   
-def backtrackAlgorithmFor(G1_dash, G2_dash, G1, G2, m, best, filename):
-    # Create a list of nodes from G1 and G2 that have already been used to form the solution
-    v1_list_int = [pair[0] for pair in m]
-    v2_list_int = [pair[1] for pair in m]
-    ordered_nodes = sort(G1_dash)
-    for v1 in ordered_nodes:
-        if bound(G1_dash, G2_dash, G1, G2, m, best):
-                # This new solution cannot have exceed the current best estimate
-                break
-        # Add the current v1 to the list of nodes that have been tried
-        v1_list = v1_list_int + [v1] 
-        for v2 in G2_dash:
-                # Check whether the new pair of nodes (v1, v2) can be added to the solution
-                if compatibleHeuristic(set(G1[v1]), set(G2[v2]), m):
-                    # Add the current v2 to the list of nodes that have been tried
-                    v2_list = v2_list_int + [v2]
-                    # Carry on down the tree
-                    for M in backtrackAlgorithmFor({v : G1_dash[v] for v in G1_dash if v not in v1_list}, 
-                                            [u for u in G2_dash if u not in v2_list],
-                                                    G1, G2,
-                                                    list(m) + [(v1, v2)],
-                                                    best, filename): 
-                            # Find the length of the current best estimate
-                            if len(M[0]) > best: 
-                                best = M[1]
-                            yield M
-        # Remove the node v1 that has already been tried from the remaining graph G1_dash
-        del G1_dash[v1]
-    if len(m) > best:
-        best = len(m)
-        print(best)
-    with open('subgraphs/' + filename,'a') as f:
-        f.write('Length {0} \n{1}\n \n'.format(best, m))
-    yield m, best
-
 
 def sort(graph):
     sorted_graph = sorted(graph.items(), key = lambda item : len(item[1]), reverse=True)
