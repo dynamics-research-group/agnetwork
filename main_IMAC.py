@@ -65,7 +65,8 @@ if __name__ == '__main__':
                            'N' : ['FRP',      ['Beam', 'Aerofoil']],
                            'O' : ['Mixed',    ['Complex', 'Assembly']],
                            'P' : ['Mixed',    ['Complex', 'Assembly']],
-                           '1' : ['Ground']}
+                           '1' : ['Ground'],
+                           '2' : ['Ground']}
     aeroplane1.joints = {('A1','A2') : ['1',  [34.2, 14.68, 5.165], 'Perfect'],
                          ('A2','A3') : ['2',  [34.2, 60.96, 5.165], 'Perfect'],
                          ('A2','B')  : ['3',  [32.2, 29.79, 2.89],  'Lug'],
@@ -84,7 +85,7 @@ if __name__ == '__main__':
                          ('A1','O')  : ['16', [34.2, 7.75,  1.75],  'Complex'],
                          ('A2','P')  : ['17', [34.2, 29.67, 1.75],  'Complex'],
                          ('O', '1')  : ['18', [34.2, 7.75,  0],     'Friction'],
-                         ('P', '1')  : ['19', [34.2, 29.67, 0],     'Friction']}
+                         ('P', '2')  : ['19', [34.2, 29.67, 0],     'Friction']}
     aeroplane1.addElements()
     aeroplane1.addJoints()
     aeroplane1.edgeList()
@@ -106,7 +107,8 @@ if __name__ == '__main__':
                            'K' : ['FRP',        ['Beam', 'Aerofoil']],
                            'L' : ['Mixed',      ['Complex', 'Assembly']], 
                            'M' : ['Mixed',      ['Complex', 'Assembly']],
-                           '1' : ['Ground']}
+                           '1' : ['Ground'],
+                           '2' : ['Ground']}
     aeroplane2.joints = {('A', 'C')  : ['1',  [0, 0, 0], 'Bolted'],
                          ('B', 'C')  : ['2',  [0, 0, 0], 'Bolted'],
                          ('C', 'D1') : ['3',  [0, 0, 0], 'Lug'],
@@ -124,7 +126,7 @@ if __name__ == '__main__':
                          ('E', 'G')  : ['15', [0, 0, 0], 'Pinned'],
                          ('F', 'H')  : ['16', [0, 0, 0], 'Pinned'],
                          ('L', '1')  : ['17', [0, 0, 0], 'Boundary'],
-                         ('M', '1')  : ['18', [0, 0, 0], 'Boundary']}
+                         ('M', '2')  : ['18', [0, 0, 0], 'Boundary']}
     aeroplane2.addElements()
     aeroplane2.addJoints()
     aeroplane2.edgeList()
@@ -232,30 +234,30 @@ if __name__ == '__main__':
     # distance = gc.findJaccardDistanceBackTrack(turbine1, aeroplane2)
     # print(distance)
 
-    # distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
-    # print(distance_matrix_backtrack)
+    distance_matrix_backtrack = gc.createDistanceMatrix(graph_list + graph_list2, "JaccardBackTrack")
+    print(distance_matrix_backtrack)
 
-    graph1, graph2 = gc.smallestGraphFirst(graph_list2[0], graph_list2[1])
-    start_time = time.time()
-    matches = bt.backtrack(graph1.graph, graph2.graph, 'IMAC.txt')
-    end_time = time.time()
-    time_taken = end_time - start_time
-    print("Time taken: {0} seconds".format(round(time_taken, 2)))
-    print("Number of matches", len(matches))
+    # graph1, graph2 = gc.smallestGraphFirst(graph_list2[0], graph_list2[1])
+    # start_time = time.time()
+    # matches = bt.backtrack(graph1.graph, graph2.graph, 'IMAC.txt')
+    # end_time = time.time()
+    # time_taken = end_time - start_time
+    # print("Time taken: {0} seconds".format(round(time_taken, 2)))
+    # print("Number of matches", len(matches))
+
+    # # MCS_nodes = matches[-1]
+
+
+    # graph1, graph2 = gc.smallestGraphFirst(graph_list2[0], graph_list2[1])
+    # start_time = time.time()
+    # matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'IMAC.txt')
+    # end_time = time.time()
+    # time_taken = end_time - start_time
+    
+    # print("Time taken: {0} seconds".format(round(time_taken, 2)))
+    # print("Number of matches", len(matches))
 
     # MCS_nodes = matches[-1]
-
-
-    graph1, graph2 = gc.smallestGraphFirst(graph_list2[0], graph_list2[1])
-    start_time = time.time()
-    matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'IMAC.txt')
-    end_time = time.time()
-    time_taken = end_time - start_time
-    
-    print("Time taken: {0} seconds".format(round(time_taken, 2)))
-    print("Number of matches", len(matches))
-
-    MCS_nodes = matches[-1]
 
     # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
 
@@ -282,6 +284,15 @@ if __name__ == '__main__':
     # [0.5        0.375      0.         0.         0.57894737 0.58823529]
     # [0.55       0.73684211 0.57894737 0.57894737 0.         0.25      ]
     # [0.47058824 0.6875     0.58823529 0.58823529 0.25       0.        ]]
+
+    # Induced graph heuristic with separate ground nodes on planes
+    # Time taken: 0.56 seconds
+    # [[0.         0.5        0.5        0.5        0.57142857 0.5       ]
+    # [0.5        0.         0.375      0.375      0.75       0.70588235]
+    # [0.5        0.375      0.         0.         0.6        0.61111111]
+    # [0.5        0.375      0.         0.         0.6        0.61111111]
+    # [0.57142857 0.75       0.6        0.6        0.         0.23809524]
+    # [0.5        0.70588235 0.61111111 0.61111111 0.23809524 0.        ]]
 
     # profile = cProfile.Profile()
     # # profile.runcall(gc.createDistanceMatrix, graph_list + graph_list2, "JaccardBackTrack")
