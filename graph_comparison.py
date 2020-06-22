@@ -283,6 +283,7 @@ def plotMCSfromNodes(MCS_nodes, graph1, graph2):
                 if v2 in graph1[v1] and u2 in graph2[u1]:
                     MCS_edges.append((node1, node2))
     graphPlot(MCS_nodes, MCS_edges)
+    return MCS_nodes, MCS_edges
 
 def plotMCSfromCEdges(clique_set, cEdges):
     """Take the first maximal clique and create an edge set from

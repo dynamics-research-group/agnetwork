@@ -70,10 +70,16 @@ if __name__ == '__main__':
     nx.write_pajek(G, "test.net")
 
     G1 = nx.Graph()
-    G1.add_edges_from(edges)
-    G1.add_nodes_from(nodes)
+    G1.add_edges_from(E1)
+    G1.add_nodes_from(V1)
 
-    nx.write_pajek(G1, "test.net")
+    nx.write_pajek(G1, "bridge1.net")
+
+    G2 = nx.Graph()
+    G2.add_edges_from(E2)
+    G2.add_nodes_from(V2)
+
+    nx.write_pajek(G2, "bridge2.net")
 
     # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
     # print(distance)
