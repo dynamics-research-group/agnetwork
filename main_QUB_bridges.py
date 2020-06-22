@@ -8,20 +8,8 @@ import graph_comparison as gc
 import backtracking as bt
 import backtracking_parallel as btp
 import network as nw
+import networkx as nx
 import time
-
-def plotBridgeMCS(MCS_nodes, graph1, graph2):
-    MCS_edges = []
-    for node1 in MCS_nodes:
-        for node2 in MCS_nodes:
-            if node1 != node2:
-                v1 = node1[0]
-                v2 = node2[0]
-                u1 = node1[1]
-                u2 = node2[1]
-                if v2 in graph1[v1] and u2 in graph2[u1]:
-                    MCS_edges.append((node1, node2))
-    gc.graphPlot(MCS_nodes, MCS_edges)
 
 if __name__ == '__main__':
 
@@ -50,28 +38,42 @@ if __name__ == '__main__':
     # gc.graphPlot(V1, E1)
     # gc.graphPlot(V2, E2)
 
-    start_time = time.time()
-    matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'bridges.txt')
-    end_time = time.time()
-    time_taken = end_time - start_time
+    # start_time = time.time()
+    # matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'bridges.txt')
+    # end_time = time.time()
+    # time_taken = end_time - start_time
     
-    print("Time taken: {0} seconds".format(round(time_taken, 2)))
-    print("Number of matches", len(matches))
+    # print("Time taken: {0} seconds".format(round(time_taken, 2)))
+    # print("Number of matches", len(matches))
 
-    with open('matches.txt','w') as f:
-        for match in matches:
-            print(match)
-            f.write('subgraphs/' + str(match) +'\n')
-        f.write("Time taken: {0} seconds".format(round(time_taken, 2)))
+    # with open('matches.txt','w') as f:
+    #     for match in matches:
+    #         print(match)
+    #         f.write('subgraphs/' + str(match) +'\n')
+    #     f.write("Time taken: {0} seconds".format(round(time_taken, 2)))
 
     # MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('J', 'R'), ('L', 'F'), ('M', '1'), 
     #              ('N', 'S'), ('O', 'T'), ('P', 'U'), ('R', 'L'), ('S', 'V'), ('T', 'W'), ('U', 'X'), 
     #              ('V', 'Y'), ('D', 'Z'), ('F', 'N'), ('G', 'O'), ('H', 'P'), ('I', 'Q'), ('Z', 'EE'), 
     #              ('Y', 'FF')]
 
-    # MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('E', 'M'), ('J', 'R'), ('L', 'S'), ('M', 'T'), ('N', 'U'), ('O', 'V'), ('R', 'W'), ('S', 'X'), ('T', 'Y'), ('U', 'Z'), ('A', 'B'), ('B', 'F'), ('C', 'H'), ('D', 'L'), ('F', 'N'), ('G', 'O'), ('H', 'P'), ('I', 'Q'), ('Z', 'EE'), ('Y', 'FF')]
+    MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('E', 'M'), ('J', 'R'), ('L', 'S'), ('M', 'T'), ('N', 'U'), ('O', 'V'), ('R', 'W'), ('S', 'X'), ('T', 'Y'), ('U', 'Z'), ('A', 'B'), ('B', 'F'), ('C', 'H'), ('D', 'L'), ('F', 'N'), ('G', 'O'), ('H', 'P'), ('I', 'Q'), ('Z', 'EE'), ('Y', 'FF')]
 
-    # gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
+    nodes, edges = gc.plotMCSfromNodes(MCS_nodes, graph1.graph, graph2.graph)
+
+    # Create new networkX graph object
+    G = nx.Graph()
+    # Add nodes and edges to the graph object
+    G.add_edges_from(edges)
+    G.add_nodes_from(nodes)
+
+    nx.write_pajek(G, "test.net")
+
+    G1 = nx.Graph()
+    G1.add_edges_from(edges)
+    G1.add_nodes_from(nodes)
+
+    nx.write_pajek(G1, "test.net")
 
     # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
     # print(distance)
