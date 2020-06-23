@@ -35,16 +35,6 @@ def backtrackParallel(G1, G2, filename='best.txt'):
     batch_size = 4
     batches = list(batchFunction(first_layer, batch_size))
     for batch in batches:
-        # for u1, u2 in first_layer:
-        #     for result in list(backtrackAlgorithmIter({v1 : G1_dash[v1] for v1 in G1_dash if v1 not in u1}, 
-        #                                             [v2 for v2 in G2_dash if v2 not in u2], 
-        #                                             G1, G2, [(u1, u2)], best, filename)):
-        #         local_solutions = result[0]
-        #         new_best = result[1]
-        #         global_solutions.append(local_solutions)
-        #     if new_best > best:
-        #         best = new_best
-
         with concurrent.futures.ProcessPoolExecutor() as executor:
             results = [executor.submit(backtrackParallelHandler, G1, G2, 
                                       b, best, filename) for b in batch]
