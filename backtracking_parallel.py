@@ -1,5 +1,6 @@
 import concurrent.futures
 import itertools
+import os
 
 def batchFunction(iterable, n=1):
     # Thank you stack overflow
@@ -31,8 +32,11 @@ def backtrackParallel(G1, G2, filename='best.txt'):
     first_layer = list(itertools.product(sort(G1), sort(G2)))
     global_solutions = []
     best = 0
-    # Number of branches to run in parallel
-    batch_size = 4
+    try:
+        batch_size = os.cpu_count()
+    except:
+        # Number of branches to run in parallel
+        batch_size = 4
     batches = list(batchFunction(first_layer, batch_size))
     for batch in batches:
         with concurrent.futures.ProcessPoolExecutor() as executor:
