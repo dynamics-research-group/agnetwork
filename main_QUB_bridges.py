@@ -39,8 +39,8 @@ if __name__ == '__main__':
     # gc.graphPlot(V2, E2)
 
     start_time = time.time()
-    # matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'bridges.txt')
-    matches = bt.backtrack(graph1.graph, graph2.graph, 'bridges.txt')
+    matches = btp.backtrackParallel(graph1.graph, graph2.graph, 'bridges.txt')
+    # matches = bt.backtrack(graph1.graph, graph2.graph, 'bridges.txt')
     end_time = time.time()
     time_taken = end_time - start_time
     
@@ -68,19 +68,19 @@ if __name__ == '__main__':
     # G.add_edges_from(edges)
     # G.add_nodes_from(nodes)
 
-    # nx.write_pajek(G, "test.net")
+    # nx.write_pajek(G, "graph_net_files/test.net")
 
     # G1 = nx.Graph()
     # G1.add_edges_from(E1)
     # G1.add_nodes_from(V1)
 
-    # nx.write_pajek(G1, "bridge1.net")
+    # nx.write_pajek(G1, "graph_net_files/bridge1.net")
 
     # G2 = nx.Graph()
     # G2.add_edges_from(E2)
     # G2.add_nodes_from(V2)
 
-    # nx.write_pajek(G2, "bridge2.net")
+    # nx.write_pajek(G2, "graph_net_files/bridge2.net")
 
     # distance = gc.createDistanceMatrix([randlestown, castledawson], "JaccardBackTrack")
     # print(distance)
