@@ -31,7 +31,8 @@ if __name__ == '__main__':
                          'G': ['Metal',    ['Beam', 'Cylindrical']],
                          'H': ['Metal',    ['Beam', 'Cylindrical']],
                          'I': ['Concrete', ['Plate', 'Cylindrical']],
-                         '1': ['Ground']}                
+                         '1': ['Ground']
+                         }                
     turbine1.joints = {('A','D') : ['1', [8, 15, 235.75], 'Bearing', ['x','y','z'], ['y','z']],
                        ('B','D') : ['2', [8, 14, 254],    'Bearing', ['x','y','z'], ['y','z']],
                        ('C','D') : ['3', [8, 16, 254],    'Bearing', ['x','y','z'], ['y','z']],
@@ -40,7 +41,8 @@ if __name__ == '__main__':
                        ('F','G') : ['6', [15, 15, 183],   'Bolted'],
                        ('G','H') : ['7', [15, 15, 105],   'Bolted'],
                        ('H','I') : ['8', [15, 15, 5],     'Bolted'],
-                       ('I','1') : ['9', [15, 15, 0],     'Boundary']}
+                       ('I','1') : ['9', [15, 15, 0],     'Boundary']
+                       }
     turbine1.addElements()
     turbine1.addJoints()
     turbine1.edgeList()
@@ -66,7 +68,8 @@ if __name__ == '__main__':
                            'O' : ['Mixed',    ['Complex', 'Assembly']],
                            'P' : ['Mixed',    ['Complex', 'Assembly']],
                            '1' : ['Ground'],
-                           '2' : ['Ground']}
+                           '2' : ['Ground']
+                           }
     aeroplane1.joints = {('A1','A2') : ['1',  [34.2, 14.68, 5.165], 'Perfect'],
                          ('A2','A3') : ['2',  [34.2, 60.96, 5.165], 'Perfect'],
                          ('A2','B')  : ['3',  [32.2, 29.79, 2.89],  'Lug'],
@@ -85,7 +88,8 @@ if __name__ == '__main__':
                          ('A1','O')  : ['16', [34.2, 7.75,  1.75],  'Complex'],
                          ('A2','P')  : ['17', [34.2, 29.67, 1.75],  'Complex'],
                          ('O', '1')  : ['18', [34.2, 7.75,  0],     'Friction'],
-                         ('P', '2')  : ['19', [34.2, 29.67, 0],     'Friction']}
+                         ('P', '2')  : ['19', [34.2, 29.67, 0],     'Friction']
+                         }
     aeroplane1.addElements()
     aeroplane1.addJoints()
     aeroplane1.edgeList()
@@ -108,7 +112,8 @@ if __name__ == '__main__':
                            'L' : ['Mixed',      ['Complex', 'Assembly']], 
                            'M' : ['Mixed',      ['Complex', 'Assembly']],
                            '1' : ['Ground'],
-                           '2' : ['Ground']}
+                           '2' : ['Ground']
+                           }
     aeroplane2.joints = {('A', 'C')  : ['1',  [0, 0, 0], 'Bolted'],
                          ('B', 'C')  : ['2',  [0, 0, 0], 'Bolted'],
                          ('C', 'D1') : ['3',  [0, 0, 0], 'Lug'],
@@ -126,7 +131,8 @@ if __name__ == '__main__':
                          ('E', 'G')  : ['15', [0, 0, 0], 'Pinned'],
                          ('F', 'H')  : ['16', [0, 0, 0], 'Pinned'],
                          ('L', '1')  : ['17', [0, 0, 0], 'Boundary'],
-                         ('M', '2')  : ['18', [0, 0, 0], 'Boundary']}
+                         ('M', '2')  : ['18', [0, 0, 0], 'Boundary']
+                         }
     aeroplane2.addElements()
     aeroplane2.addJoints()
     aeroplane2.edgeList()
@@ -137,11 +143,13 @@ if __name__ == '__main__':
                         '2' : ['Ground'],
                         '3' : ['Ground'], 
                         'A' : ['Concrete', 'Beam'], 
-                        'B' : ['Concrete', 'Beam']}
+                        'B' : ['Concrete', 'Beam']
+                        }
     bridge1.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
                       ('3','A') : ['2', [0, 0, 0], 'Simply supported'],
                       ('2','B') : ['3', [0, 0, 0], 'Clamped'],
-                      ('A','B') : ['4', [0, 0, 0], 'Joined']}
+                      ('A','B') : ['4', [0, 0, 0], 'Joined']
+                      }
     bridge1.addElements()
     bridge1.addJoints()
     bridge1.edgeList()
@@ -155,14 +163,16 @@ if __name__ == '__main__':
                         'A' : ['Concrete', 'Beam'], 
                         'B' : ['Concrete', 'Beam'],
                         'C' : ['Concrete', 'Beam'], 
-                        'D' : ['Concrete', 'Beam']}
+                        'D' : ['Concrete', 'Beam']
+                        }
     bridge2.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
                       ('4','C') : ['2', [0, 0, 0], 'Simply supported'],
                       ('2','B') : ['3', [0, 0, 0], 'Clamped'],
                       ('3','D') : ['4', [0, 0, 0], 'Clamped'],
                       ('A','B') : ['5', [0, 0, 0], 'Joined'],
                       ('A','C') : ['6', [0, 0, 0], 'Joined'],
-                      ('C','D') : ['7', [0, 0, 0], 'Joined']}
+                      ('C','D') : ['7', [0, 0, 0], 'Joined']
+                      }
     bridge2.addElements()
     bridge2.addJoints()
     bridge2.edgeList()
@@ -170,20 +180,22 @@ if __name__ == '__main__':
     # Define the graph for Bridge 2a
     bridge2a = Structure('Bridge2a')
     bridge2a.elements = {'1' : ['Ground'],
-                        '2' : ['Ground'],
-                        '3' : ['Ground'], 
-                        '4' : ['Ground'],
-                        'A' : ['Concrete', 'Beam'], 
-                        'B' : ['Concrete', 'Beam'],
-                        'C' : ['Concrete', 'Beam'], 
-                        'D' : ['Concrete', 'Beam']}
+                         '2' : ['Ground'],
+                         '3' : ['Ground'], 
+                         '4' : ['Ground'],
+                         'A' : ['Concrete', 'Beam'], 
+                         'B' : ['Concrete', 'Beam'],
+                         'C' : ['Concrete', 'Beam'], 
+                         'D' : ['Concrete', 'Beam']
+                         }
     bridge2a.joints = {('1','A') : ['1', [0, 0, 0], 'Simply supported'],
-                      ('4','C') : ['2', [0, 0, 0], 'Simply supported'],
-                      ('2','B') : ['3', [0, 0, 0], 'Clamped'],
-                      ('3','D') : ['4', [0, 0, 0], 'Clamped'],
-                      ('A','B') : ['5', [0, 0, 0], 'Joined'],
-                      ('A','C') : ['6', [0, 0, 0], 'Joined'],
-                      ('C','D') : ['7', [0, 0, 0], 'Joined']}
+                       ('4','C') : ['2', [0, 0, 0], 'Simply supported'],
+                       ('2','B') : ['3', [0, 0, 0], 'Clamped'],
+                       ('3','D') : ['4', [0, 0, 0], 'Clamped'],
+                       ('A','B') : ['5', [0, 0, 0], 'Joined'],
+                       ('A','C') : ['6', [0, 0, 0], 'Joined'],
+                       ('C','D') : ['7', [0, 0, 0], 'Joined']
+                       }
     bridge2a.addElements()
     bridge2a.addJoints()
     bridge2a.edgeList()
@@ -200,7 +212,8 @@ if __name__ == '__main__':
                         'C' : ['Concrete', 'Beam'], 
                         'D' : ['Concrete', 'Beam'],
                         'E' : ['Concrete', 'Beam'],
-                        'F' : ['Concrete', 'Beam']}
+                        'F' : ['Concrete', 'Beam']
+                        }
     bridge3.joints = {('1','A') : ['1',  [0, 0, 0], 'Simply supported'],
                       ('5','E') : ['2',  [0, 0, 0], 'Simply supported'],
                       ('2','B') : ['3',  [0, 0, 0], 'Clamped'],
@@ -210,7 +223,8 @@ if __name__ == '__main__':
                       ('A','C') : ['7',  [0, 0, 0], 'Joined'],
                       ('C','D') : ['8',  [0, 0, 0], 'Joined'],
                       ('C','E') : ['9',  [0, 0, 0], 'Joined'],
-                      ('E','F') : ['10', [0, 0, 0], 'Joined']}
+                      ('E','F') : ['10', [0, 0, 0], 'Joined']
+                      }
     bridge3.addElements()
     bridge3.addJoints()
     bridge3.edgeList()
