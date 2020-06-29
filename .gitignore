@@ -5,6 +5,10 @@ __pycache__/joint_test.cpython-37.pyc
 __pycache__/network.cpython-37.pyc
 __pycache__/structure_test.cpython-37.pyc
 __pycache__/backtracking.cpython-37.pyc
+__pycache__/backtracking_parallel.cpython-37.pyc
+__pycache__/element.cpython-37.pyc
+__pycache__/joint.cpython-37.pyc
+__pycache__/structure.cpython-37.pyc
 
 best.txt
 bridges.txt
