@@ -1,4 +1,4 @@
-# IEmodelV2
-IE model with geometry.
+# The Network
+IE models are defined in Excel and then imported into a json format.
 
-Whereas the previous version used lumped mass approximations with joints representing springs, this version uses full geometry with the joints representing boundary conditions on the elements.
+Once in this format, all sorts of visualisation and comparison are possible!
