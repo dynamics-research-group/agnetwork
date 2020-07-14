@@ -60,13 +60,12 @@ def import_IE_from_excel(structure, file_path, population=None):
 	boundary_list = json.loads(boundary_json_str)
 
 	for boundary in boundary_list:
-		boundary_dict["name"] 
-		
+		boundary_dict = {key: str(value) for key, value in boundary.items()}
 		boundary_dict["metadata"] = {}
-		structure_dict["irreducible_element_model"]["elements"].append(boundary)
+		boundary_dict["type"] = "boundary-condition"
+		structure_dict["irreducible_element_model"]["elements"].append(boundary_dict)
 
 	# joints = pd.read_excel (file_path, sheet_name='Joints')
-	# boundary_conditions = pd.read_excel (file_path, sheet_name='Boundary conditions')
 
 	with open (f"{json_export_directory}/{structure}.json", "w") as outfile:
 		json.dump(structure_dict, outfile, indent=4)
