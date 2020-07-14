@@ -27,22 +27,15 @@ def import_IE_from_excel(structure, file_path, population=None):
 	elements_raw = pd.read_excel(file_path, sheet_name='Elements')
 	elements = elements_raw.loc[:, ~elements_raw.columns.str.contains('^Unnamed')].dropna()
 	elements_json_str = elements.to_json(indent=2, orient="records").lower()
-	elements_dict = json.loads(elements_json_str)
+	elements_list = json.loads(elements_json_str)
 
-	for element in elements_dict:
+	for element in elements_list:
 		element_dict = {}
 		material_dict = {}
 		shape_dict = {}
-		# element_properties = ["description", 
-		# 					  "name", 
-		# 					  "material", 
-		# 					  "material class",
-		# 					  "material properties",
-		# 					  "geometry class", 
-		# 					  "shape",
-		# 					  "dimensions"]
+
 		for key, value in element.items():
-			print(f"Key:{key}, value: {value}")
+			# print(f"Key:{key}, value: {value}")
 			if "description" in key: element_dict["description"] = value
 			if "name" in key: element_dict["name"] = value
 			if "material" in key:
@@ -56,11 +49,21 @@ def import_IE_from_excel(structure, file_path, population=None):
 		
 		element_dict["material"] = material_dict
 		element_dict["shape"] = shape_dict
-					
 		element_dict["metadata"] = {}
 		element_dict["type"] = "regular"
 
 		structure_dict["irreducible_element_model"]["elements"].append(element_dict)
+
+	boundary_raw = pd.read_excel(file_path, sheet_name='Boundary conditions')
+	boundary = boundary_raw.loc[:, ~boundary_raw.columns.str.contains('^Unnamed')].dropna()
+	boundary_json_str = boundary.to_json(indent=2, orient="records").lower()
+	boundary_list = json.loads(boundary_json_str)
+
+	for boundary in boundary_list:
+		boundary_dict["name"] 
+		
+		boundary_dict["metadata"] = {}
+		structure_dict["irreducible_element_model"]["elements"].append(boundary)
 
 	# joints = pd.read_excel (file_path, sheet_name='Joints')
 	# boundary_conditions = pd.read_excel (file_path, sheet_name='Boundary conditions')
