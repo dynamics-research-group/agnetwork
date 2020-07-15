@@ -3,6 +3,7 @@ import json
 import time
 import re
 import ast
+import pprint
 
 timestamp_conversion_factor = 10**9
 json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json"
@@ -27,33 +28,50 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 
 	elements_raw = pd.read_excel(file_path, sheet_name='Elements')
 	elements = elements_raw.loc[:, ~elements_raw.columns.str.contains('^Unnamed')].dropna(how='all')
+	# print(elements)
 	elements_json_str = elements.to_json(indent=2, orient="records").lower()
+	# print(elements_json_str)
 	elements_list = json.loads(elements_json_str)
 
+	# iterate through dataframe rows
 	for element in elements_list:
 		element_dict = {}
-		material_dict = {}
-		shape_dict = {}
 
 		for key, value in element.items():
 			if debug == True:
 					print(f"Key:{key}, value: {value}")
 			if value != None:
-				if "description" in key: element_dict["description"] = value
-				if "name" in key: element_dict["name"] = value
+				if "description" in key: 
+					element_dict["description"] = value
+				if "name" in key: 
+					element_dict["name"] = value
 				if "material" in key:
+					if "material" not in element_dict:
+						element_dict["material"] = {}
 					if "class" not in key and "properties" not in key: 
-						material_dict["name"] = value
-				if "material" in key and "class" in key: material_dict["class"] = value
-				if "material" in key and "properties" in key: material_dict["properties"] = create_properties_object(value)
-				if "shape" in key: shape_dict["name"] = value
-				if "geometry class" in key: shape_dict["class"] = value
-				if "dimensions" in key: shape_dict["dimensions"] = create_properties_object(value)
+						element_dict["material"]["name"] = value
+					elif "class" in key:
+						element_dict["material"]["class"] = value
+					elif "properties" in key:
+						element_dict["material"]["properties"] = create_properties_object(value)	
+				if "shape" in key: 
+					if "shape" not in element_dict:
+						element_dict["shape"] = {}
+					element_dict["shape"]["name"] = value
+				if "geometry class" in key: 
+					if "shape" not in element_dict:
+						element_dict["shape"] = {}
+					element_dict["shape"]["class"] = value
+				if "dimensions" in key: 
+					if "shape" not in element_dict:
+						element_dict["shape"] = {}
+					element_dict["shape"]["dimensions"] = create_properties_object(value)
 		
-		element_dict["material"] = material_dict
-		element_dict["shape"] = shape_dict
 		element_dict["metadata"] = {}
 		element_dict["type"] = "regular"
+
+		print("element")
+		pprint.pprint(element_dict,indent=2)
 
 		structure_dict["irreducible_element_model"]["elements"].append(element_dict)
 
@@ -142,11 +160,32 @@ def create_degrees_of_freedom_object(degrees_of_freedom):
 		degrees_of_freedom_object[dof] = {}
 	return degrees_of_freedom_object
 
+def acquire_inputs():
+	# Get all inputs from command prompt
+	# Create all inputs as a python dictionary
+	# Save the python dictionary as a json config file
+
+	# look at dan's pbshm flask core initialisation module, first method
+	# (ignoring line 16) def initialise_sub_system_config from
+	# https://github.com/dynamics-research-group/pbshm-flask-core/blob/master/pbshm/initialisation/initialisation.py
+
+	pass
+
 if __name__ == "__main__":
-	# import_IE_from_excel('IE example', 
-	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx")
+	# See if json config file exists
+	# Check if it has all of the required variables inside of it
+	# (config file will be python dict so pass into import_IE_from_excel the correct values)
+	# If any variables are missing or config file does not exist, call acquire_inputs
+
+	# inputs json export name, json export path, excel import path, excel import name
+
+	import_IE_from_excel('IE example', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx",
+						 debug=False)
 	# import_IE_from_excel('Aeroplane 1', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
-	import_IE_from_excel('Bridge 1', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
-						 debug=True)
+	# import_IE_from_excel('Bridge 1', 
+						#  "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
+						#  debug=True)
+	# import_IE_from_excel('Castledawson', 
+						#  "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx")
