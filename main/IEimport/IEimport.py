@@ -95,10 +95,6 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 
 	for joint in joints_list:
 		joint_dict = {}
-		coordinates_dict = {}
-		degrees_of_freedom_dict = {}
-		displacement_dof_dict = {}
-		rotational_dof_dict = {}
 
 		for key, value in joint.items():
 			if debug == True:
@@ -106,21 +102,28 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 			if value != None:
 				if "name" in key: joint_dict["name"] = str(value)
 				if "element set" in key: joint_dict["element set"] = [e.strip() for e in re.split(",", value)]
-				if "x-location" in key: coordinates_dict["x"] = value
-				if "y-location" in key: coordinates_dict["y"] = value
-				if "z-location" in key: coordinates_dict["z"] = value
+				if "location" in key:
+					if "coordinates" not in joint_dict:
+						joint_dict["coordinates"] = {}
+					if "x-location" in key: 
+						joint_dict["coordinates"]["x"] = value
+					if "y-location" in key: 
+						joint_dict["coordinates"]["y"] = value
+					if "z-location" in key: 
+						joint_dict["coordinates"]["z"] = value
 				if "type" in key: joint_dict["type"] = value
-				if "disp dof" in key: displacement_dof_dict = create_degrees_of_freedom_object(value)
-				if "rot dof" in key: rotational_dof_dict = create_degrees_of_freedom_object(value)
-			
-			if displacement_dof_dict != {}:
-				degrees_of_freedom_dict["displacement"] = displacement_dof_dict
-			if rotational_dof_dict != {}:
-				degrees_of_freedom_dict["rotational"] = rotational_dof_dict
-			if degrees_of_freedom_dict != {}:
-				joint_dict["restricted_degrees_of_freedom"] = degrees_of_freedom_dict
+				if "dof" in key:
+					if "restricted_degrees_of_freedom" not in joint_dict: 
+						joint_dict["restricted_degrees_of_freedom"] = {}
+					if "disp dof" in key:
+						if "displacement" not in joint_dict["restricted_degrees_of_freedom"]:
+							joint_dict["restricted_degrees_of_freedom"]["displacement"] = {}
+						joint_dict["restricted_degrees_of_freedom"]["displacement"] = create_degrees_of_freedom_object(value)
+					if "rot dof" in key: 
+						if "rotational" not in joint_dict["restricted_degrees_of_freedom"]:
+							joint_dict["restricted_degrees_of_freedom"]["rotational"] = {}
+						joint_dict["restricted_degrees_of_freedom"]["rotational"] = create_degrees_of_freedom_object(value)
 
-		joint_dict["coordinates"] = coordinates_dict
 		joint_dict["metadata"] = {}
 		structure_dict["irreducible_element_model"]["joints"].append(joint_dict)
 
