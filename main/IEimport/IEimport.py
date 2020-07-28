@@ -16,8 +16,6 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 	structure_dict = {"name": name,
 					  "timestamp": int(timestamp),
 					  "irreducible_element_model": {
-						  "number_of_elements": 0,
-						  "number_of_joints": 0,
 						  "metadata": {},
 						  "elements": [],
 						  "joints": []
@@ -70,8 +68,8 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 		element_dict["metadata"] = {}
 		element_dict["type"] = "regular"
 
-		print("element")
-		pprint.pprint(element_dict,indent=2)
+		# print("element")
+		# pprint.pprint(element_dict,indent=2)
 
 		structure_dict["irreducible_element_model"]["elements"].append(element_dict)
 
@@ -101,7 +99,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 					print(f"Key:{key}, value: {value}")
 			if value != None:
 				if "name" in key: joint_dict["name"] = str(value)
-				if "element set" in key: joint_dict["element set"] = [e.strip() for e in re.split(",", value)]
+				if "element set" in key: joint_dict["element_set"] = [e.strip() for e in re.split(",", value)]
 				if "location" in key:
 					if "coordinates" not in joint_dict:
 						joint_dict["coordinates"] = {}
@@ -174,6 +172,40 @@ def acquire_inputs():
 
 	pass
 
+def generate_graph_from_json(file_path):
+	# read in current json
+	# extract elements and joints
+	# create the blank graph (adjacency list) object/dict
+	# using the element set from the joints, fill in the graph object
+	# write the graph object to the json file
+
+	with open(file_path, "r") as infile:
+		structure = json.load(infile)
+
+	graph = {}
+
+	number_of_elements = len(structure["irreducible_element_model"]["elements"])
+	number_of_joints = len(structure["irreducible_element_model"]["joints"])
+
+	for element in structure["irreducible_element_model"]["elements"]:
+		graph[element["name"]] = []
+
+	for joint in structure["irreducible_element_model"]["joints"]:
+		for element1 in joint["element_set"]:
+			for element2 in joint["element_set"]:
+				if element1 != element2:
+					graph[element1].append({element2: {}})
+
+	pprint.pprint(graph,indent=2)
+
+	structure["attributed_graph"] = {}
+	structure["attributed_graph"]["counts"] = {"elements": number_of_elements,
+											   "joints": number_of_joints}
+	structure["attributed_graph"]["graph"] = graph
+
+	with open(file_path, "w") as outfile:
+		json.dump(structure, outfile, indent=4)
+
 if __name__ == "__main__":
 	# See if json config file exists
 	# Check if it has all of the required variables inside of it
@@ -185,10 +217,11 @@ if __name__ == "__main__":
 	import_IE_from_excel('IE example', 
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx",
 						 debug=False)
-	# import_IE_from_excel('Aeroplane 1', 
-	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	import_IE_from_excel('Aeroplane 1', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
 	# import_IE_from_excel('Bridge 1', 
 						#  "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
 						#  debug=True)
 	# import_IE_from_excel('Castledawson', 
 						#  "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Aeroplane 1.json")
