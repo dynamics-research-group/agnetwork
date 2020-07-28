@@ -173,12 +173,7 @@ def acquire_inputs():
 	pass
 
 def generate_graph_from_json(file_path):
-	# read in current json
-	# extract elements and joints
-	# create the blank graph (adjacency list) object/dict
-	# using the element set from the joints, fill in the graph object
-	# write the graph object to the json file
-
+	
 	with open(file_path, "r") as infile:
 		structure = json.load(infile)
 
