@@ -198,8 +198,6 @@ def generate_graph_from_json(file_path):
 			attributes[element["name"]] = element["shape"]["class"]
 		else:
 			attributes[element["name"]] = "N/A"
-	
-	print(attributes)
 
 	for joint in structure["irreducible_element_model"]["joints"]:
 		for element1 in joint["element_set"]:
