@@ -51,7 +51,9 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 					elif "class" in key:
 						element_dict["material"]["class"] = value
 					elif "properties" in key:
-						element_dict["material"]["properties"] = create_properties_object(value)	
+						properties = create_properties_object(value)
+						if properties != []:
+							element_dict["material"]["properties"] = properties	
 				if "shape" in key: 
 					if "shape" not in element_dict:
 						element_dict["shape"] = {}
@@ -63,7 +65,9 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 				if "dimensions" in key: 
 					if "shape" not in element_dict:
 						element_dict["shape"] = {}
-					element_dict["shape"]["dimensions"] = create_properties_object(value)
+					dimensions = create_properties_object(value)
+					if dimensions != []:
+						element_dict["shape"]["dimensions"] = dimensions
 		
 		element_dict["metadata"] = {}
 		element_dict["type"] = "regular"
@@ -116,11 +120,15 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 					if "disp dof" in key:
 						if "displacement" not in joint_dict["restricted_degrees_of_freedom"]:
 							joint_dict["restricted_degrees_of_freedom"]["displacement"] = {}
-						joint_dict["restricted_degrees_of_freedom"]["displacement"] = create_degrees_of_freedom_object(value)
+						displacement_degrees_of_freedom = create_degrees_of_freedom_object(value)
+						if displacement_degrees_of_freedom != []:
+							joint_dict["restricted_degrees_of_freedom"]["displacement"] = displacement_degrees_of_freedom
 					if "rot dof" in key: 
 						if "rotational" not in joint_dict["restricted_degrees_of_freedom"]:
 							joint_dict["restricted_degrees_of_freedom"]["rotational"] = {}
-						joint_dict["restricted_degrees_of_freedom"]["rotational"] = create_degrees_of_freedom_object(value)
+						rotational_degrees_of_freedom = create_degrees_of_freedom_object(value)
+						if rotational_degrees_of_freedom != []:
+							joint_dict["restricted_degrees_of_freedom"]["rotational"] = rotational_degrees_of_freedom
 
 		joint_dict["metadata"] = {}
 		structure_dict["irreducible_element_model"]["joints"].append(joint_dict)
@@ -134,21 +142,22 @@ def create_properties_object(properties):
 	for p in split_properties:
 		p = p.strip()
 		split = re.split(":", p)
-		name = split[0]
-		to_split = split[1].strip()
-		for i, c in reversed(list(enumerate(to_split))):
-			if c.isdigit():
-				break	
-		value = float(to_split[:i+1])
-		units = to_split[i+1:]
-		# print(f"Name {name}, value: {value}, units:{units}")
-		if units == '':
-			properties_object.append({"name": name,
-								      "value": value})
-		else: 
-			properties_object.append({"name": name,
-								  	  "value": value,
-								      "units": units})
+		if len(split) == 2:
+			name = split[0]
+			to_split = split[1].strip()
+			for i, c in reversed(list(enumerate(to_split))):
+				if c.isdigit():
+					break	
+			value = float(to_split[:i+1])
+			units = to_split[i+1:]
+			# print(f"Name {name}, value: {value}, units:{units}")
+			if units == '':
+				properties_object.append({"name": name,
+											"value": value})
+			else: 
+				properties_object.append({"name": name,
+											"value": value,
+											"units": units})
 	return properties_object
 
 def create_degrees_of_freedom_object(degrees_of_freedom):
@@ -173,30 +182,38 @@ def acquire_inputs():
 	pass
 
 def generate_graph_from_json(file_path):
-	
+
 	with open(file_path, "r") as infile:
 		structure = json.load(infile)
 
 	graph = {}
+	attributes = {}
 
 	number_of_elements = len(structure["irreducible_element_model"]["elements"])
 	number_of_joints = len(structure["irreducible_element_model"]["joints"])
 
 	for element in structure["irreducible_element_model"]["elements"]:
 		graph[element["name"]] = []
+		if "shape" in element.keys():
+			attributes[element["name"]] = element["shape"]["class"]
+		else:
+			attributes[element["name"]] = "N/A"
+	
+	print(attributes)
 
 	for joint in structure["irreducible_element_model"]["joints"]:
 		for element1 in joint["element_set"]:
 			for element2 in joint["element_set"]:
 				if element1 != element2:
-					graph[element1].append({element2: {}})
+					graph[element1].append(element2)
 
-	pprint.pprint(graph,indent=2)
+	# pprint.pprint(graph,indent=2)
 
 	structure["attributed_graph"] = {}
 	structure["attributed_graph"]["counts"] = {"elements": number_of_elements,
 											   "joints": number_of_joints}
 	structure["attributed_graph"]["graph"] = graph
+	structure["attributed_graph"]["attributes"] = attributes
 
 	with open(file_path, "w") as outfile:
 		json.dump(structure, outfile, indent=4)
@@ -209,14 +226,23 @@ if __name__ == "__main__":
 
 	# inputs json export name, json export path, excel import path, excel import name
 
-	import_IE_from_excel('IE example', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx",
-						 debug=False)
-	import_IE_from_excel('Aeroplane 1', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	# import_IE_from_excel('IE example', 
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx",
+	# 					 debug=False)
+
+	# import_IE_from_excel('Aeroplane 1', 
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
 	# import_IE_from_excel('Bridge 1', 
-						#  "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
-						#  debug=True)
-	# import_IE_from_excel('Castledawson', 
-						#  "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx")
-	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Aeroplane 1.json")
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
+	# 					 debug=False)
+
+	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Aeroplane 1.json")
+	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bridge 1.json")
+
+	import_IE_from_excel('Castledawson', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Castledawson_Bridge_IEM_revB.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
+
+	import_IE_from_excel('Randlestown', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Randlestown_West_Deck_Bridge.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randlestown.json")
