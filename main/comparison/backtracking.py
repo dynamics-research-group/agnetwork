@@ -143,16 +143,16 @@ if __name__ == "__main__":
 	# # pprint.pprint(graph1_attributed,indent=2)
 
 	# graph2_attributed = load_AG_from_json_file(f"{directory}Bridge 1.json")
-
-	# print(backtrack(graph1_attributed["graph"], 
-	# 				graph2_attributed["graph"], 
-	# 				graph1_attributed["attributes"], 
-	# 				graph2_attributed["attributes"]))
 	
-	graph1_attributed = load_AG_from_json_file(f"{directory}Randlestown.json")
+	# graph1_attributed = load_AG_from_json_file(f"{directory}Randlestown.json")
+	# # pprint.pprint(graph1_attributed,indent=2)
+
+	# graph2_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
+
+	graph1_attributed = load_AG_from_json_file(f"{directory}Brough_Road.json")
 	# pprint.pprint(graph1_attributed,indent=2)
 
-	graph2_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
+	graph2_attributed = load_AG_from_json_file(f"{directory}Drumderg.json")
 
 	print(backtrack(graph1_attributed["graph"], 
 					graph2_attributed["graph"], 

@@ -6,6 +6,8 @@ import ast
 import pprint
 
 timestamp_conversion_factor = 10**9
+import_na_values = ['-1.#IND', '1.#QNAN', '1.#IND', '-1.#QNAN', '#N/A N/A', '#N/A', 'N/A', 'n/a', 
+				   	' ', 'NULL', '#NA', 'null', 'NaN', '-NaN', 'nan', '-nan', '']
 json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json"
 
 def import_IE_from_excel(structure, file_path, population=None, debug=False):
@@ -24,7 +26,11 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 	if population != None:
 		structure_dict["population"] = population
 
-	elements_raw = pd.read_excel(file_path, sheet_name='Elements')
+	elements_raw = pd.read_excel(file_path,
+								 sheet_name='Elements',
+								 keep_default_na=False,
+								 na_values=import_na_values,
+								 dtype=str)
 	elements = elements_raw.loc[:, ~elements_raw.columns.str.contains('^Unnamed')].dropna(how='all')
 	# print(elements)
 	elements_json_str = elements.to_json(indent=2, orient="records").lower()
@@ -41,8 +47,8 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 			if value != None:
 				if "description" in key: 
 					element_dict["description"] = value
-				if "name" in key: 
-					element_dict["name"] = value
+				if "name" in key or "element id" in key: 
+					element_dict["name"] = str(value)
 				if "material" in key:
 					if "material" not in element_dict:
 						element_dict["material"] = {}
@@ -77,7 +83,11 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 
 		structure_dict["irreducible_element_model"]["elements"].append(element_dict)
 
-	boundary_raw = pd.read_excel(file_path, sheet_name='Boundary conditions')
+	boundary_raw = pd.read_excel(file_path, 
+								 sheet_name='Boundary conditions', 
+								 keep_default_na=False,
+								 na_values=import_na_values,
+								 dtype=str)
 	boundary = boundary_raw.loc[:, ~boundary_raw.columns.str.contains('^Unnamed')].dropna()
 	boundary_json_str = boundary.to_json(indent=2, orient="records").lower()
 	boundary_list = json.loads(boundary_json_str)
@@ -90,7 +100,11 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 		boundary_dict["type"] = "boundary-condition"
 		structure_dict["irreducible_element_model"]["elements"].append(boundary_dict)
 
-	joints_raw = pd.read_excel(file_path, sheet_name='Joints')
+	joints_raw = pd.read_excel(file_path, 
+							   sheet_name='Joints',
+							   keep_default_na=False,
+							   na_values=import_na_values, 
+							   dtype=str)
 	joints = joints_raw.loc[:, ~joints_raw.columns.str.contains('^Unnamed')].dropna(how='all')
 	joints_json_str = joints.to_json(indent=2, orient="records").lower()
 	joints_list = json.loads(joints_json_str)
@@ -102,8 +116,8 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 			if debug == True:
 					print(f"Key:{key}, value: {value}")
 			if value != None:
-				if "name" in key: joint_dict["name"] = str(value)
-				if "element set" in key: joint_dict["element_set"] = [e.strip() for e in re.split(",", value)]
+				if "name" in key: joint_dict["name"] = value
+				if "element set" in key or "joint set" in key: joint_dict["element_set"] = [e.strip() for e in re.split(",", value)]
 				if "location" in key:
 					if "coordinates" not in joint_dict:
 						joint_dict["coordinates"] = {}
@@ -232,15 +246,23 @@ if __name__ == "__main__":
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
 	# import_IE_from_excel('Bridge 1', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
-	# 					 debug=False)
+	# 					 debug=True)
 
 	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Aeroplane 1.json")
 	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bridge 1.json")
 
-	import_IE_from_excel('Castledawson', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Castledawson_Bridge_IEM_revB.xlsx")
-	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
+	# import_IE_from_excel('Castledawson', 
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Castledawson_Bridge_IEM_revB.xlsx")
+	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
 
-	import_IE_from_excel('Randlestown', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Randlestown_West_Deck_Bridge.xlsx")
-	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randlestown.json")
+	# import_IE_from_excel('Randlestown', 
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Randlestown_West_Deck_Bridge.xlsx")
+	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randlestown.json")
+
+	import_IE_from_excel('Drumderg', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg_Footbridge.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json")
+
+	import_IE_from_excel('Brough_Road', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road_Footbridge.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Brough_Road.json")
