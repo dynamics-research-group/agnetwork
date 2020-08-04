@@ -91,9 +91,13 @@ if __name__ == "__main__":
 
 	# nodes, edges = plot_mcs_from_nodes(MCS_nodes, graph1_attributed["graph"], graph2_attributed["graph"])
 
-	MCS_nodes2 = [('x', 'dd'), ('q', 'bb'), ('k', 'aa'), ('w', 'cc'), ('j', 'r'), ('l', 's'), ('m', 't'), ('n', 'u'), ('o', 'v'), ('r', 'w'), ('s', 'x'), ('t', 'y'), ('u', 'z'), ('f', 'n'), ('g', 'o'), ('h', 'p'), ('i', 'q'), ('y', 'ee'), ('z', 'ff'), ('2', '2'), ('3', '3')]
+	MCS_nodes2 = [('x', 'dd'), ('q', 'bb'), ('k', 'aa'), ('w', 'cc'), ('j', 'r'), ('l', 's'), ('m', 't'), ('n', 'u'), ('o', 'v'), ('r', 'w'), ('s', 'x'), ('t', 'y'), ('u', 'z'), ('f', 'n'), ('e', 'm'), ('g', 'o'), ('h', 'p'), ('i', 'q'), ('y', 'ee'), ('z', 'ff'), ('2', '2'), ('4', '4'), ('5', '5')]
+	# MCS_nodes2 = [('x', 'dd'), ('q', 'bb'), ('k', 'aa'), ('w', 'cc'), ('e', 'a'), ('j', 'r'), ('l', 's'), ('m', 't'), ('n', 'u'), ('o', 'v'), ('r', 'w'), ('s', 'x'), ('t', 'y'), ('u', 'z'), ('a', 'm'), ('y', 'ee'), ('z', 'ff'), ('1', '2'), ('2', '1'), ('3', '3'), ('4', '4'), ('5', '5')]
 
 	nodes, edges = plot_mcs_from_nodes(MCS_nodes2, graph1_attributed["graph"], graph2_attributed["graph"])
+
+	graph_plot(graph1_attributed["nodes"], graph1_attributed["edges"])
+	graph_plot(graph2_attributed["nodes"], graph2_attributed["edges"])
 
 	G = nx.Graph()
 	# Add nodes and edges to the graph object
