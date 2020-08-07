@@ -99,7 +99,26 @@ if __name__ == "__main__":
 	graph_plot(graph1_attributed["nodes"], graph1_attributed["edges"])
 	graph_plot(graph2_attributed["nodes"], graph2_attributed["edges"])
 
+	# Create new networkX graph object
 	G = nx.Graph()
 	# Add nodes and edges to the graph object
 	G.add_edges_from(edges)
 	G.add_nodes_from(nodes)
+
+	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/MCS.net")
+
+	# Create new networkX graph object
+	G = nx.Graph()
+	# Add nodes and edges to the graph object
+	G.add_edges_from(graph1_attributed["edges"])
+	G.add_nodes_from(graph1_attributed["nodes"])
+
+	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/Randlestown.net")
+
+	# Create new networkX graph object
+	G = nx.Graph()
+	# Add nodes and edges to the graph object
+	G.add_edges_from(graph2_attributed["edges"])
+	G.add_nodes_from(graph2_attributed["nodes"])
+
+	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/Castledawson.net")
