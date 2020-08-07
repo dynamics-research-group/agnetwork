@@ -162,16 +162,17 @@ def create_properties_object(properties):
 			for i, c in reversed(list(enumerate(to_split))):
 				if c.isdigit():
 					break	
-			value = float(to_split[:i+1])
-			units = to_split[i+1:]
-			# print(f"Name {name}, value: {value}, units:{units}")
-			if units == '':
-				properties_object.append({"name": name,
-											"value": value})
-			else: 
-				properties_object.append({"name": name,
-											"value": value,
-											"units": units})
+			if i != 0:
+				value = float(to_split[:i+1])
+				units = to_split[i+1:]
+				# print(f"Name {name}, value: {value}, units:{units}")
+				if units == '':
+					properties_object.append({"name": name,
+												"value": value})
+				else: 
+					properties_object.append({"name": name,
+												"value": value,
+												"units": units})
 	return properties_object
 
 def create_degrees_of_freedom_object(degrees_of_freedom):
@@ -257,13 +258,13 @@ if __name__ == "__main__":
 	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Aeroplane 1.json")
 	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bridge 1.json")
 
-	import_IE_from_excel('Castledawson', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Castledawson_Bridge_IEM_revB.xlsx")
-	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
+	# import_IE_from_excel('Castledawson', 
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Castledawson_Bridge_IEM_revB.xlsx")
+	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
 
-	import_IE_from_excel('Randlestown', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Randlestown_West_Deck_Bridge.xlsx")
-	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randlestown.json")
+	# import_IE_from_excel('Randlestown', 
+	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Randlestown_West_Deck_Bridge.xlsx")
+	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randlestown.json")
 
 	# import_IE_from_excel('Drumderg', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg_Footbridge.xlsx")
@@ -272,3 +273,7 @@ if __name__ == "__main__":
 	# import_IE_from_excel('Brough_Road', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road_Footbridge.xlsx")
 	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Brough_Road.json")
+
+	import_IE_from_excel('Toome',
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Toome_Arch_Bridge.xlsx")
+	# generate_graph_from_json()
