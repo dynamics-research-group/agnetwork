@@ -276,4 +276,8 @@ if __name__ == "__main__":
 
 	import_IE_from_excel('Toome',
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Toome_Arch_Bridge.xlsx")
-	# generate_graph_from_json()
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Toome.json")
+
+	import_IE_from_excel('Baker',
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Baker_Bridge.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Baker.json")

@@ -222,6 +222,8 @@ def load_AG_from_json_file(file_path):
 	return structure["attributed_graph"]
 
 if __name__ == "__main__":
+	import networkx as nx
+
 	directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/"
 
 	# graph1_attributed = load_AG_from_json_file(f"{directory}Aeroplane 1.json")
@@ -229,21 +231,28 @@ if __name__ == "__main__":
 
 	# graph2_attributed = load_AG_from_json_file(f"{directory}Bridge 1.json")
 	
-	graph1_attributed = load_AG_from_json_file(f"{directory}Randlestown.json")
+	# graph1_attributed = load_AG_from_json_file(f"{directory}Randlestown.json")
 	# # pprint.pprint(graph1_attributed,indent=2)
 
-	graph2_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
+	# graph1_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
 
 	# graph2_attributed = load_AG_from_json_file(f"{directory}Brough_Road.json")
 	# pprint.pprint(graph1_attributed,indent=2)
 
-	# graph1_attributed = load_AG_from_json_file(f"{directory}Drumderg.json")
+	graph2_attributed = load_AG_from_json_file(f"{directory}Drumderg.json")
+
+
+	graph1_attributed = load_AG_from_json_file(f"{directory}Baker.json")
+
+	# graph2_attributed = load_AG_from_json_file(f"{directory}Toome.json")
 
 	results = backtrack(graph1_attributed["graph"], 
-					graph2_attributed["graph"], 
-					graph1_attributed["attributes"], 
-					graph2_attributed["attributes"])
-	
+						graph2_attributed["graph"], 
+						graph1_attributed["attributes"], 
+						graph2_attributed["attributes"])
+
+
+
 	for r in results: print(r)
 
 	# backtrack_parallel(graph1_attributed["graph"], 
