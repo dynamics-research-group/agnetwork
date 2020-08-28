@@ -29,7 +29,11 @@ def bound(graph1_modified, graph2_modified, graph1, graph2, current_solution, le
 	else:
 		return False
 
-def backtrack(graph1, graph2, attributes1, attributes2, filename='best.txt'):
+def backtrack(graph1_attributed, graph2_attributed, filename='best.txt'):
+	graph1 = graph1_attributed["graph"]
+	graph2 = graph2_attributed["graph"]
+	attributes1 = graph1_attributed["attributes"]
+	attributes2 = graph2_attributed["attributes"]
 	initial_solution = []
 	#  graph2_modified = graph2.keys()
 	graph2_modified = list(sort(graph2))
@@ -43,7 +47,11 @@ def backtrack(graph1, graph2, attributes1, attributes2, filename='best.txt'):
 												   				 attributes1, attributes2, 
 												   				 initial_solution, len_best_solution, filename))]
 
-def backtrack_parallel(graph1, graph2, attributes1, attributes2, filename='best.txt'):
+def backtrack_parallel(graph1_attributed, graph2_attributed, filename='best.txt'):
+	graph1 = graph1_attributed["graph"]
+	graph2 = graph2_attributed["graph"]
+	attributes1 = graph1_attributed["attributes"]
+	attributes2 = graph2_attributed["attributes"]
 	with open('/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/' + filename,'w') as f:
 		f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(graph1.keys()), list(graph2.keys())))
 	first_layer = list(itertools.product(sort(graph1), sort(graph2))) 
@@ -239,19 +247,13 @@ if __name__ == "__main__":
 	# graph2_attributed = load_AG_from_json_file(f"{directory}Brough_Road.json")
 	# pprint.pprint(graph1_attributed,indent=2)
 
-	graph2_attributed = load_AG_from_json_file(f"{directory}Drumderg.json")
-
+	graph2_attributed = load_AG_from_json_file(f"{directory}Toome.json")
 
 	graph1_attributed = load_AG_from_json_file(f"{directory}Baker.json")
 
 	# graph2_attributed = load_AG_from_json_file(f"{directory}Toome.json")
 
-	results = backtrack(graph1_attributed["graph"], 
-						graph2_attributed["graph"], 
-						graph1_attributed["attributes"], 
-						graph2_attributed["attributes"])
-
-
+	results = backtrack(graph1_attributed, graph2_attributed)
 
 	for r in results: print(r)
 
