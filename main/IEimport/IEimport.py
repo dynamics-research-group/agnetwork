@@ -46,16 +46,16 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 					print(f"Key:{key}, value: {value}")
 			if value != None:
 				if "description" in key: 
-					element_dict["description"] = value
+					element_dict["description"] = value.strip()
 				if "name" in key or "element id" in key: 
-					element_dict["name"] = str(value)
+					element_dict["name"] = str(value).strip()
 				if "material" in key:
 					if "material" not in element_dict:
 						element_dict["material"] = {}
 					if "class" not in key and "properties" not in key: 
-						element_dict["material"]["name"] = value
+						element_dict["material"]["name"] = value.strip()
 					elif "class" in key:
-						element_dict["material"]["class"] = value
+						element_dict["material"]["class"] = value.strip()
 					elif "properties" in key:
 						properties = create_properties_object(value)
 						if properties != []:
@@ -63,11 +63,11 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 				if "shape" in key: 
 					if "shape" not in element_dict:
 						element_dict["shape"] = {}
-					element_dict["shape"]["name"] = value
+					element_dict["shape"]["name"] = value.strip()
 				if "geometry class" in key: 
 					if "shape" not in element_dict:
 						element_dict["shape"] = {}
-					element_dict["shape"]["class"] = value
+					element_dict["shape"]["class"] = value.strip()
 				if "dimensions" in key: 
 					if "shape" not in element_dict:
 						element_dict["shape"] = {}
@@ -95,7 +95,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 	for boundary in boundary_list:
 		if debug == True:
 			print(f"Boundary element:{boundary}")
-		boundary_dict = {key: str(value) for key, value in boundary.items()}
+		boundary_dict = {key: str(value).strip() for key, value in boundary.items()}
 		boundary_dict["metadata"] = {}
 		boundary_dict["type"] = "boundary-condition"
 		structure_dict["irreducible_element_model"]["elements"].append(boundary_dict)
@@ -116,7 +116,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 			if debug == True:
 					print(f"Key:{key}, value: {value}")
 			if value != None:
-				if "name" or "joint id" in key: joint_dict["name"] = value
+				if "name" or "joint id" in key: joint_dict["name"] = value.strip()
 				if "element set" in key or "joint set" in key: 
 					joint_dict["element_set"] = [e.strip() for e in re.split(",", value)]
 				if "location" in key:
@@ -128,7 +128,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 						joint_dict["coordinates"]["y"] = value
 					if "z-location" in key: 
 						joint_dict["coordinates"]["z"] = value
-				if "type" in key: joint_dict["type"] = value
+				if "type" in key: joint_dict["type"] = value.strip()
 				if "dof" in key:
 					if "restricted_degrees_of_freedom" not in joint_dict: 
 						joint_dict["restricted_degrees_of_freedom"] = {}
@@ -158,14 +158,14 @@ def create_properties_object(properties):
 		p = p.strip()
 		split = re.split(":", p)
 		if len(split) == 2:
-			name = split[0]
+			name = split[0].strip()
 			to_split = split[1].strip()
 			for i, c in reversed(list(enumerate(to_split))):
 				if c.isdigit():
 					break	
 			if i != 0:
 				value = float(to_split[:i+1])
-				units = to_split[i+1:]
+				units = to_split[i+1:].strip()
 				# print(f"Name {name}, value: {value}, units:{units}")
 				if units == '':
 					properties_object.append({"name": name,
