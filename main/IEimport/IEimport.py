@@ -289,3 +289,4 @@ if __name__ == "__main__":
 	import_IE_from_excel('Humber',
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Humber_Bridge.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
+	print("Hello")
