@@ -14,20 +14,21 @@ def batching_function(iterable, n=1):
 # Backtracking algorithm
 def bound(graph1_modified, graph2_modified, graph1, graph2, current_solution, len_best_solution):
 	len_current_solution = len(current_solution)
-	# if len(graph1_modified) + len_current_solution <= len_best_solution:
-	# 	return True
-	# elif len(graph2_modified) + len_current_solution <= len_best_solution:
-	# 	return True
-	# else:
-	candidates = set()
-	for vertex1 in graph1_modified:
-		for vertex2 in  graph2_modified:
-				if compatible_attributes(graph1[vertex1], graph2[vertex2]):
-					candidates.add(vertex1)
-	if len(candidates) + len_current_solution < len_best_solution:
+	# These checks are useful if the match is close to the size of the graph?
+	if len(graph1_modified) + len_current_solution <= len_best_solution:
+		return True
+	elif len(graph2_modified) + len_current_solution <= len_best_solution:
 		return True
 	else:
-		return False
+		candidates = set()
+		for vertex1 in graph1_modified:
+			for vertex2 in  graph2_modified:
+					if compatible_attributes(graph1[vertex1], graph2[vertex2]):
+						candidates.add(vertex1)
+		if len(candidates) + len_current_solution < len_best_solution:
+			return True
+		else:
+			return False
 
 def backtrack(graph1_attributed, graph2_attributed, filename='best.txt'):
 	graph1 = graph1_attributed["graph"]
@@ -115,7 +116,6 @@ def backtrack_algorithm(graph1_modified, graph2_modified,
 				if compatible_attributes(attributes1[vertex1], attributes2[vertex2]):
 					if compatible_connected(set(graph1[vertex1]), set(graph2[vertex2]), current_solution):
 						if compatible_heuristic(set(graph1[vertex1]), set(graph2[vertex2]), current_solution):
-							
 							# Add the current v2 to the list of nodes that have been tried in this branch
 							vertex2_list = vertex2_list_int + [vertex2]
 							# Carry on down the tree
@@ -229,40 +229,52 @@ def load_AG_from_json_file(file_path):
 		structure = json.load(infile)
 	return structure["attributed_graph"]
 
+def load_IE_from_json_file(file_path):
+	with open(file_path, "r") as infile:
+		structure = json.load(infile)
+	return structure["irreducible_element_model"]
+
+def retrieve_MCS_descriptions(maximum_common_subgraph, IE_model1, IE_model2):
+	description_dict = {}
+	for node in maximum_common_subgraph:
+		for element in IE_model1["elements"]:
+			if element["name"] == node[0]:
+				description1 = element["description"]
+		for element in IE_model2["elements"]:
+			if element["name"] == node[1]:
+				description2 = element["description"]
+		description_dict[node] = [description1, description2]
+		
+	pprint.pprint(description_dict, indent=2)
+
 if __name__ == "__main__":
 	import networkx as nx
 
 	directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/"
 
-	# graph1_attributed = load_AG_from_json_file(f"{directory}Aeroplane 1.json")
-	# # pprint.pprint(graph1_attributed,indent=2)
+	# Name:			Number of elements:
+	# Randallstown 	31
+	# Castledawson	37
+	# Baker			77
+	# Toome			86
+	# Drumderg		110
+	# Brough_Road	111
 
-	# graph2_attributed = load_AG_from_json_file(f"{directory}Bridge 1.json")
-	
-	# graph1_attributed = load_AG_from_json_file(f"{directory}Randallstown.json")
+	# Largest graph first
+	file1 = f"{directory}Drumderg.json"
+	file2 = f"{directory}Castledawson.json"
+
+	graph1_attributed = load_AG_from_json_file(file1)
+	IE_model1 = load_IE_from_json_file(file1)
+	# pprint.pprint(IE_model1, indent=2)
 	# pprint.pprint(graph1_attributed,indent=2)
 
-	# graph2_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
-
-	# graph2_attributed = load_AG_from_json_file(f"{directory}Brough_Road.json")
-	# pprint.pprint(graph1_attributed,indent=2)
-
-	# graph2_attributed = load_AG_from_json_file(f"{directory}Toome.json")
-
-	graph1_attributed = load_AG_from_json_file(f"{directory}Baker.json")
-
-	graph2_attributed = load_AG_from_json_file(f"{directory}Toome.json")
+	graph2_attributed = load_AG_from_json_file(file2)
+	IE_model2 = load_IE_from_json_file(file2)
 
 	results = backtrack(graph1_attributed, graph2_attributed)
+	# results = backtrack_parallel(graph1_attributed, graph2_attributed)
 
 	for r in results: print(r)
 
-	# backtrack_parallel(graph1_attributed["graph"], 
-	# 				   graph2_attributed["graph"], 
-	# 				   graph1_attributed["attributes"], 
-	# 				   graph2_attributed["attributes"])
-	
-	# print(backtrack_parallel(graph1_attributed["graph"], 
-	# 				  	 	 graph2_attributed["graph"], 
-	# 				   		 graph1_attributed["attributes"], 
-	# 				   		 graph2_attributed["attributes"]))
+	retrieve_MCS_descriptions(results[0], IE_model1, IE_model2)
