@@ -116,7 +116,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 			if debug == True:
 					print(f"Key:{key}, value: {value}")
 			if value != None:
-				if "name" or "joint id" in key: joint_dict["name"] = value.strip()
+				if "name" in key or "joint id" in key: joint_dict["name"] = value.strip()
 				if "element set" in key or "joint set" in key: 
 					joint_dict["element_set"] = [e.strip() for e in re.split(",", value)]
 				if "location" in key:
@@ -211,7 +211,10 @@ def generate_graph_from_json(file_path):
 	number_of_joints = len(structure["irreducible_element_model"]["joints"])
 
 	for element in structure["irreducible_element_model"]["elements"]:
-		graph[element["name"]] = []
+		try:
+			graph[element["name"]] = []
+		except:
+			print(element)
 		if "shape" in element.keys():
 			attributes[element["name"]] = element["shape"]["class"]
 		else:
@@ -268,11 +271,11 @@ if __name__ == "__main__":
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randallstown.json")
 
 	import_IE_from_excel('Drumderg', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg_Footbridge.xlsx")
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg_Footbridge-2.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json")
 
 	import_IE_from_excel('Brough_Road', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road_Footbridge.xlsx")
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road_Footbridge-2.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Brough_Road.json")
 
 	import_IE_from_excel('Toome',
@@ -283,6 +286,6 @@ if __name__ == "__main__":
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Baker_Bridge.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Baker.json")
 
-	# import_IE_from_excel('Humber',
-	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Humber_Bridge.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
+	import_IE_from_excel('Humber',
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Humber_Bridge.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
