@@ -80,9 +80,9 @@ def load_AG_from_json_file(file_path):
 if __name__ == "__main__":
 	directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/" 
 
-	graph1_attributed = load_AG_from_json_file(f"{directory}Randlestown.json")
+	graph1_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
 
-	graph2_attributed = load_AG_from_json_file(f"{directory}Castledawson.json")
+	graph2_attributed = load_AG_from_json_file(f"{directory}Randallstown.json")
 
 	# MCS_nodes = [('X', 'DD'), ('Q', 'BB'), ('K', 'AA'), ('W', 'CC'), ('E', 'M'), ('J', 'R'), ('L', 'S'), 
 	# 			 ('M', 'T'), ('N', 'U'), ('O', 'V'), ('R', 'W'), ('S', 'X'), ('T', 'Y'), ('U', 'Z'), 
@@ -91,21 +91,23 @@ if __name__ == "__main__":
 
 	# nodes, edges = plot_mcs_from_nodes(MCS_nodes, graph1_attributed["graph"], graph2_attributed["graph"])
 
-	MCS_nodes2 = [('x', 'dd'), ('q', 'bb'), ('k', 'aa'), ('w', 'cc'), ('j', 'r'), ('l', 's'), ('m', 't'), ('n', 'u'), ('o', 'v'), ('r', 'w'), ('s', 'x'), ('t', 'y'), ('u', 'z'), ('f', 'n'), ('e', 'm'), ('g', 'o'), ('h', 'p'), ('i', 'q'), ('y', 'ee'), ('z', 'ff'), ('2', '2'), ('4', '4'), ('5', '5')]
+	# MCS_nodes2 = [('x', 'dd'), ('q', 'bb'), ('k', 'aa'), ('w', 'cc'), ('j', 'r'), ('l', 's'), ('m', 't'), ('n', 'u'), ('o', 'v'), ('r', 'w'), ('s', 'x'), ('t', 'y'), ('u', 'z'), ('f', 'n'), ('e', 'm'), ('g', 'o'), ('h', 'p'), ('i', 'q'), ('y', 'ee'), ('z', 'ff'), ('2', '2'), ('4', '4'), ('5', '5')]
 	# MCS_nodes2 = [('x', 'dd'), ('q', 'bb'), ('k', 'aa'), ('w', 'cc'), ('e', 'a'), ('j', 'r'), ('l', 's'), ('m', 't'), ('n', 'u'), ('o', 'v'), ('r', 'w'), ('s', 'x'), ('t', 'y'), ('u', 'z'), ('a', 'm'), ('y', 'ee'), ('z', 'ff'), ('1', '2'), ('2', '1'), ('3', '3'), ('4', '4'), ('5', '5')]
+	# MCS_nodes2 = [('72', '81'), ('73', '82'), ('74', '83')]
 
-	nodes, edges = plot_mcs_from_nodes(MCS_nodes2, graph1_attributed["graph"], graph2_attributed["graph"])
 
-	graph_plot(graph1_attributed["nodes"], graph1_attributed["edges"])
-	graph_plot(graph2_attributed["nodes"], graph2_attributed["edges"])
+	# nodes, edges = plot_mcs_from_nodes(MCS_nodes2, graph1_attributed["graph"], graph2_attributed["graph"])
 
-	# Create new networkX graph object
-	G = nx.Graph()
-	# Add nodes and edges to the graph object
-	G.add_edges_from(edges)
-	G.add_nodes_from(nodes)
+	# graph_plot(graph1_attributed["nodes"], graph1_attributed["edges"])
+	# graph_plot(graph2_attributed["nodes"], graph2_attributed["edges"])
 
-	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/MCS.net")
+	# # Create new networkX graph object
+	# G = nx.Graph()
+	# # Add nodes and edges to the graph object
+	# G.add_edges_from(edges)
+	# G.add_nodes_from(nodes)
+	# 
+	# nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/MCS.net")
 
 	# Create new networkX graph object
 	G = nx.Graph()
@@ -113,7 +115,7 @@ if __name__ == "__main__":
 	G.add_edges_from(graph1_attributed["edges"])
 	G.add_nodes_from(graph1_attributed["nodes"])
 
-	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/Randlestown.net")
+	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/Castledawson.net")
 
 	# Create new networkX graph object
 	G = nx.Graph()
@@ -121,4 +123,4 @@ if __name__ == "__main__":
 	G.add_edges_from(graph2_attributed["edges"])
 	G.add_nodes_from(graph2_attributed["nodes"])
 
-	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/Castledawson.net")
+	nx.write_pajek(G, "/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/Randallstown.net")
