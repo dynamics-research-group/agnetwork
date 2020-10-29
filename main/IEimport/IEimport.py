@@ -213,13 +213,13 @@ def generate_graph_from_json(file_path):
 	for element in structure["irreducible_element_model"]["elements"]:
 		try:
 			graph[element["name"]] = []
+			if "shape" in element.keys():
+				attributes[element["name"]] = element["shape"]["class"]
+			else:
+				attributes[element["name"]] = "N/A"
+				list_of_nodes.append(element["name"])
 		except:
 			print(element)
-		if "shape" in element.keys():
-			attributes[element["name"]] = element["shape"]["class"]
-		else:
-			attributes[element["name"]] = "N/A"
-		list_of_nodes.append(element["name"])
 
 	for joint in structure["irreducible_element_model"]["joints"]:
 		for element1 in joint["element_set"]:
@@ -271,11 +271,11 @@ if __name__ == "__main__":
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randallstown.json")
 
 	import_IE_from_excel('Drumderg', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg_Footbridge-2.xlsx")
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg_Footbridge.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json")
 
 	import_IE_from_excel('Brough_Road', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road_Footbridge-2.xlsx")
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road_Footbridge.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Brough_Road.json")
 
 	import_IE_from_excel('Toome',
@@ -289,4 +289,3 @@ if __name__ == "__main__":
 	import_IE_from_excel('Humber',
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Humber_Bridge.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
-	print("Test")
