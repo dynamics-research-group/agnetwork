@@ -1,3 +1,4 @@
+import numpy as np
 import itertools
 import json
 import pprint
@@ -104,7 +105,7 @@ def backtrack_algorithm(graph1_modified, graph2_modified,
 			except:
 				# This new solution must exceed the current best estimate, update the best estimate
 				len_best_solution = len(current_solution)
-				print(len_best_solution)
+				# print(len_best_solution)
 				with open('/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/' + filename,'a') as f:
 					f.write('Length {0} \n{1}\n \n'.format(len_best_solution, current_solution))
 				yield current_solution, len_best_solution
@@ -247,6 +248,46 @@ def retrieve_MCS_descriptions(maximum_common_subgraph, IE_model1, IE_model2):
 		
 	pprint.pprint(description_dict, indent=2)
 
+def return_largest_result(results):
+	max_len = 0
+	for result in results:
+		# Has a larger clique has been found?
+		if len(result) > max_len:
+			# Update the maximum clique length
+			max_len = len(result)
+			# Reset the maximum clique list
+			max_result = result
+	return max_result
+
+def largest_graph_first(graph1_attributed, graph2_attributed):
+    if graph1_attributed["counts"]["elements"] < graph2_attributed["counts"]["elements"]:
+        # Swap graphs so largest is graph1
+        temp_graph = graph1_attributed
+        graph1_attributed = graph2_attributed
+        graph2_attributed = temp_graph
+    return graph1_attributed, graph2_attributed
+
+def create_distance_matrix(file_list):
+	# create list of attributed graphs from list of files 
+	attributed_graph_list = [load_AG_from_json_file(f) for f in file_list]
+	# Create distance matrix with initital distance set to zero
+	n = len(attributed_graph_list)
+	similarity_matrix = np.zeros((n,n))
+	# Iterate through pairs of graphs in list
+	for i, graph1 in enumerate(attributed_graph_list):
+		for j, graph2 in enumerate(attributed_graph_list):
+			# If graphs are not identical, calculate pairwise distances
+			if i < j:
+				graph1_attributed, graph2_attributed = largest_graph_first(graph1, graph2)
+				results = backtrack(graph1_attributed, graph2_attributed)
+				result = return_largest_result(results)
+				jaccard_index = len(result) / (graph1_attributed["counts"]["elements"] + graph2_attributed["counts"]["elements"] - len(result))
+				similarity_matrix[i][j] = jaccard_index
+			if i > j:
+				# Use symmetry condition for distance matrix
+				similarity_matrix[i][j] = similarity_matrix[j][i]
+	return similarity_matrix
+
 if __name__ == "__main__":
 	import networkx as nx
 
@@ -261,8 +302,8 @@ if __name__ == "__main__":
 	# Brough_Road	111
 
 	# Largest graph first
-	file1 = f"{directory}Drumderg.json"
-	file2 = f"{directory}Castledawson.json"
+	file1 = f"{directory}Castledawson.json"
+	file2 = f"{directory}Randallstown.json"
 
 	graph1_attributed = load_AG_from_json_file(file1)
 	IE_model1 = load_IE_from_json_file(file1)
@@ -275,6 +316,10 @@ if __name__ == "__main__":
 	results = backtrack(graph1_attributed, graph2_attributed)
 	# results = backtrack_parallel(graph1_attributed, graph2_attributed)
 
-	for r in results: print(r)
+	# for r in results: print(r)
 
-	retrieve_MCS_descriptions(results[0], IE_model1, IE_model2)
+	# retrieve_MCS_descriptions(results[0], IE_model1, IE_model2)
+
+	file_list = ["/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json",
+				 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randallstown.json"]
+	print(create_distance_matrix(file_list))
