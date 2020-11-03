@@ -31,7 +31,7 @@ def bound(graph1_modified, graph2_modified, graph1, graph2, current_solution, le
 		else:
 			return False
 
-def backtrack(graph1_attributed, graph2_attributed, filename='best.txt'):
+def backtrack(graph1_attributed, graph2_attributed, solution_limit=10, filename='best.txt', debug=False):
 	graph1 = graph1_attributed["graph"]
 	graph2 = graph2_attributed["graph"]
 	attributes1 = graph1_attributed["attributes"]
@@ -41,19 +41,23 @@ def backtrack(graph1_attributed, graph2_attributed, filename='best.txt'):
 	graph2_modified = list(sort(graph2))
 	graph1_modified = graph1.copy()
 	len_best_solution = 0
+	solution_number = 0
 	# return list(backtrack_algorithm(G1_dash, G2_dash, G1, G2, m_initial, best))
 	with open('/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/' + filename,'w') as f:
 		f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(graph1.keys()), list(graph2.keys())))
 	return [solution[0] for solution in list(backtrack_algorithm(graph1_modified, graph2_modified, 
 												   				 graph1, graph2, 
 												   				 attributes1, attributes2, 
-												   				 initial_solution, len_best_solution, filename))]
+												   				 initial_solution, len_best_solution, 
+																 solution_number, solution_limit, filename, debug))]
 
-def backtrack_parallel(graph1_attributed, graph2_attributed, filename='best.txt'):
+def backtrack_parallel(graph1_attributed, graph2_attributed, solution_limit=10, filename='best.txt'):
 	graph1 = graph1_attributed["graph"]
 	graph2 = graph2_attributed["graph"]
 	attributes1 = graph1_attributed["attributes"]
 	attributes2 = graph2_attributed["attributes"]
+	solution_number = 0
+	solution_limit = 10
 	with open('/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/' + filename,'w') as f:
 		f.write('MCS for graphs \n{0}\n{1}\n \n'.format(list(graph1.keys()), list(graph2.keys())))
 	first_layer = list(itertools.product(sort(graph1), sort(graph2))) 
@@ -68,7 +72,7 @@ def backtrack_parallel(graph1_attributed, graph2_attributed, filename='best.txt'
 	for batch in batches:
 		with concurrent.futures.ProcessPoolExecutor() as executor:
 			results = [executor.submit(backtrack_parallel_handler, graph1, graph2, attributes1, attributes2, 
-									  b, len_best_solution, filename) for b in batch]
+									  b, len_best_solution, solution_number, solution_limit, filename) for b in batch]
 			for result in concurrent.futures.as_completed(results):
 				solutions = result.result()
 				for solution in solutions:
@@ -78,19 +82,22 @@ def backtrack_parallel(graph1_attributed, graph2_attributed, filename='best.txt'
 					global_solutions.append(local_solutions)
 	return global_solutions
 	
-def backtrack_parallel_handler(graph1, graph2, attributes1, attributes2, b, len_best_solution, filename='best.txt'):
+def backtrack_parallel_handler(graph1, graph2, attributes1, attributes2, b, len_best_solution, solution_number, solution_limit,
+							   filename='best.txt', debug=False):
 	graph2_modified = list(sort(graph2))
 	graph1_modified = graph1.copy()
 	u1, u2 = b
 	return list(backtrack_algorithm({v1 : graph1_modified[v1] for v1 in graph1_modified if v1 not in u1}, 
 											[v2 for v2 in graph2_modified if v2 not in u2], 
 											graph1, graph2, attributes1, attributes2, [(u1, u2)], 
-											len_best_solution, filename))
+											len_best_solution, solution_number, solution_limit, filename, debug))
 
 def backtrack_algorithm(graph1_modified, graph2_modified,
 						graph1, graph2, 
 						attributes1, attributes2, 
-						current_solution, len_best_solution, filename):
+						current_solution, len_best_solution, 
+						solution_number, solution_limit,
+						filename, debug):
 	# Create a list of nodes from G1 and G2 that have already been used to form the solution
 	vertex1_list_int = [pair[0] for pair in current_solution]
 	vertex2_list_int = [pair[1] for pair in current_solution]
@@ -100,15 +107,18 @@ def backtrack_algorithm(graph1_modified, graph2_modified,
 			if bound(graph1_modified, graph2_modified, graph1, graph2, current_solution, len_best_solution):
 				# This new solution cannot have exceed the current best estimate
 				break
+			if solution_number >= solution_limit:
+				break
 			try:
 				vertex1 = next(ordered_nodes)
 			except:
+				solution_number += 1
 				# This new solution must exceed the current best estimate, update the best estimate
 				len_best_solution = len(current_solution)
-				# print(len_best_solution)
+				if debug: print(f"Solution {solution_number}, length {len_best_solution}")
 				with open('/Users/Julian/Documents/WorkDocuments/Irreducible Element/Random write/' + filename,'a') as f:
 					f.write('Length {0} \n{1}\n \n'.format(len_best_solution, current_solution))
-				yield current_solution, len_best_solution
+				yield current_solution, len_best_solution, solution_number
 				break
 			# Add the current v1 to the list of nodes that have been tried
 			vertex1_list = vertex1_list_int + [vertex1] 
@@ -125,10 +135,11 @@ def backtrack_algorithm(graph1_modified, graph2_modified,
 																		 graph1, graph2,
 																		 attributes1, attributes2,
 																		 list(current_solution) + [(vertex1, vertex2)],
-																		 len_best_solution, filename): 
+																		 len_best_solution, solution_number, solution_limit, filename, debug): 
 								# Find the length of the current best estimate
 								if list_of_solutions[1] > len_best_solution: 
 									len_best_solution = list_of_solutions[1]
+								solution_number = list_of_solutions[2]
 								yield list_of_solutions
 			# Remove the node v1 that has already been tried from the remaining graph G1_dash
 			# del graph1_modified[vertex1]
@@ -267,26 +278,37 @@ def largest_graph_first(graph1_attributed, graph2_attributed):
         graph2_attributed = temp_graph
     return graph1_attributed, graph2_attributed
 
-def create_distance_matrix(file_list):
+def create_distance_matrix(file_list, similarity_option=True, nodes_option=False):
 	# create list of attributed graphs from list of files 
 	attributed_graph_list = [load_AG_from_json_file(f) for f in file_list]
 	# Create distance matrix with initital distance set to zero
 	n = len(attributed_graph_list)
-	similarity_matrix = np.zeros((n,n))
+	if similarity_option: similarity_matrix = np.zeros((n,n))
+	if nodes_option: nodes_in_mcs = np.zeros((n,n))
 	# Iterate through pairs of graphs in list
 	for i, graph1 in enumerate(attributed_graph_list):
 		for j, graph2 in enumerate(attributed_graph_list):
 			# If graphs are not identical, calculate pairwise distances
-			if i < j:
+			if i <= j:
+				print(f"Matching {i+1}/{n} and {j+1}/{n}")
 				graph1_attributed, graph2_attributed = largest_graph_first(graph1, graph2)
 				results = backtrack(graph1_attributed, graph2_attributed)
 				result = return_largest_result(results)
 				jaccard_index = len(result) / (graph1_attributed["counts"]["elements"] + graph2_attributed["counts"]["elements"] - len(result))
-				similarity_matrix[i][j] = jaccard_index
+				if similarity_option: similarity_matrix[i][j] = jaccard_index
+				if nodes_option: nodes_in_mcs[i][j] = len(result)
 			if i > j:
 				# Use symmetry condition for distance matrix
-				similarity_matrix[i][j] = similarity_matrix[j][i]
-	return similarity_matrix
+				if similarity_option: similarity_matrix[i][j] = similarity_matrix[j][i]
+				if nodes_option: nodes_in_mcs[i][j] = nodes_in_mcs[j][i]
+	if similarity_option and nodes_option:
+		return similarity_matrix, nodes_in_mcs
+	elif similarity_option:
+		return similarity_option
+	elif nodes_option:
+		return nodes_in_mcs
+	else:
+		return
 
 if __name__ == "__main__":
 	import networkx as nx
@@ -313,13 +335,18 @@ if __name__ == "__main__":
 	graph2_attributed = load_AG_from_json_file(file2)
 	IE_model2 = load_IE_from_json_file(file2)
 
-	results = backtrack(graph1_attributed, graph2_attributed)
+	results = backtrack(graph1_attributed, graph2_attributed, 20, debug=True)
 	# results = backtrack_parallel(graph1_attributed, graph2_attributed)
 
 	# for r in results: print(r)
 
+	# missing_element = [element for results[0]
+
 	# retrieve_MCS_descriptions(results[0], IE_model1, IE_model2)
 
-	file_list = ["/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json",
-				 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randallstown.json"]
-	print(create_distance_matrix(file_list))
+	# file_list = ["/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json",
+	# 			 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json",
+	# 			 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Toome.json",
+	# 			 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Baker.json",
+	# 			 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json"]
+	# print(create_distance_matrix(file_list,nodes_option=True))
