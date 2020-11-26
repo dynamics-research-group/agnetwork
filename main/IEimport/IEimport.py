@@ -95,7 +95,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 	for boundary in boundary_list:
 		if debug == True:
 			print(f"Boundary element:{boundary}")
-		boundary_dict = {key: str(value).strip() for key, value in boundary.items()}
+		boundary_dict = {str(key).strip(): str(value).strip() for key, value in boundary.items()}
 		boundary_dict["metadata"] = {}
 		boundary_dict["type"] = "boundary-condition"
 		structure_dict["irreducible_element_model"]["elements"].append(boundary_dict)
@@ -264,29 +264,37 @@ if __name__ == "__main__":
 	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bridge 1.json")
 
 	import_IE_from_excel('Castledawson', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Castledawson.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Castledawson_Deck_Bridge_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
 
 	import_IE_from_excel('Randallstown', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Randallstown.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randallstown.json")
 
 	import_IE_from_excel('Drumderg', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Drumderg.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Drumderg_Footbridge_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json")
 
 	import_IE_from_excel('Brough_Road', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Brough_Road.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Brough_Road_Footbridge_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Brough_Road.json")
 
 	import_IE_from_excel('Toome',
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Toome.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Toome_Arch_Bridge_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Toome.json")
 
 	import_IE_from_excel('Baker',
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Baker.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Baker_Bridge_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Baker.json")
 
 	import_IE_from_excel('Humber',
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Humber.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Humber_Bridge_IEM.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
+
+	import_IE_from_excel('Bosphorous_Original', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Bosphorous_Original_IEM.xlsx")
+	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
+
+	import_IE_from_excel('Bosphorous_Repaired', 
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Bosphorous_Repaired_IEM.xlsx")
 	generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
