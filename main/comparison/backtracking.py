@@ -278,13 +278,13 @@ def largest_graph_first(graph1_attributed, graph2_attributed):
         graph2_attributed = temp_graph
     return graph1_attributed, graph2_attributed
 
-def create_distance_matrix(file_list, similarity_option=True, nodes_option=False):
+def create_distance_matrix(file_list):
 	# create list of attributed graphs from list of files 
 	attributed_graph_list = [load_AG_from_json_file(f) for f in file_list]
 	# Create distance matrix with initital distance set to zero
 	n = len(attributed_graph_list)
-	if similarity_option: similarity_matrix = np.zeros((n,n))
-	if nodes_option: nodes_in_mcs = np.zeros((n,n))
+	similarity_matrix = np.zeros((n,n))
+	nodes_in_mcs = np.zeros((n,n))
 	# Iterate through pairs of graphs in list
 	for i, graph1 in enumerate(attributed_graph_list):
 		for j, graph2 in enumerate(attributed_graph_list):
@@ -295,20 +295,13 @@ def create_distance_matrix(file_list, similarity_option=True, nodes_option=False
 				results = backtrack(graph1_attributed, graph2_attributed)
 				result = return_largest_result(results)
 				jaccard_index = len(result) / (graph1_attributed["counts"]["elements"] + graph2_attributed["counts"]["elements"] - len(result))
-				if similarity_option: similarity_matrix[i][j] = jaccard_index
-				if nodes_option: nodes_in_mcs[i][j] = len(result)
+				similarity_matrix[i][j] = jaccard_index
+				nodes_in_mcs[i][j] = len(result)
 			if i > j:
 				# Use symmetry condition for distance matrix
-				if similarity_option: similarity_matrix[i][j] = similarity_matrix[j][i]
-				if nodes_option: nodes_in_mcs[i][j] = nodes_in_mcs[j][i]
-	if similarity_option and nodes_option:
-		return similarity_matrix, nodes_in_mcs
-	elif similarity_option:
-		return similarity_option
-	elif nodes_option:
-		return nodes_in_mcs
-	else:
-		return
+				similarity_matrix[i][j] = similarity_matrix[j][i]
+				nodes_in_mcs[i][j] = nodes_in_mcs[j][i]
+	return similarity_matrix, nodes_in_mcs
 
 if __name__ == "__main__":
 	import networkx as nx
@@ -320,12 +313,12 @@ if __name__ == "__main__":
 	# Castledawson	37
 	# Baker			77
 	# Toome			86
-	# Drumderg		110
+	# Drumderg		109
 	# Brough_Road	111
 
 	# Largest graph first
-	file1 = f"{directory}Castledawson.json"
-	file2 = f"{directory}Randallstown.json"
+	file1 = f"{directory}Drumderg_Footbridge.json" 
+	file2 = f"{directory}Castledawson_Deck_Bridge.json"
 
 	graph1_attributed = load_AG_from_json_file(file1)
 	IE_model1 = load_IE_from_json_file(file1)
@@ -338,11 +331,9 @@ if __name__ == "__main__":
 	results = backtrack(graph1_attributed, graph2_attributed, 20, debug=True)
 	# results = backtrack_parallel(graph1_attributed, graph2_attributed)
 
-	# for r in results: print(r)
+	for r in results: print(r)
 
-	# missing_element = [element for results[0]
-
-	# retrieve_MCS_descriptions(results[0], IE_model1, IE_model2)
+	retrieve_MCS_descriptions(results[0], IE_model1, IE_model2)
 
 	# file_list = ["/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json",
 	# 			 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json",
