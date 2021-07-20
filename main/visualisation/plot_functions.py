@@ -101,6 +101,8 @@ if __name__ == "__main__":
 	# graph_plot(graph1_attributed["nodes"], graph1_attributed["edges"])
 	# graph_plot(graph2_attributed["nodes"], graph2_attributed["edges"])
 
+	
+
 	# # Create new networkX graph object
 	# G = nx.Graph()
 	# # Add nodes and edges to the graph object
