@@ -2,7 +2,6 @@ import pandas as pd
 import json
 import time
 import re
-import ast
 import pprint
 
 timestamp_conversion_factor = 10**9
