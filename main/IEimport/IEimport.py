@@ -20,7 +20,11 @@ material_mapping_dict = {'FRP' : {"name" : "composite", "type" : {"name" : "fibr
 						'Concrete' : {"name" : "ceramic", "type" : {"name" : "cement"}}, 
 						'Steel' : {"name" : "metal", "type": {"name" : "ferrousAlloy", "type" : {"name" : "steel"}}}, 
 						'Reinforced Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}, 
-						'Reinfoced Concrete': {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}}
+						'Reinfoced Concrete': {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
+						'Mixed' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
+						'Steele, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
+						'Steel, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}
+						}
 geometry_class_mapping_dict = { 'Beam' : 'beam',
 								'Plate' : 'plate', 
 								'Slab' : 'slab', 
@@ -30,7 +34,8 @@ geometry_class_mapping_dict = { 'Beam' : 'beam',
 								'Cable' : 'cable', 
 								'Block' : 'block',
 								'Fuselage' : 'fuselage',
-								'Other' : 'Other'}
+								'Tower' : 'tower',
+								'Other' : 'other'}
 shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cylinder"}}},	
 						'Cylindrical' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}}, 
 						'Cone': {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cylinder"}}}, 
@@ -43,26 +48,34 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'Continuous Slab' : {"name" : "plate", "type" : {"name" : "rectangular"}}, 
 						'SHS' : {"name" : "beam"}, 
 						'RHS' : {"name" : "beam"}, 
-						'Ribbed Plate':'',
-						'I Beam':'',
-						'Box (Hollow)':'',
-						'Box (Solid)':'',
-						'I beam':'',
-						'Cylinder (Solid)':'',
-						'Square':'',
-						'CHS':'',
+						'Hollow cylinder' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}}, 
+						'Ribbed Plate' : {"name" : "plate"},
+						'I Beam': {"name" : "beam", "type" : {"name" : "i-beam"}},
+						'Box (Hollow)': {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Box (Solid)': {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'I beam' : {"name" : "beam", "type" : {"name" : "i-beam"}},
+						'Cylinder (Solid)' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
+						'CHS' : {"name" : "beam"},
 						'Cylinder (hollow)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
-						'Square Hollow':'',
 						'Cylinder Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
-						'Cylinder Solid':'',
-						'Trapezoid Hollow':'',
-						'Cuboid' : '',
-						'Cuboid ':'',
-						'Cuboid Hollow':'',
+						'Cylinder Solid' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
+						'Trapezoid Hollow' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cuboid"}}},
+						'Cuboid Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Cylinder\nHollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
-						'Cylinder ':'',
-						'Square\nHollow':'',
-						'Square \nHollow':''}
+						'Beam' : {"name" : "beam"},
+						'Rectangular Beam' : {"name" : "beam", "type" : {"name" : "rectangular"}},
+						'Plate' : {"name" : "plate"},
+						'Rectangular' : {"name" : "plate", "type" : {"name" : "rectangular"}},
+						'Rectangular Plate' : {"name" : "plate", "type" : {"name" : "rectangular"}},
+						'Rectangular box' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Cylinder' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
+						'Cylinder ' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
+						'Cuboid' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Cuboid ' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Cuboid (shell)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Square' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Square Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}}
+						}
 
 def discoverIDModelMappings(structure, file_path):
 	if structure == None or file_path == None: return 
@@ -110,13 +123,13 @@ def import_IE_from_excel_new(structure, file_path):
 	jsonElements = []
 	for index, row in elements.iterrows():
 		if row[columnMappings["geometry class"]] not in geometry_class_mapping_dict:
-			print(f"Error: geometry class {row[columnMappings['geometry class']]} not in mappings dictionary (Row:{index+2} in {file_path})")
+			print(f"Error: geometry class \'{row[columnMappings['geometry class']]}\' not in mappings dictionary (Row:{index+2} in {file_path})")
 			continue
 		if row[columnMappings["shape"]] not in shape_mapping_dict:
-			print(f"Error: shape {row[columnMappings['shape']]} not in mappings dictionary (Row:{index+2} in {file_path})")
+			print(f"Error: shape \'{row[columnMappings['shape']]}\' not in mappings dictionary (Row:{index+2} in {file_path})")
 			continue
 		if row[columnMappings["material"]] not in material_mapping_dict:
-			print(f"Error: material {row[columnMappings['material']]} not in mappings dictionary (Row:{index+2} in {file_path})")
+			print(f"Error: material \'{row[columnMappings['material']]}\' not in mappings dictionary (Row:{index+2} in {file_path})")
 			continue
 
 		element = 	{"name" : row[columnMappings["name"]],
@@ -137,7 +150,6 @@ def import_IE_from_excel_new(structure, file_path):
 	# print(jsonElements)
 	
 	# For geometry, shape, material create list of entries and decide what we need to do with them
-	
 
 	#print(elements)
 	#elements_json_str = elements.to_json(indent=2, orient="records").lower()
