@@ -23,7 +23,8 @@ material_mapping_dict = {'FRP' : {"name" : "composite", "type" : {"name" : "fibr
 						'Reinfoced Concrete': {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
 						'Mixed' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
 						'Steele, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
-						'Steel, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}
+						'Steel, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
+						'Encased Concrete' : {"name" : "composite"}
 						}
 geometry_class_mapping_dict = { 'Beam' : 'beam',
 								'Plate' : 'plate', 
@@ -49,8 +50,10 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'SHS' : {"name" : "beam"}, 
 						'RHS' : {"name" : "beam"}, 
 						'Hollow cylinder' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}}, 
-						'Ribbed Plate' : {"name" : "plate"},
-						'I Beam': {"name" : "beam", "type" : {"name" : "i-beam"}},
+						'Ribbed Plate' : {"name" : "plate", "type" : {"name" : "rectangular"}},
+						'Ribbed (Solid)' : {"name" : "plate", "type" : {"name" : "rectangular"}},
+						'I' : {"name" : "beam", "type" : {"name" : "i-beam"}},
+						'I Beam' : {"name" : "beam", "type" : {"name" : "i-beam"}},
 						'Box (Hollow)': {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Box (Solid)': {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'I beam' : {"name" : "beam", "type" : {"name" : "i-beam"}},
@@ -61,6 +64,8 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'Cylinder Solid' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
 						'Trapezoid Hollow' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cuboid"}}},
 						'Cuboid Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Trapezoid (Hollow)' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cuboid"}}},
+						'Cylinder (Hollow)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
 						'Cylinder\nHollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
 						'Beam' : {"name" : "beam"},
 						'Rectangular Beam' : {"name" : "beam", "type" : {"name" : "rectangular"}},
@@ -72,12 +77,14 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'Cylinder ' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
 						'Cuboid' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Cuboid ' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Cuboid (Solid)' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Cuboid (shell)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
+						'Cuboid (Hollow)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Square' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Square Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}}
 						}
 
-def discoverIDModelMappings(structure, file_path):
+def discover_element_mappings(structure, file_path):
 	if structure == None or file_path == None: return 
 	elements_raw = pd.read_excel(file_path,
 								 sheet_name='Elements',
@@ -87,21 +94,25 @@ def discoverIDModelMappings(structure, file_path):
 	elements = elements_raw.loc[:, ~elements_raw.columns.str.contains('^Unnamed')].dropna(how='all')
 
 	#Create Column Mappings
-	columnMappings = {}
+	column_mappings = {}
 	index = 0
 	for col in elements.columns:
-		columnMappings[col.strip().lower()] = index
+		column_mappings[col.strip().lower()] = index
 		index += 1
 
 	#Enumerate through rows
 	for index, row in elements.iterrows():
-		if row[columnMappings["material"]] not in material_list:
+		if row[column_mappings["material"]] not in material_list:
 			# print(row[columnMappings["material"]])
-			material_list.append(row[columnMappings["material"]])
-		if row[columnMappings["geometry class"]] not in geometry_class_list:
-			geometry_class_list.append(row[columnMappings["geometry class"]])
-		if row[columnMappings["shape"]] not in shape_list:
-			shape_list.append(row[columnMappings["shape"]])
+			material_list.append(row[column_mappings["material"]])
+		if row[column_mappings["geometry class"]] not in geometry_class_list:
+			geometry_class_list.append(row[column_mappings["geometry class"]])
+		if row[column_mappings["shape"]] not in shape_list:
+			shape_list.append(row[column_mappings["shape"]])
+
+def discover_joint_mappings(structure, file_path):
+	if structure == None or file_path == None: return
+	join
 
 def import_IE_from_excel_new(structure, file_path):
 	if structure == None or file_path == None: return 
@@ -401,13 +412,11 @@ if __name__ == "__main__":
 	# import_IE_from_excel('IE example', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/IE example.xlsx",
 	# 					 debug=False)
-
 	# import_IE_from_excel('Aeroplane 1', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
 	# import_IE_from_excel('Bridge 1', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx",
 	# 					 debug=True)
-
 	# import_IE_from_excel('Aeroplane 2', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
 	# import_IE_from_excel('Bridge 2', 
@@ -416,46 +425,6 @@ if __name__ == "__main__":
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
 	# import_IE_from_excel('Turbine 1', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
-
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Aeroplane 1.json")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bridge 1.json")
-
-	# import_IE_from_excel('Castledawson', 
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Castledawson_Deck_Bridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Castledawson.json")
-
-	# import_IE_from_excel('Randallstown', 
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Randallstown.json")
-
-	# import_IE_from_excel('Drumderg', 
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Drumderg_Footbridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Drumderg.json")
-
-	# import_IE_from_excel('Brough_Road', 
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Brough_Road_Footbridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Brough_Road.json")
-
-	# import_IE_from_excel('Toome',
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Toome_Arch_Bridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Toome.json")
-
-	# import_IE_from_excel('Baker',
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Baker_Bridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Baker.json")
-
-	# import_IE_from_excel('Humber',
-	# 						"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Humber_Bridge_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Humber.json")
-
-	# import_IE_from_excel('Bosphorous_Original', 
-	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Bosphorous_Original_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bosphorous_Original.json")
-
-	# import_IE_from_excel('Bosphorous_Repaired', 
-	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Bosphorous_Repaired_IEM.xlsx")
-	# generate_graph_from_json("/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json/Bosphorous_Repaired.json")
-
 
 	import_IE_from_excel_new('Aeroplane 1', 
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
@@ -470,20 +439,20 @@ if __name__ == "__main__":
 	import_IE_from_excel_new('Turbine 1', 
 						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
 	import_IE_from_excel_new('Castledawson', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Castledawson_Deck_Bridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
 	import_IE_from_excel_new('Randallstown', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
 	import_IE_from_excel_new('Drumderg', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Drumderg_Footbridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
 	import_IE_from_excel_new('Brough_Road', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Brough_Road_Footbridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
 	import_IE_from_excel_new('Toome',
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Toome_Arch_Bridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
 	import_IE_from_excel_new('Baker',
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Baker_Bridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
 	import_IE_from_excel_new('Humber',
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Humber_Bridge_IEM.xlsx")
+							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
 	import_IE_from_excel_new('Bosphorous_Original', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Bosphorous_Original_IEM.xlsx")
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
 	import_IE_from_excel_new('Bosphorous_Repaired', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/26-11-20/Bosphorous_Repaired_IEM.xlsx")
+						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
