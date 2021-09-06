@@ -3,6 +3,7 @@ import json
 import time
 import re
 import pprint
+import math
 
 timestamp_conversion_factor = 10**9
 import_na_values = ['-1.#IND', '1.#QNAN', '1.#IND', '-1.#QNAN', '#N/A N/A', '#N/A', 'N/A', 'n/a', 
@@ -13,6 +14,7 @@ json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Eleme
 material_list = []
 geometry_class_list = []
 shape_list = []
+joint_type_list = []
 
 material_mapping_dict = {'FRP' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}, 
 						'Assembly' : {"name" : "metal"}, 
@@ -83,6 +85,21 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'Square' : {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'Square Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}}
 						}
+joint_type_mapping_dict = 	{'Lug' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
+							'Complex' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
+							'Friction' : {}, 
+							'Clamped' : {"name" : "static", "nature" : {"name" : "other"}}, 
+							'Joined' : {}, 
+							'Bolted' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
+							'Bearing' : {}, 
+							'Bearing ' : {}, 
+							'Soil' : {}, 
+							'Fixed' : {}, 
+							'Expansion' : {}, 
+							'Pin' : {}, 
+							'Splice' : {},
+							'Roller' : {}, 
+							'roller' : {}}
 
 def discover_element_mappings(structure, file_path):
 	if structure == None or file_path == None: return 
@@ -112,9 +129,31 @@ def discover_element_mappings(structure, file_path):
 
 def discover_joint_mappings(structure, file_path):
 	if structure == None or file_path == None: return
-	join
+	joints_raw = pd.read_excel(file_path, 
+							   sheet_name='Joints',
+							   keep_default_na=False,
+							   na_values=import_na_values, 
+							   dtype=str)
+	joints = joints_raw.loc[:, ~joints_raw.columns.str.contains('^Unnamed')].dropna(how='all')
+
+	#Create Column Mappings
+	columnMappings = {}
+	index = 0
+	for col in joints.columns:
+		columnMappings[col.strip().lower()] = index
+		index += 1
+
+	for index, row in joints.iterrows():
+		if row[columnMappings["type"]] not in joint_type_list:
+			joint_type_list.append(row[columnMappings["type"]])
+
+	# print(columnMappings)
+	# print(joints)
+	# print(math.isnan(joints['Disp DoF'][0]))
+	# 'name' 'element set', 'x-location', 'y-location', 'z-location', 'type', 'disp dof', 'rot dof'
 
 def import_IE_from_excel_new(structure, file_path):
+	# Import IE model information
 	if structure == None or file_path == None: return 
 	elements_raw = pd.read_excel(file_path,
 								 sheet_name='Elements',
@@ -123,39 +162,79 @@ def import_IE_from_excel_new(structure, file_path):
 								 dtype=str)
 	elements = elements_raw.loc[:, ~elements_raw.columns.str.contains('^Unnamed')].dropna(how='all')
 
-	#Create Column Mappings
-	columnMappings = {}
+	joints_raw = pd.read_excel(file_path, 
+							   sheet_name='Joints',
+							   keep_default_na=False,
+							   na_values=import_na_values, 
+							   dtype=str)
+	joints = joints_raw.loc[:, ~joints_raw.columns.str.contains('^Unnamed')].dropna(how='all')
+
+	# Create Column Mappings
+	columnMappings = {"elements" : {}, "joints" : {}, "boundary-conditions" : {}}
 	index = 0
 	for col in elements.columns:
-		columnMappings[col.strip().lower()] = index
+		columnMappings["elements"][col.strip().lower()] = index
+		index += 1
+
+	index = 0
+	for col in joints.columns:
+		columnMappings["joints"][col.strip().lower()] = index
 		index += 1
 	
-	#Enumerate through rows
+	# Enumerate through rows in elements
 	jsonElements = []
 	for index, row in elements.iterrows():
-		if row[columnMappings["geometry class"]] not in geometry_class_mapping_dict:
-			print(f"Error: geometry class \'{row[columnMappings['geometry class']]}\' not in mappings dictionary (Row:{index+2} in {file_path})")
+		if row[columnMappings["elements"]["geometry class"]] not in geometry_class_mapping_dict:
+			print(f'Error: geometry class \'{row[columnMappings["elements"]["geometry class"]]}\' not in mappings dictionary (Row:{index+2} in {file_path})')
 			continue
-		if row[columnMappings["shape"]] not in shape_mapping_dict:
-			print(f"Error: shape \'{row[columnMappings['shape']]}\' not in mappings dictionary (Row:{index+2} in {file_path})")
+		if row[columnMappings["elements"]["shape"]] not in shape_mapping_dict:
+			print(f'Error: shape \'{row[columnMappings["elements"]["shape"]]}\' not in mappings dictionary (Row:{index+2} in {file_path})')
 			continue
-		if row[columnMappings["material"]] not in material_mapping_dict:
-			print(f"Error: material \'{row[columnMappings['material']]}\' not in mappings dictionary (Row:{index+2} in {file_path})")
+		if row[columnMappings["elements"]["material"]] not in material_mapping_dict:
+			print(f'Error: material \'{row[columnMappings["elements"]["material"]]}\' not in mappings dictionary (Row:{index+2} in {file_path})')
 			continue
 
-		element = 	{"name" : row[columnMappings["name"]],
+		element = 	{"name" : row[columnMappings["elements"]["name"]],
 					"type" : "regular",
 					"contextual" : {
-						"type" : geometry_class_mapping_dict[row[columnMappings["geometry class"]]]
+						"type" : geometry_class_mapping_dict[row[columnMappings["elements"]["geometry class"]]]
 					},
 					"geometry" : {
-						"type" : shape_mapping_dict[row[columnMappings["shape"]]]
+						"type" : shape_mapping_dict[row[columnMappings["elements"]["shape"]]]
 					},
 					"material" : {
-						"type" : material_mapping_dict[row[columnMappings["material"]]]
+						"type" : material_mapping_dict[row[columnMappings["elements"]["material"]]]
 					}
 					}
 		jsonElements.append(element)
+
+	# Enumerate through rows in joints
+	jsonJoints = []
+	for index, row in joints.iterrows():
+		joint  = {}
+		joint["name"] = row[columnMappings["joints"]["joint id"]]
+		if row[columnMappings["joints"]["type"]] == "Perfect":
+			joint["type"] = "perfect"
+		elif row[columnMappings["joints"]["type"]] not in joint_type_mapping_dict:
+			print(f'Error: joint type \'{row[columnMappings["joints"]["type"]]}\' not in mappings dictionary(Row:{index+2} in {file_path})')
+		else:
+			joint["type"] = "joint"
+			
+			try:
+				if type(row[columnMappings["joints"]["disp dof"]]) == str or row[columnMappings["joints"]["rot dof"]] == str:
+					# print(f'{row[columnMappings["joints"]["joint id"]]} is dynamic')
+					pass
+				else: 
+					# print(f'{row[columnMappings["joints"]["joint id"]]} is static')
+					pass
+			except:
+				print(f'Error on Joint {row[columnMappings["joints"]["joint id"]]} in {file_path}')
+				print(f'Displacement DoF type: {type("disp dof")}')
+				print(f'Rotational DoF type: {type("rot dof")}')
+		# 	joint = {"name" : row[columnMappings["joints"]["name"]]}
+		# 	print(row[columnMappings["joints"]["name"]])
+		# jsonJoints.append(joint)
+		
 		
 	# print(f"For {file_path} we have the following elements:")
 	# print(jsonElements)
@@ -426,33 +505,36 @@ if __name__ == "__main__":
 	# import_IE_from_excel('Turbine 1', 
 	# 					 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
 
-	import_IE_from_excel_new('Aeroplane 1', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
-	import_IE_from_excel_new('Bridge 1', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
-	import_IE_from_excel_new('Aeroplane 2', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
-	import_IE_from_excel_new('Bridge 2', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
-	import_IE_from_excel_new('Bridge 3', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
-	import_IE_from_excel_new('Turbine 1', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
-	import_IE_from_excel_new('Castledawson', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Randallstown', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Drumderg', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
-	import_IE_from_excel_new('Brough_Road', 
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
-	import_IE_from_excel_new('Toome',
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Baker',
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Humber',
-							"/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Bosphorous_Original', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
-	import_IE_from_excel_new('Bosphorous_Repaired', 
-						 "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
+	# discover_joint_mappings('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	# discover_joint_mappings('Bridge 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
+	# discover_joint_mappings('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
+	# discover_joint_mappings('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
+	# discover_joint_mappings('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
+	# discover_joint_mappings('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
+	# discover_joint_mappings('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
+	# discover_joint_mappings('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
+	# discover_joint_mappings('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
+	# discover_joint_mappings('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
+	# discover_joint_mappings('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
+	# discover_joint_mappings('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
+	# discover_joint_mappings('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
+	# discover_joint_mappings('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
+	# discover_joint_mappings('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
+
+	# print(joint_type_list)
+
+	import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	import_IE_from_excel_new('Bridge 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
+	import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
+	import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
+	import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
+	import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
+	import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
+	import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
+	import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
+	import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
+	import_IE_from_excel_new('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
+	import_IE_from_excel_new('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
+	import_IE_from_excel_new('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
+	import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
+	import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
