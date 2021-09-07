@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import time
 import re
-import pprint
+from pprint import pprint
 import math
 
 timestamp_conversion_factor = 10**9
@@ -215,20 +215,36 @@ def import_IE_from_excel_new(structure, file_path):
 	for index, row in joints.iterrows():
 		joint  = {}
 		joint["name"] = row[columnMappings["joints"]["joint id"]]
+
+		
+		coordinates_object = {"global": {
+										"translational": {
+											"x": {"unit": "m", "value": check_values(row[columnMappings["joints"]["x-location"]])},
+											"y": {"unit": "m", "value": check_values(row[columnMappings["joints"]["y-location"]])},
+											"z": {"unit": "m", "value": check_values(row[columnMappings["joints"]["z-location"]])}
+										}
+									}}
 		if row[columnMappings["joints"]["type"]] == "Perfect":
 			joint["type"] = "perfect"
-			joint["coordinates"] = {"global": {
-										"translational": {
-											"x": {"unit": "m", "value": row[columnMappings["joints"]["x-location"]]},
-											"y": {"unit": "m", "value": row[columnMappings["joints"]["y-location"]]},
-											"z": {"unit": "m", "value": row[columnMappings["joints"]["z-location"]]}
-										}
-                        			}}
+			joint["coordinates"] = coordinates_object
+			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
+			joint["element set"] = []
+			for element in element_set:
+				joint["element set"].append({"name" : element})
+			# pprint(joint, indent=2)
+
 		elif row[columnMappings["joints"]["type"]] not in joint_type_mapping_dict:
 			print(f'Error: joint type \'{row[columnMappings["joints"]["type"]]}\' not in mappings dictionary(Row:{index+2} in {file_path})')
 		else:
 			joint["type"] = "joint"
 			joint["nature"] = joint_type_mapping_dict[row[columnMappings["joints"]["type"]]]
+			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
+			joint["element set"] = []
+			for element in element_set:
+				joint["element set"].append({"name" : element,
+											"coordinates" : coordinates_object})
+				# pprint(joint, indent=2)
+
 		
 		
 		
@@ -313,7 +329,7 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 		element_dict["type"] = "regular"
 
 		# print("element")
-		# pprint.pprint(element_dict,indent=2)
+		# pprint(element_dict,indent=2)
 
 		structure_dict["irreducible_element_model"]["elements"].append(element_dict)
 
@@ -463,7 +479,7 @@ def generate_graph_from_json(file_path):
 					graph[element1].append(element2)
 		list_of_edges.append(joint["element_set"])
 
-	# pprint.pprint(graph,indent=2)
+	# pprint(graph,indent=2)
 
 	structure["attributed_graph"] = {}
 	structure["attributed_graph"]["counts"] = {"elements": number_of_elements,
@@ -475,6 +491,9 @@ def generate_graph_from_json(file_path):
 
 	with open(file_path, "w") as outfile:
 		json.dump(structure, outfile, indent=4)
+
+def check_values(value):
+	return value
 
 if __name__ == "__main__":
 	# See if json config file exists
