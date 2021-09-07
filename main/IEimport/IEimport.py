@@ -87,19 +87,21 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						}
 joint_type_mapping_dict = 	{'Lug' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
 							'Complex' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
-							'Friction' : {}, 
-							'Clamped' : {"name" : "static", "nature" : {"name" : "other"}}, 
-							'Joined' : {}, 
+							'Friction' : {"name" : "dynamic"}, 
+							'Clamped' : {"name" : "static"}, 
 							'Bolted' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
-							'Bearing' : {}, 
-							'Bearing ' : {}, 
-							'Soil' : {}, 
-							'Fixed' : {}, 
-							'Expansion' : {}, 
-							'Pin' : {}, 
-							'Splice' : {},
-							'Roller' : {}, 
-							'roller' : {}}
+							'Bearing' : {"name" : "dynamic"}, 
+							'Bearing ' : {"name" : "dynamic"}, 
+							'Soil' : {"name" : "static"}, 
+							'Fixed' : {"name" : "static"}, 
+							'Expansion' : {"name" : "static", "nature" : {"name" : "expansion"}}, 
+							'Pin' : {"name" : "dynamic"}, 
+							'Roller' : {"name" : "dynamic"}, 
+							'roller' : {"name" : "dynamic"},
+							'Simply supported' : {"name" : "dynamic"},
+							'Joined' : {"name" : "static"},
+							'Pinned' : {"name" : "dynamic"},
+							'Splice' : {"name" : "static"}}
 
 def discover_element_mappings(structure, file_path):
 	if structure == None or file_path == None: return 
@@ -215,25 +217,19 @@ def import_IE_from_excel_new(structure, file_path):
 		joint["name"] = row[columnMappings["joints"]["joint id"]]
 		if row[columnMappings["joints"]["type"]] == "Perfect":
 			joint["type"] = "perfect"
+			joint["coordinates"] = {"global": {
+										"translational": {
+											"x": {"unit": "m", "value": row[columnMappings["joints"]["x-location"]]},
+											"y": {"unit": "m", "value": row[columnMappings["joints"]["y-location"]]},
+											"z": {"unit": "m", "value": row[columnMappings["joints"]["z-location"]]}
+										}
+                        			}}
 		elif row[columnMappings["joints"]["type"]] not in joint_type_mapping_dict:
 			print(f'Error: joint type \'{row[columnMappings["joints"]["type"]]}\' not in mappings dictionary(Row:{index+2} in {file_path})')
 		else:
 			joint["type"] = "joint"
-			
-			try:
-				if type(row[columnMappings["joints"]["disp dof"]]) == str or row[columnMappings["joints"]["rot dof"]] == str:
-					# print(f'{row[columnMappings["joints"]["joint id"]]} is dynamic')
-					pass
-				else: 
-					# print(f'{row[columnMappings["joints"]["joint id"]]} is static')
-					pass
-			except:
-				print(f'Error on Joint {row[columnMappings["joints"]["joint id"]]} in {file_path}')
-				print(f'Displacement DoF type: {type("disp dof")}')
-				print(f'Rotational DoF type: {type("rot dof")}')
-		# 	joint = {"name" : row[columnMappings["joints"]["name"]]}
-		# 	print(row[columnMappings["joints"]["name"]])
-		# jsonJoints.append(joint)
+			joint["nature"] = joint_type_mapping_dict[row[columnMappings["joints"]["type"]]]
+		
 		
 		
 	# print(f"For {file_path} we have the following elements:")
