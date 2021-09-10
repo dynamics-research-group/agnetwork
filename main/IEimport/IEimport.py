@@ -171,6 +171,13 @@ def import_IE_from_excel_new(structure, file_path):
 							   dtype=str)
 	joints = joints_raw.loc[:, ~joints_raw.columns.str.contains('^Unnamed')].dropna(how='all')
 
+	boundary_raw = pd.read_excel(file_path, 
+								 sheet_name='Boundary conditions', 
+								 keep_default_na=False,
+								 na_values=import_na_values,
+								 dtype=str)
+	boundary_conditions = boundary_raw.loc[:, ~boundary_raw.columns.str.contains('^Unnamed')].dropna()
+
 	# Create Column Mappings
 	columnMappings = {"elements" : {}, "joints" : {}, "boundary-conditions" : {}}
 	index = 0
@@ -182,6 +189,13 @@ def import_IE_from_excel_new(structure, file_path):
 	for col in joints.columns:
 		columnMappings["joints"][col.strip().lower()] = index
 		index += 1
+
+	index = 0
+	for col in boundary_conditions.columns:
+		columnMappings["boundary-conditions"][col.strip().lower()] = index
+		index += 1
+
+	print(columnMappings["boundary-conditions"])
 	
 	# Enumerate through rows in elements
 	jsonElements = []
@@ -232,18 +246,33 @@ def import_IE_from_excel_new(structure, file_path):
 			for element in element_set:
 				joint["element set"].append({"name" : element})
 			# pprint(joint, indent=2)
-
+			jsonJoints.append(joint)
 		elif row[columnMappings["joints"]["type"]] not in joint_type_mapping_dict:
 			print(f'Error: joint type \'{row[columnMappings["joints"]["type"]]}\' not in mappings dictionary(Row:{index+2} in {file_path})')
 		else:
 			joint["type"] = "joint"
 			joint["nature"] = joint_type_mapping_dict[row[columnMappings["joints"]["type"]]]
+			if joint["nature"]["name"] == "dynamic":
+				if type(row[columnMappings["joints"]["disp dof"]]) == str: 
+					joint["degreesOfFreedom"] = {} 
+					joint["degreesOfFreedom"]["translational"] = create_degrees_of_freedom_object(row[columnMappings["joints"]["disp dof"]])
+				if type(row[columnMappings["joints"]["rot dof"]]) == str:
+					if "degreesOfFreedom" not in joint: joint["degreesOfFreedom"] = {}
+					else:
+						joint["degreesOfFreedom"]["rotational"] = rotational_degrees_of_freedom_object(row[columnMappings["joints"]["rot dof"]])
+				if "degreesOfFreedom" not in joint:
+					print(f'Error: dynamic joint has no dof information in Row:{index+2} in {file_path}')
 			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
 			joint["element set"] = []
 			for element in element_set:
 				joint["element set"].append({"name" : element,
 											"coordinates" : coordinates_object})
-				# pprint(joint, indent=2)
+			# pprint(joint, indent=2)
+			jsonJoints.append(joint)
+
+	jsonBoundaryConditions = []
+	for index, row in boundary_conditions.iterrows():
+		pass
 
 
 	# print(f"For {file_path} we have the following elements:")
@@ -432,6 +461,21 @@ def create_degrees_of_freedom_object(degrees_of_freedom):
 		dof = dof.replace(']','')
 		dof = dof.strip()
 		degrees_of_freedom_object[dof] = {}
+	return degrees_of_freedom_object
+
+def rotational_degrees_of_freedom_object(degrees_of_freedom):
+	degrees_of_freedom_object = {}
+	split_degrees_of_freedom = re.split(",", degrees_of_freedom)
+	for dof in split_degrees_of_freedom:
+		dof = dof.replace('[','')
+		dof = dof.replace(']','')
+		dof = dof.strip()
+		if dof == 'x':
+			degrees_of_freedom_object["alpha"] = {}
+		elif dof == 'y':
+			degrees_of_freedom_object["beta"] = {}
+		elif dof == 'z':
+			degrees_of_freedom_object["gamma"] = {}
 	return degrees_of_freedom_object
 
 def acquire_inputs():
