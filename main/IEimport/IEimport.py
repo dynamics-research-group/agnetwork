@@ -216,14 +216,14 @@ def import_IE_from_excel_new(structure, file_path):
 		joint  = {}
 		joint["name"] = row[columnMappings["joints"]["joint id"]]
 
-		
 		coordinates_object = {"global": {
 										"translational": {
-											"x": {"unit": "m", "value": check_values(row[columnMappings["joints"]["x-location"]])},
-											"y": {"unit": "m", "value": check_values(row[columnMappings["joints"]["y-location"]])},
-											"z": {"unit": "m", "value": check_values(row[columnMappings["joints"]["z-location"]])}
+											"x": {"unit": "m", "value": check_and_convert_to_numeric(row[columnMappings["joints"]["x-location"]], index, file_path)},
+											"y": {"unit": "m", "value": check_and_convert_to_numeric(row[columnMappings["joints"]["y-location"]], index, file_path)},
+											"z": {"unit": "m", "value": check_and_convert_to_numeric(row[columnMappings["joints"]["z-location"]], index, file_path)}
 										}
 									}}
+		# print(coordinates_object)
 		if row[columnMappings["joints"]["type"]] == "Perfect":
 			joint["type"] = "perfect"
 			joint["coordinates"] = coordinates_object
@@ -245,9 +245,7 @@ def import_IE_from_excel_new(structure, file_path):
 											"coordinates" : coordinates_object})
 				# pprint(joint, indent=2)
 
-		
-		
-		
+
 	# print(f"For {file_path} we have the following elements:")
 	# print(jsonElements)
 	
@@ -492,8 +490,19 @@ def generate_graph_from_json(file_path):
 	with open(file_path, "w") as outfile:
 		json.dump(structure, outfile, indent=4)
 
-def check_values(value):
-	return value
+def check_and_convert_to_numeric(value, index, file_path):
+	if type(value) == int:
+		return value
+	elif type(value) == float:
+		if math.isnan(value):
+			print(f'Nan value found on Row:{index+2} in {file_path}')
+		else:
+			return value
+	elif type(value) == str:
+		try:
+			return int(value)
+		except ValueError:
+			return float(value)
 
 if __name__ == "__main__":
 	# See if json config file exists
