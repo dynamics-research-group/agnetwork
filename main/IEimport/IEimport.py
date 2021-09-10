@@ -194,8 +194,6 @@ def import_IE_from_excel_new(structure, file_path):
 	for col in boundary_conditions.columns:
 		columnMappings["boundary-conditions"][col.strip().lower()] = index
 		index += 1
-
-	print(columnMappings["boundary-conditions"])
 	
 	# Enumerate through rows in elements
 	jsonElements = []
@@ -272,7 +270,12 @@ def import_IE_from_excel_new(structure, file_path):
 
 	jsonBoundaryConditions = []
 	for index, row in boundary_conditions.iterrows():
-		pass
+		boundaryCondition = {}
+		boundaryCondition["name"] = row[columnMappings["boundary-conditions"]["name"]]
+		boundaryCondition["type"] = "ground"
+		jsonBoundaryConditions.append(boundaryCondition)
+	
+	print(jsonBoundaryConditions)
 
 
 	# print(f"For {file_path} we have the following elements:")
