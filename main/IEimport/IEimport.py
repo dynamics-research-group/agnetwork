@@ -9,6 +9,7 @@ timestamp_conversion_factor = 10**9
 import_na_values = ['-1.#IND', '1.#QNAN', '1.#IND', '-1.#QNAN', '#N/A N/A', '#N/A', 'N/A', 'n/a', 
 				   	' ', 'NULL', '#NA', 'null', 'NaN', '-NaN', 'nan', '-nan', '']
 json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json"
+new_json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/valid-json"
 
 # Create list of unique entries for each column
 material_list = []
@@ -154,9 +155,27 @@ def discover_joint_mappings(structure, file_path):
 	# print(math.isnan(joints['Disp DoF'][0]))
 	# 'name' 'element set', 'x-location', 'y-location', 'z-location', 'type', 'disp dof', 'rot dof'
 
-def import_IE_from_excel_new(structure, file_path):
-	# Import IE model information
+def import_IE_from_excel_new(structure, file_path, population=None):
 	if structure == None or file_path == None: return 
+
+	timestamp = time.time() * timestamp_conversion_factor
+
+	jsonNew = 	{"name": structure,
+				"timestamp": int(timestamp),
+				"models": {
+					"irreducibleElement": {
+						"type" : "grounded",
+						"elements": [],
+						"relationships": []
+						}
+					}	
+				}
+	if population != None:
+		jsonNew["population"] = population
+	else:
+		jsonNew["population"] = 'test'
+
+	# Import IE model information
 	elements_raw = pd.read_excel(file_path,
 								 sheet_name='Elements',
 								 keep_default_na=False,
@@ -196,7 +215,6 @@ def import_IE_from_excel_new(structure, file_path):
 		index += 1
 	
 	# Enumerate through rows in elements
-	jsonElements = []
 	for index, row in elements.iterrows():
 		if row[columnMappings["elements"]["geometry class"]] not in geometry_class_mapping_dict:
 			print(f'Error: geometry class \'{row[columnMappings["elements"]["geometry class"]]}\' not in mappings dictionary (Row:{index+2} in {file_path})')
@@ -220,7 +238,8 @@ def import_IE_from_excel_new(structure, file_path):
 						"type" : material_mapping_dict[row[columnMappings["elements"]["material"]]]
 					}
 					}
-		jsonElements.append(element)
+		# print(element)
+		jsonNew["models"]["irreducibleElement"]["elements"].append(element)
 
 	# Enumerate through rows in joints
 	jsonJoints = []
@@ -240,11 +259,11 @@ def import_IE_from_excel_new(structure, file_path):
 			joint["type"] = "perfect"
 			joint["coordinates"] = coordinates_object
 			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
-			joint["element set"] = []
+			joint["elements"] = []
 			for element in element_set:
-				joint["element set"].append({"name" : element})
+				joint["elements"].append({"name" : element})
 			# pprint(joint, indent=2)
-			jsonJoints.append(joint)
+			jsonNew["models"]["irreducibleElement"]["relationships"].append(joint)
 		elif row[columnMappings["joints"]["type"]] not in joint_type_mapping_dict:
 			print(f'Error: joint type \'{row[columnMappings["joints"]["type"]]}\' not in mappings dictionary(Row:{index+2} in {file_path})')
 		else:
@@ -253,7 +272,7 @@ def import_IE_from_excel_new(structure, file_path):
 			if joint["nature"]["name"] == "dynamic":
 				if type(row[columnMappings["joints"]["disp dof"]]) == str: 
 					joint["degreesOfFreedom"] = {} 
-					joint["degreesOfFreedom"]["translational"] = create_degrees_of_freedom_object(row[columnMappings["joints"]["disp dof"]])
+					joint["degreesOfFreedom"]["translational"] = translational_degrees_of_freedom_object(row[columnMappings["joints"]["disp dof"]])
 				if type(row[columnMappings["joints"]["rot dof"]]) == str:
 					if "degreesOfFreedom" not in joint: joint["degreesOfFreedom"] = {}
 					else:
@@ -261,21 +280,23 @@ def import_IE_from_excel_new(structure, file_path):
 				if "degreesOfFreedom" not in joint:
 					print(f'Error: dynamic joint has no dof information in Row:{index+2} in {file_path}')
 			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
-			joint["element set"] = []
+			joint["elements"] = []
 			for element in element_set:
-				joint["element set"].append({"name" : element,
+				joint["elements"].append({"name" : element,
 											"coordinates" : coordinates_object})
-			# pprint(joint, indent=2)
-			jsonJoints.append(joint)
+			jsonNew["models"]["irreducibleElement"]["relationships"].append(joint)
+		# pprint(joint, indent=2)
 
-	jsonBoundaryConditions = []
 	for index, row in boundary_conditions.iterrows():
 		boundaryCondition = {}
 		boundaryCondition["name"] = row[columnMappings["boundary-conditions"]["name"]]
 		boundaryCondition["type"] = "ground"
-		jsonBoundaryConditions.append(boundaryCondition)
+		jsonNew["models"]["irreducibleElement"]["elements"].append(boundaryCondition)
 	
-	print(jsonBoundaryConditions)
+	with open (f"{new_json_export_directory}/{structure}.json", "w") as outfile:
+		json.dump(jsonNew, outfile, indent=4)
+
+	# print(jsonBoundaryConditions)
 
 
 	# print(f"For {file_path} we have the following elements:")
@@ -466,6 +487,16 @@ def create_degrees_of_freedom_object(degrees_of_freedom):
 		degrees_of_freedom_object[dof] = {}
 	return degrees_of_freedom_object
 
+def translational_degrees_of_freedom_object(degrees_of_freedom):
+	degrees_of_freedom_object = {}
+	split_degrees_of_freedom = re.split(",", degrees_of_freedom)
+	for dof in split_degrees_of_freedom:
+		dof = dof.replace('[','')
+		dof = dof.replace(']','')
+		dof = dof.strip()
+		degrees_of_freedom_object[dof] = {"unit": "mm", "minimum": 0, "maximum": 1}
+	return degrees_of_freedom_object
+
 def rotational_degrees_of_freedom_object(degrees_of_freedom):
 	degrees_of_freedom_object = {}
 	split_degrees_of_freedom = re.split(",", degrees_of_freedom)
@@ -474,11 +505,11 @@ def rotational_degrees_of_freedom_object(degrees_of_freedom):
 		dof = dof.replace(']','')
 		dof = dof.strip()
 		if dof == 'x':
-			degrees_of_freedom_object["alpha"] = {}
+			degrees_of_freedom_object["alpha"] = {"unit": "degrees", "minimum": 0, "maximum": 1}
 		elif dof == 'y':
-			degrees_of_freedom_object["beta"] = {}
+			degrees_of_freedom_object["beta"] = {"unit": "degrees", "minimum": 0, "maximum": 1}
 		elif dof == 'z':
-			degrees_of_freedom_object["gamma"] = {}
+			degrees_of_freedom_object["gamma"] = {"unit": "degrees", "minimum": 0, "maximum": 1}
 	return degrees_of_freedom_object
 
 def acquire_inputs():
@@ -594,18 +625,18 @@ if __name__ == "__main__":
 
 	# print(joint_type_list)
 
-	import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	# import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
 	import_IE_from_excel_new('Bridge 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
-	import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
-	import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
-	import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
-	import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
-	import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
-	import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
-	import_IE_from_excel_new('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
-	import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
+	# import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
+	# import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
+	# import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
+	# import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
+	# import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
+	# import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
+	# import_IE_from_excel_new('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
+	# import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
