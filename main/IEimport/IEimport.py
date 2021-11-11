@@ -9,7 +9,7 @@ timestamp_conversion_factor = 10**9
 import_na_values = ['-1.#IND', '1.#QNAN', '1.#IND', '-1.#QNAN', '#N/A N/A', '#N/A', 'N/A', 'n/a', 
 				   	' ', 'NULL', '#NA', 'null', 'NaN', '-NaN', 'nan', '-nan', '']
 json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json"
-new_json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/valid-json"
+new_json_export_directory = "/Users/Julian/Documents/WorkDocuments/Python/pbshm-schema/docs"
 
 # Create list of unique entries for each column
 material_list = []
@@ -88,21 +88,21 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						}
 joint_type_mapping_dict = 	{'Lug' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
 							'Complex' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
-							'Friction' : {"name" : "dynamic"}, 
-							'Clamped' : {"name" : "static"}, 
+							'Friction' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
+							'Clamped' : {"name" : "static", "nature" : {"name" : "other"}}, 
 							'Bolted' : {"name" : "static", "nature" : {"name" : "bolted"}}, 
-							'Bearing' : {"name" : "dynamic"}, 
-							'Bearing ' : {"name" : "dynamic"}, 
-							'Soil' : {"name" : "static"}, 
-							'Fixed' : {"name" : "static"}, 
+							'Bearing' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
+							'Bearing ' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
+							'Soil' : {"name" : "static", "nature" : {"name" : "other"}}, 
+							'Fixed' : {"name" : "static", "nature" : {"name" : "other"}}, 
 							'Expansion' : {"name" : "static", "nature" : {"name" : "expansion"}}, 
-							'Pin' : {"name" : "dynamic"}, 
-							'Roller' : {"name" : "dynamic"}, 
-							'roller' : {"name" : "dynamic"},
-							'Simply supported' : {"name" : "dynamic"},
-							'Joined' : {"name" : "static"},
-							'Pinned' : {"name" : "dynamic"},
-							'Splice' : {"name" : "static"}}
+							'Pin' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
+							'Roller' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
+							'roller' : {"name" : "dynamic", "nature" : {"name" : "other"}},
+							'Simply supported' : {"name" : "dynamic", "nature" : {"name" : "other"}},
+							'Joined' : {"name" : "static", "nature" : {"name" : "other"}},
+							'Pinned' : {"name" : "dynamic", "nature" : {"name" : "other"}},
+							'Splice' : {"name" : "static", "nature" : {"name" : "other"}}}
 
 def discover_element_mappings(structure, file_path):
 	if structure == None or file_path == None: return 
@@ -173,7 +173,7 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 	if population != None:
 		jsonNew["population"] = population
 	else:
-		jsonNew["population"] = 'test'
+		jsonNew["population"] = 'test-population'
 
 	# Import IE model information
 	elements_raw = pd.read_excel(file_path,
@@ -271,12 +271,13 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 			joint["nature"] = joint_type_mapping_dict[row[columnMappings["joints"]["type"]]]
 			if joint["nature"]["name"] == "dynamic":
 				if type(row[columnMappings["joints"]["disp dof"]]) == str: 
-					joint["degreesOfFreedom"] = {} 
-					joint["degreesOfFreedom"]["translational"] = translational_degrees_of_freedom_object(row[columnMappings["joints"]["disp dof"]])
+					joint["degreesOfFreedom"] = { "global" : {}} 
+					joint["degreesOfFreedom"]["global"]["translational"] = translational_degrees_of_freedom_object(row[columnMappings["joints"]["disp dof"]])
 				if type(row[columnMappings["joints"]["rot dof"]]) == str:
-					if "degreesOfFreedom" not in joint: joint["degreesOfFreedom"] = {}
+					if "degreesOfFreedom" not in joint: 
+						joint["degreesOfFreedom"] = { "global" : {}} 
 					else:
-						joint["degreesOfFreedom"]["rotational"] = rotational_degrees_of_freedom_object(row[columnMappings["joints"]["rot dof"]])
+						joint["degreesOfFreedom"]["global"]["rotational"] = rotational_degrees_of_freedom_object(row[columnMappings["joints"]["rot dof"]])
 				if "degreesOfFreedom" not in joint:
 					print(f'Error: dynamic joint has no dof information in Row:{index+2} in {file_path}')
 			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
@@ -625,12 +626,12 @@ if __name__ == "__main__":
 
 	# print(joint_type_list)
 
-	# import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
 	import_IE_from_excel_new('Bridge 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
-	# import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
-	# import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
-	# import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
-	# import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
+	import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
+	import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
+	import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
+	import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
 	# import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
