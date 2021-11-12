@@ -18,7 +18,7 @@ shape_list = []
 joint_type_list = []
 
 material_mapping_dict = {'FRP' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}, 
-						'Assembly' : {"name" : "metal"}, 
+						'Assembly' : {"name" : "metal", "type": {"name": "aluminiumAlloy"}}, 
 						'Aluminium' : {"name" : "metal", "type" : {"name" : "aluminiumAlloy"}}, 
 						'Concrete' : {"name" : "ceramic", "type" : {"name" : "cement"}}, 
 						'Steel' : {"name" : "metal", "type": {"name" : "ferrousAlloy", "type" : {"name" : "steel"}}}, 
@@ -27,7 +27,7 @@ material_mapping_dict = {'FRP' : {"name" : "composite", "type" : {"name" : "fibr
 						'Mixed' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
 						'Steele, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
 						'Steel, Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}},
-						'Encased Concrete' : {"name" : "composite"}
+						'Encased Concrete' : {"name" : "composite", "type" : {"name" : "fibre-reinforced"}}
 						}
 geometry_class_mapping_dict = { 'Beam' : 'beam',
 								'Plate' : 'plate', 
@@ -43,15 +43,15 @@ geometry_class_mapping_dict = { 'Beam' : 'beam',
 shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cylinder"}}},	
 						'Cylindrical' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}}, 
 						'Cone': {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cylinder"}}}, 
-						'Aerofoil' : {"name" : "beam"}, 
-						'Pylon' : {"name" : "beam"}, 
-						'Assembly' : {"name" : "beam"}, 
+						'Aerofoil' : {"name" : "beam", "type": { "name": "other" }}, 
+						'Pylon' : {"name" : "beam", "type": { "name": "other" }}, 
+						'Assembly' : {"name" : "beam", "type": { "name": "other" }}, 
 						'Rotor hub' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cylinder"}}}, 
 						'Trapezoid' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cuboid"}}}, 
-						'U' : {"name" : "beam"}, 
+						'U' : {"name" : "beam", "type": { "name": "other" }}, 
 						'Continuous Slab' : {"name" : "plate", "type" : {"name" : "rectangular"}}, 
-						'SHS' : {"name" : "beam"}, 
-						'RHS' : {"name" : "beam"}, 
+						'SHS' : {"name" : "beam", "type": { "name": "other" }}, 
+						'RHS' : {"name" : "beam", "type": { "name": "other" }}, 
 						'Hollow cylinder' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}}, 
 						'Ribbed Plate' : {"name" : "plate", "type" : {"name" : "rectangular"}},
 						'Ribbed (Solid)' : {"name" : "plate", "type" : {"name" : "rectangular"}},
@@ -61,7 +61,7 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'Box (Solid)': {"name" : "solid", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
 						'I beam' : {"name" : "beam", "type" : {"name" : "i-beam"}},
 						'Cylinder (Solid)' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
-						'CHS' : {"name" : "beam"},
+						'CHS' : {"name" : "beam", "type": { "name": "other" }},
 						'Cylinder (hollow)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
 						'Cylinder Hollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
 						'Cylinder Solid' : {"name" : "solid", "type" : {"name" : "translate", "type" :  {"name" : "cylinder"}}},
@@ -70,9 +70,9 @@ shape_mapping_dict = 	{'Truncated cone' : {"name" : "shell", "type" : {"name" : 
 						'Trapezoid (Hollow)' : {"name" : "shell", "type" : {"name" : "translateAndScale", "type" : {"name" : "cuboid"}}},
 						'Cylinder (Hollow)' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
 						'Cylinder\nHollow' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cylinder"}}},
-						'Beam' : {"name" : "beam"},
+						'Beam' : {"name" : "beam", "type": { "name": "other" }},
 						'Rectangular Beam' : {"name" : "beam", "type" : {"name" : "rectangular"}},
-						'Plate' : {"name" : "plate"},
+						'Plate' : {"name" : "plate", "type": { "name": "other" }},
 						'Rectangular' : {"name" : "plate", "type" : {"name" : "rectangular"}},
 						'Rectangular Plate' : {"name" : "plate", "type" : {"name" : "rectangular"}},
 						'Rectangular box' : {"name" : "shell", "type" : {"name" : "translate", "type" : {"name" : "cuboid"}}},
@@ -96,7 +96,7 @@ joint_type_mapping_dict = 	{'Lug' : {"name" : "static", "nature" : {"name" : "bo
 							'Soil' : {"name" : "static", "nature" : {"name" : "other"}}, 
 							'Fixed' : {"name" : "static", "nature" : {"name" : "other"}}, 
 							'Expansion' : {"name" : "static", "nature" : {"name" : "expansion"}}, 
-							'Pin' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
+							'Pin' : {"name" : "dynamic", "nature" : {"name" : "pinned"}}, 
 							'Roller' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
 							'roller' : {"name" : "dynamic", "nature" : {"name" : "other"}},
 							'Simply supported' : {"name" : "dynamic", "nature" : {"name" : "other"}},
@@ -276,6 +276,7 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 				if type(row[columnMappings["joints"]["rot dof"]]) == str:
 					if "degreesOfFreedom" not in joint: 
 						joint["degreesOfFreedom"] = { "global" : {}} 
+						joint["degreesOfFreedom"]["global"]["rotational"] = rotational_degrees_of_freedom_object(row[columnMappings["joints"]["rot dof"]])
 					else:
 						joint["degreesOfFreedom"]["global"]["rotational"] = rotational_degrees_of_freedom_object(row[columnMappings["joints"]["rot dof"]])
 				if "degreesOfFreedom" not in joint:
@@ -632,7 +633,7 @@ if __name__ == "__main__":
 	import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
 	import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
 	import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
-	# import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
+	import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
 	# import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
