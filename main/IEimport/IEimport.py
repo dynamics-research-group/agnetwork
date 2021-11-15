@@ -95,7 +95,7 @@ joint_type_mapping_dict = 	{'Lug' : {"name" : "static", "nature" : {"name" : "bo
 							'Bearing ' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
 							'Soil' : {"name" : "static", "nature" : {"name" : "other"}}, 
 							'Fixed' : {"name" : "static", "nature" : {"name" : "other"}}, 
-							'Expansion' : {"name" : "static", "nature" : {"name" : "expansion"}}, 
+							'Expansion' : {"name" : "dynamic", "nature" : {"name" : "expansion"}}, 
 							'Pin' : {"name" : "dynamic", "nature" : {"name" : "pinned"}}, 
 							'Roller' : {"name" : "dynamic", "nature" : {"name" : "other"}}, 
 							'roller' : {"name" : "dynamic", "nature" : {"name" : "other"}},
@@ -254,7 +254,7 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 											"z": {"unit": "m", "value": check_and_convert_to_numeric(row[columnMappings["joints"]["z-location"]], index, file_path)}
 										}
 									}}
-		# print(coordinates_object)
+		element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
 		if row[columnMappings["joints"]["type"]] == "Perfect":
 			joint["type"] = "perfect"
 			joint["coordinates"] = coordinates_object
@@ -266,6 +266,11 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 			jsonNew["models"]["irreducibleElement"]["relationships"].append(joint)
 		elif row[columnMappings["joints"]["type"]] not in joint_type_mapping_dict:
 			print(f'Error: joint type \'{row[columnMappings["joints"]["type"]]}\' not in mappings dictionary(Row:{index+2} in {file_path})')
+		elif len(element_set) > 2:
+			joint["type"] = "connection"
+			joint["elements"] = []
+			for element in element_set:
+				joint["elements"].append({"name" : element, "coordinates" : coordinates_object, "nature" : {"name" : "static", "nature" : {"name" : "other"} } } )
 		else:
 			joint["type"] = "joint"
 			joint["nature"] = joint_type_mapping_dict[row[columnMappings["joints"]["type"]]]
@@ -281,7 +286,6 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 						joint["degreesOfFreedom"]["global"]["rotational"] = rotational_degrees_of_freedom_object(row[columnMappings["joints"]["rot dof"]])
 				if "degreesOfFreedom" not in joint:
 					print(f'Error: dynamic joint has no dof information in Row:{index+2} in {file_path}')
-			element_set = [e.strip() for e in re.split(",", row[columnMappings["joints"]["element set"]])]
 			joint["elements"] = []
 			for element in element_set:
 				joint["elements"].append({"name" : element,
@@ -627,18 +631,18 @@ if __name__ == "__main__":
 
 	# print(joint_type_list)
 
-	import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
-	import_IE_from_excel_new('Bridge 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
-	import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
-	import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
-	import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
-	import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
-	import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Aeroplane 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 1.xlsx")
+	# import_IE_from_excel_new('Bridge 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 1.xlsx")
+	# import_IE_from_excel_new('Aeroplane 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Aeroplane 2.xlsx")
+	# import_IE_from_excel_new('Bridge 2', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 2.xlsx")
+	# import_IE_from_excel_new('Bridge 3', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Bridge 3.xlsx")
+	# import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
+	# import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
 	# import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
 	# import_IE_from_excel_new('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
-	# import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
-	# import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
+	import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
+	import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
