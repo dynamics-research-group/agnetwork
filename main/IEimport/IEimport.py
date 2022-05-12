@@ -574,6 +574,8 @@ def generate_graph_from_json(file_path):
 	with open(file_path, "w") as outfile:
 		json.dump(structure, outfile, indent=4)
 
+	return structure["attributed_graph"]
+
 def check_and_convert_to_numeric(value, index, file_path):
 	if type(value) == int:
 		return value
