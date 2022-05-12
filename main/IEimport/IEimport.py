@@ -8,7 +8,6 @@ import math
 timestamp_conversion_factor = 10**9
 import_na_values = ['-1.#IND', '1.#QNAN', '1.#IND', '-1.#QNAN', '#N/A N/A', '#N/A', 'N/A', 'n/a', 
 				   	' ', 'NULL', '#NA', 'null', 'NaN', '-NaN', 'nan', '-nan', '']
-json_export_directory = "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/json"
 new_json_export_directory = "/Users/Julian/Documents/WorkDocuments/Python/pbshm-schema/docs"
 
 # Create list of unique entries for each column
@@ -316,7 +315,7 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 	#elements_list = json.loads(elements_json_str)
 
 
-def import_IE_from_excel(structure, file_path, population=None, debug=False):
+def import_IE_from_excel(structure, file_path, json_export_directory, population=None, debug=False):
 	if structure == None or file_path == None: return 
 
 	name = structure
@@ -455,7 +454,8 @@ def import_IE_from_excel(structure, file_path, population=None, debug=False):
 		joint_dict["metadata"] = {}
 		structure_dict["irreducible_element_model"]["joints"].append(joint_dict)
 
-	with open (f"{json_export_directory}/{structure}.json", "w") as outfile:
+	print(f"{json_export_directory}{structure}.json")
+	with open (f"{json_export_directory}{structure}.json", "w") as outfile:
 		json.dump(structure_dict, outfile, indent=4)
 
 def create_properties_object(properties):
