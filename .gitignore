@@ -134,3 +134,6 @@ dmypy.json
 
 # Diagnostics for import
 diagnostics.txt
+
+# MCS results
+mcs-results.txt
