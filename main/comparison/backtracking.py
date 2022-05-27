@@ -278,7 +278,7 @@ def largest_graph_first(graph1_attributed, graph2_attributed):
         graph2_attributed = temp_graph
     return graph1_attributed, graph2_attributed
 
-def create_distance_matrix(file_list):
+def create_distance_matrix(file_list, bridge_list):
 	# create list of attributed graphs from list of files 
 	attributed_graph_list = [load_AG_from_json_file(f) for f in file_list]
 	# Create distance matrix with initital distance set to zero
@@ -294,6 +294,12 @@ def create_distance_matrix(file_list):
 				graph1_attributed, graph2_attributed = largest_graph_first(graph1, graph2)
 				results = backtrack(graph1_attributed, graph2_attributed)
 				result = return_largest_result(results)
+				# Save out MCS result
+				dir = os.path.dirname(__file__)
+				filepath = os.path.join(dir, 'mcs-results.txt')
+				with open(filepath, 'a') as f:
+					f.write(f'MCS between {bridge_list[i]} and {bridge_list[j]}:\n{result}\n')
+				# Calculate Jaccard index
 				jaccard_index = len(result) / (graph1_attributed["counts"]["elements"] + graph2_attributed["counts"]["elements"] - len(result))
 				similarity_matrix[i][j] = jaccard_index
 				nodes_in_mcs[i][j] = len(result)
