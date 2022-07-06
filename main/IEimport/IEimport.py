@@ -154,13 +154,14 @@ def discover_joint_mappings(structure, file_path):
 	# print(math.isnan(joints['Disp DoF'][0]))
 	# 'name' 'element set', 'x-location', 'y-location', 'z-location', 'type', 'disp dof', 'rot dof'
 
-def import_IE_from_excel_new(name, file_path, population=None):
+def import_IE_from_excel_new(name, file_path, population="testpopulation"):
 	if name == None or file_path == None: return 
 
 	timestamp = time.time() * timestamp_conversion_factor
 
 	jsonNew = 	{"version": "1.1.0",
 				"name": name,
+				"population" : population,
 				"timestamp": int(timestamp),
 				"models": {
 					"irreducibleElement": {
@@ -170,11 +171,6 @@ def import_IE_from_excel_new(name, file_path, population=None):
 						}
 					}	
 				}
-	if population != None:
-		jsonNew["population"] = population
-	else:
-		jsonNew["population"] = 'test-population'
-
 
 	# Import IE model information
 	elements_raw = pd.read_excel(file_path,
@@ -651,4 +647,4 @@ if __name__ == "__main__":
 	# import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
 	# import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
 
-	import_IE_from_excel_new('Z24-measurments', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Z24.xlsx")
+	import_IE_from_excel_new('Z24-measurements', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Z24.xlsx", population="realbridges")
