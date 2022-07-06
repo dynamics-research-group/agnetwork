@@ -648,3 +648,4 @@ if __name__ == "__main__":
 	# import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
 
 	import_IE_from_excel_new('Z24-measurements', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Z24.xlsx", population="realbridges")
+	import_IE_from_excel_new('S101-no-measurements', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Z24.xlsx", population="realbridges")
