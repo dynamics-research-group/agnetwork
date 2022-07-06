@@ -176,7 +176,7 @@ def import_IE_from_excel_new(structure, file_path, name=None, population=None):
 
 	if name != None:
 		jsonNew["name"] = name
-	else
+	else:
 		jsonNew["name"] = structure
 
 	# Import IE model information
