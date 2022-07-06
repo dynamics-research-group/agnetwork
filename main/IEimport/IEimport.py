@@ -154,12 +154,13 @@ def discover_joint_mappings(structure, file_path):
 	# print(math.isnan(joints['Disp DoF'][0]))
 	# 'name' 'element set', 'x-location', 'y-location', 'z-location', 'type', 'disp dof', 'rot dof'
 
-def import_IE_from_excel_new(structure, file_path, name=None, population=None):
-	if structure == None or file_path == None: return 
+def import_IE_from_excel_new(name, file_path, population=None):
+	if name == None or file_path == None: return 
 
 	timestamp = time.time() * timestamp_conversion_factor
 
-	jsonNew = 	{"version" : "1.1.0",
+	jsonNew = 	{"version": "1.1.0",
+				"name": name,
 				"timestamp": int(timestamp),
 				"models": {
 					"irreducibleElement": {
@@ -174,10 +175,6 @@ def import_IE_from_excel_new(structure, file_path, name=None, population=None):
 	else:
 		jsonNew["population"] = 'test-population'
 
-	if name != None:
-		jsonNew["name"] = name
-	else:
-		jsonNew["name"] = structure
 
 	# Import IE model information
 	elements_raw = pd.read_excel(file_path,
@@ -303,7 +300,7 @@ def import_IE_from_excel_new(structure, file_path, name=None, population=None):
 		boundaryCondition["type"] = "ground"
 		jsonNew["models"]["irreducibleElement"]["elements"].append(boundaryCondition)
 	
-	with open (f"{new_json_export_directory}/{structure}.json", "w") as outfile:
+	with open (f"{new_json_export_directory}/{name}.json", "w") as outfile:
 		json.dump(jsonNew, outfile, indent=4)
 
 	# print(jsonBoundaryConditions)
@@ -646,10 +643,12 @@ if __name__ == "__main__":
 	# import_IE_from_excel_new('Turbine 1', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Turbine 1.xlsx")
 	# import_IE_from_excel_new('Castledawson', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Castledawson_Deck_Bridge_IEM.xlsx")
 	# import_IE_from_excel_new('Randallstown', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Randallstown_West_Deck_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
-	import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
-	import_IE_from_excel_new('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
-	import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
-	import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
+	# import_IE_from_excel_new('Drumderg', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Drumderg_Footbridge_IEM.xlsx")
+	# import_IE_from_excel_new('Brough_Road', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Brough_Road_Footbridge_IEM.xlsx")
+	# import_IE_from_excel_new('Toome', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Toome_Arch_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Baker', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Baker_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Humber', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Humber_Bridge_IEM.xlsx")
+	# import_IE_from_excel_new('Bosphorous_Original', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Original_IEM.xlsx")
+	# import_IE_from_excel_new('Bosphorous_Repaired', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/04-12-20/Bosphorous_Repaired_IEM.xlsx")
+
+	import_IE_from_excel_new('Z24-measurments', "/Users/Julian/Documents/WorkDocuments/Irreducible Element/IE models/Excel/Z24.xlsx")
