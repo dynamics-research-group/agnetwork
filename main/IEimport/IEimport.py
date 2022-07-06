@@ -154,12 +154,12 @@ def discover_joint_mappings(structure, file_path):
 	# print(math.isnan(joints['Disp DoF'][0]))
 	# 'name' 'element set', 'x-location', 'y-location', 'z-location', 'type', 'disp dof', 'rot dof'
 
-def import_IE_from_excel_new(structure, file_path, population=None):
+def import_IE_from_excel_new(structure, file_path, name=None, population=None):
 	if structure == None or file_path == None: return 
 
 	timestamp = time.time() * timestamp_conversion_factor
 
-	jsonNew = 	{"name": structure,
+	jsonNew = 	{"version" : "1.1.0",
 				"timestamp": int(timestamp),
 				"models": {
 					"irreducibleElement": {
@@ -173,6 +173,11 @@ def import_IE_from_excel_new(structure, file_path, population=None):
 		jsonNew["population"] = population
 	else:
 		jsonNew["population"] = 'test-population'
+
+	if name != None:
+		jsonNew["name"] = name
+	else
+		jsonNew["name"] = structure
 
 	# Import IE model information
 	elements_raw = pd.read_excel(file_path,
