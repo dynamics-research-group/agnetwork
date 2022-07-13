@@ -137,3 +137,6 @@ diagnostics.txt
 
 # MCS results
 mcs-results.txt
+
+# Z24 config file
+Z24-config.json
